@@ -138,6 +138,7 @@ export type Database = {
           id: string
           owner_id: string
           photo_url: string | null
+          photo_urls: string[]
           problem_description: string
           status: Database["public"]["Enums"]["request_status"]
           updated_at: string
@@ -152,6 +153,7 @@ export type Database = {
           id?: string
           owner_id: string
           photo_url?: string | null
+          photo_urls?: string[]
           problem_description: string
           status?: Database["public"]["Enums"]["request_status"]
           updated_at?: string
@@ -166,6 +168,7 @@ export type Database = {
           id?: string
           owner_id?: string
           photo_url?: string | null
+          photo_urls?: string[]
           problem_description?: string
           status?: Database["public"]["Enums"]["request_status"]
           updated_at?: string
