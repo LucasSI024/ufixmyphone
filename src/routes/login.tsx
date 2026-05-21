@@ -13,8 +13,8 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 export const Route = createFileRoute("/login")({
   head: () => ({
     meta: [
-      { title: "Inloggen — Fixbod" },
-      { name: "description", content: "Log in of maak een account aan op Fixbod." },
+      { title: "Inloggen — I Will Make It" },
+      { name: "description", content: "Log in of maak een account aan op I Will Make It." },
     ],
   }),
   component: LoginPage,
@@ -74,7 +74,7 @@ function LoginPage() {
           <div className="bg-gradient-mint shadow-glow flex h-10 w-10 items-center justify-center rounded-lg">
             <Wrench className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
           </div>
-          <span className="font-display text-2xl font-bold">Fixbod</span>
+          <span className="font-display text-2xl font-bold">I Will Make It</span>
         </Link>
 
         <div className="bg-gradient-card shadow-card rounded-2xl border border-border/60 p-6 sm:p-8">

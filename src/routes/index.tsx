@@ -30,7 +30,7 @@ function Landing() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
-              Plaats je kapotte toestel op Fixbod en ontvang biedingen van reparateurs door heel Nederland.
+              Plaats je kapotte toestel op I Will Make It en ontvang biedingen van reparateurs door heel Nederland.
               Geen overprijsde winkels meer — kies zelf de beste prijs en datum.
             </p>
 
@@ -94,7 +94,7 @@ function Landing() {
             Twee zijden, één marktplaats
           </h2>
           <p className="mx-auto mt-3 max-w-xl text-center text-muted-foreground">
-            Of je nu een kapot toestel hebt of als reparateur klussen zoekt — Fixbod is voor jou gemaakt.
+            Of je nu een kapot toestel hebt of als reparateur klussen zoekt — I Will Make It is voor jou gemaakt.
           </p>
 
           <div className="mt-12 grid gap-6 md:grid-cols-2">
@@ -157,7 +157,7 @@ function Landing() {
 
       <footer className="border-t border-border/60 py-8">
         <div className="container mx-auto max-w-6xl px-4 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} Fixbod — De marktplaats voor telefoonreparaties
+          © {new Date().getFullYear()} I Will Make It — De marktplaats voor telefoonreparaties
         </div>
       </footer>
     </div>
