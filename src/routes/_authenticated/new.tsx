@@ -402,7 +402,7 @@ function NewRequestPage() {
         {/* Eigen uitleg */}
         <fieldset className="space-y-4">
           <legend className="font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            4. Eigen uitleg
+            5. Eigen uitleg
           </legend>
 
           <div className="space-y-2">
