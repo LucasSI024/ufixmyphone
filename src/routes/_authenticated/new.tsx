@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useState, useRef, type FormEvent } from "react";
 import { toast } from "sonner";
-import { Smartphone } from "lucide-react";
+import { Smartphone, ImagePlus, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+
+const MAX_PHOTOS = 5;
+const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5 MB
+const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"];
+
+type PendingPhoto = { file: File; previewUrl: string };
 
 export const Route = createFileRoute("/_authenticated/new")({
   head: () => ({ meta: [{ title: "Reparatie plaatsen — Fixbod" }] }),
@@ -76,6 +82,8 @@ function NewRequestPage() {
     budget_max: "",
   });
   const [extras, setExtras] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<PendingPhoto[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const upd =
     (k: keyof typeof form) =>
@@ -85,12 +93,59 @@ function NewRequestPage() {
   const toggleExtra = (label: string, checked: boolean) =>
     setExtras((x) => (checked ? [...x, label] : x.filter((v) => v !== label)));
 
+  const handleFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const accepted: PendingPhoto[] = [];
+    for (const file of Array.from(files)) {
+      if (photos.length + accepted.length >= MAX_PHOTOS) {
+        toast.error(`Maximaal ${MAX_PHOTOS} foto's.`);
+        break;
+      }
+      if (!ACCEPTED_TYPES.includes(file.type)) {
+        toast.error(`${file.name}: alleen JPG, PNG, WEBP of HEIC.`);
+        continue;
+      }
+      if (file.size > MAX_FILE_BYTES) {
+        toast.error(`${file.name} is groter dan 5 MB.`);
+        continue;
+      }
+      accepted.push({ file, previewUrl: URL.createObjectURL(file) });
+    }
+    if (accepted.length > 0) setPhotos((p) => [...p, ...accepted]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removePhoto = (idx: number) => {
+    setPhotos((p) => {
+      URL.revokeObjectURL(p[idx].previewUrl);
+      return p.filter((_, i) => i !== idx);
+    });
+  };
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!user) return;
     if (form.details.trim().length < 20) {
       toast.error("Geef minimaal 20 tekens uitleg bij 'Extra details'.");
       return;
+    }
+
+    setBusy(true);
+
+    // Upload photos to storage
+    const uploadedUrls: string[] = [];
+    for (const p of photos) {
+      const ext = p.file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("repair-photos")
+        .upload(path, p.file, { contentType: p.file.type, upsert: false });
+      if (upErr) {
+        setBusy(false);
+        return toast.error(`Upload mislukt: ${upErr.message}`);
+      }
+      const { data: pub } = supabase.storage.from("repair-photos").getPublicUrl(path);
+      uploadedUrls.push(pub.publicUrl);
     }
 
     // Bundle structured answers into one rich description.
@@ -107,7 +162,6 @@ function NewRequestPage() {
       .filter(Boolean)
       .join("\n");
 
-    setBusy(true);
     const { data, error } = await supabase
       .from("repair_requests")
       .insert({
@@ -117,6 +171,7 @@ function NewRequestPage() {
         problem_description: description,
         city: form.city.trim(),
         budget_max: form.budget_max ? Number(form.budget_max) : null,
+        photo_urls: uploadedUrls,
       })
       .select("id")
       .single();
@@ -125,6 +180,7 @@ function NewRequestPage() {
     toast.success("Je reparatie staat live!");
     navigate({ to: "/request/$id", params: { id: data.id } });
   };
+
 
   return (
     <main className="container mx-auto max-w-2xl px-4 py-8">
@@ -291,10 +347,62 @@ function NewRequestPage() {
           </div>
         </fieldset>
 
+        {/* Foto's */}
+        <fieldset className="space-y-3">
+          <legend className="font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            4. Foto's (optioneel, max {MAX_PHOTOS} · 5 MB per foto)
+          </legend>
+          <p className="text-xs text-muted-foreground">
+            Duidelijke foto's van de schade leveren scherpere biedingen op.
+          </p>
+
+          {photos.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {photos.map((p, idx) => (
+                <div
+                  key={p.previewUrl}
+                  className="group relative aspect-square overflow-hidden rounded-xl border border-border/60 bg-background/40"
+                >
+                  <img
+                    src={p.previewUrl}
+                    alt={`Foto ${idx + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(idx)}
+                    aria-label={`Foto ${idx + 1} verwijderen`}
+                    className="absolute right-1.5 top-1.5 rounded-full bg-background/90 p-1 text-foreground opacity-90 shadow-card transition hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {photos.length < MAX_PHOTOS && (
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/60 bg-background/30 px-4 py-6 text-sm text-muted-foreground transition hover:border-primary/50 hover:text-foreground">
+              <ImagePlus className="h-5 w-5" />
+              <span>Foto's toevoegen ({photos.length}/{MAX_PHOTOS})</span>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={ACCEPTED_TYPES.join(",")}
+                multiple
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+              />
+            </label>
+          )}
+        </fieldset>
+
+
+
         {/* Eigen uitleg */}
         <fieldset className="space-y-4">
           <legend className="font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            4. Eigen uitleg
+            5. Eigen uitleg
           </legend>
 
           <div className="space-y-2">
@@ -327,7 +435,7 @@ function NewRequestPage() {
         {/* Locatie + budget */}
         <fieldset className="space-y-4">
           <legend className="font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            5. Locatie & budget
+            6. Locatie & budget
           </legend>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
