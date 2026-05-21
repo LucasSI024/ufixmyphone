@@ -123,9 +123,25 @@ function AccountPage() {
         </TabsContent>
 
         <TabsContent value="requests" className="mt-6 space-y-3">
+          <div className="bg-gradient-card shadow-card flex flex-col gap-3 rounded-2xl border border-border/60 p-4 sm:flex-row sm:items-center sm:justify-between">
+            <div>
+              <div className="font-semibold">Plaats een nieuwe reparatie</div>
+              <p className="text-xs text-muted-foreground">Komt op je eigen profiel én in de algemene feed.</p>
+            </div>
+            <div className="flex gap-2">
+              <Button asChild className="shadow-glow">
+                <Link to="/new"><Plus className="h-4 w-4" /> Plaats reparatie</Link>
+              </Button>
+              {user && (
+                <Button asChild variant="outline">
+                  <Link to="/u/$id" params={{ id: user.id }}>Mijn profiel</Link>
+                </Button>
+              )}
+            </div>
+          </div>
           {myRequests.data?.length === 0 && (
             <p className="rounded-2xl border border-dashed border-border/60 p-8 text-center text-sm text-muted-foreground">
-              Je hebt nog geen reparaties geplaatst. <Link to="/new" className="text-primary hover:underline">Plaats er één</Link>.
+              Je hebt nog geen reparaties geplaatst.
             </p>
           )}
           {myRequests.data?.map((r) => (
