@@ -16,6 +16,7 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+import { REPAIR_CATEGORIES } from "@/lib/categories";
 
 const MAX_PHOTOS = 5;
 const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5 MB
@@ -28,19 +29,8 @@ export const Route = createFileRoute("/_authenticated/new")({
   component: NewRequestPage,
 });
 
-const PROBLEM_TYPES = [
-  "Gebarsten scherm",
-  "Touchscreen werkt niet",
-  "Accu / batterij",
-  "Laadpoort / laadt niet op",
-  "Camera",
-  "Speaker / microfoon",
-  "Knoppen (aan/uit, volume)",
-  "Waterschade",
-  "Gaat niet meer aan",
-  "Software / vastgelopen",
-  "Anders",
-] as const;
+const PROBLEM_TYPES = REPAIR_CATEGORIES;
+
 
 const WHEN_OPTIONS = [
   "Vandaag",
