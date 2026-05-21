@@ -347,6 +347,58 @@ function NewRequestPage() {
           </div>
         </fieldset>
 
+        {/* Foto's */}
+        <fieldset className="space-y-3">
+          <legend className="font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
+            4. Foto's (optioneel, max {MAX_PHOTOS} · 5 MB per foto)
+          </legend>
+          <p className="text-xs text-muted-foreground">
+            Duidelijke foto's van de schade leveren scherpere biedingen op.
+          </p>
+
+          {photos.length > 0 && (
+            <div className="grid grid-cols-3 gap-2 sm:grid-cols-4">
+              {photos.map((p, idx) => (
+                <div
+                  key={p.previewUrl}
+                  className="group relative aspect-square overflow-hidden rounded-xl border border-border/60 bg-background/40"
+                >
+                  <img
+                    src={p.previewUrl}
+                    alt={`Foto ${idx + 1}`}
+                    className="h-full w-full object-cover"
+                  />
+                  <button
+                    type="button"
+                    onClick={() => removePhoto(idx)}
+                    aria-label={`Foto ${idx + 1} verwijderen`}
+                    className="absolute right-1.5 top-1.5 rounded-full bg-background/90 p-1 text-foreground opacity-90 shadow-card transition hover:bg-destructive hover:text-destructive-foreground"
+                  >
+                    <X className="h-3.5 w-3.5" />
+                  </button>
+                </div>
+              ))}
+            </div>
+          )}
+
+          {photos.length < MAX_PHOTOS && (
+            <label className="flex cursor-pointer items-center justify-center gap-2 rounded-xl border-2 border-dashed border-border/60 bg-background/30 px-4 py-6 text-sm text-muted-foreground transition hover:border-primary/50 hover:text-foreground">
+              <ImagePlus className="h-5 w-5" />
+              <span>Foto's toevoegen ({photos.length}/{MAX_PHOTOS})</span>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept={ACCEPTED_TYPES.join(",")}
+                multiple
+                className="hidden"
+                onChange={(e) => handleFiles(e.target.files)}
+              />
+            </label>
+          )}
+        </fieldset>
+
+
+
         {/* Eigen uitleg */}
         <fieldset className="space-y-4">
           <legend className="font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
