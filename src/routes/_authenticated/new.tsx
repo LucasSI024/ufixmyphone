@@ -159,6 +159,7 @@ function NewRequestPage() {
         device_brand: form.device_brand.trim(),
         device_model: form.device_model.trim(),
         problem_description: description,
+        category: form.problem_type,
         city: form.city.trim(),
         budget_max: form.budget_max ? Number(form.budget_max) : null,
         photo_urls: uploadedUrls,
