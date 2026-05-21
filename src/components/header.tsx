@@ -49,6 +49,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
+              <NotificationBell />
               <Button asChild size="sm" variant="default" className="hidden sm:inline-flex">
                 <Link to="/new">
                   <Plus className="h-4 w-4" />
