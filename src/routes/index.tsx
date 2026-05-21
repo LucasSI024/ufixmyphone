@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Wrench, Smartphone, Euro, Users, ArrowRight, CheckCircle2, Eye } from "lucide-react";
+import { Wrench, Smartphone, Euro, Users, ArrowRight, CheckCircle2, Eye, Search, Camera, MapPin } from "lucide-react";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 
