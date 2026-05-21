@@ -145,12 +145,8 @@ function FeedPage() {
         ) : (
           <ul className="space-y-3">
             {filtered.map((req) => (
-              <li key={req.id}>
-                <Link
-                  to="/request/$id"
-                  params={{ id: req.id }}
-                  className="bg-gradient-card shadow-card group block rounded-2xl border border-border/60 p-5 transition-all hover:border-primary/50 hover:shadow-glow"
-                >
+              <li key={req.id} className="bg-gradient-card shadow-card group rounded-2xl border border-border/60 p-5 transition-all hover:border-primary/50 hover:shadow-glow">
+                <Link to="/request/$id" params={{ id: req.id }} className="block">
                   <div className="flex items-start gap-4">
                     <div className="flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
                       <Smartphone className="h-6 w-6" />
@@ -183,6 +179,15 @@ function FeedPage() {
                     </div>
                   </div>
                 </Link>
+                <div className="mt-3 flex justify-end border-t border-border/40 pt-3">
+                  <Link
+                    to="/u/$id"
+                    params={{ id: req.owner_id }}
+                    className="text-xs font-medium text-muted-foreground hover:text-primary"
+                  >
+                    Bekijk profiel van plaatser →
+                  </Link>
+                </div>
               </li>
             ))}
           </ul>
