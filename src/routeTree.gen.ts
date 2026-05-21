@@ -14,6 +14,7 @@ import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
 import { Route as AuthenticatedFeedRouteImport } from './routes/_authenticated/feed'
+import { Route as AuthenticatedRequestIdRouteImport } from './routes/_authenticated/request.$id'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
@@ -39,18 +40,25 @@ const AuthenticatedFeedRoute = AuthenticatedFeedRouteImport.update({
   path: '/feed',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedRequestIdRoute = AuthenticatedRequestIdRouteImport.update({
+  id: '/request/$id',
+  path: '/request/$id',
+  getParentRoute: () => AuthenticatedRoute,
+} as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/feed': typeof AuthenticatedFeedRoute
   '/new': typeof AuthenticatedNewRoute
+  '/request/$id': typeof AuthenticatedRequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/login': typeof LoginRoute
   '/feed': typeof AuthenticatedFeedRoute
   '/new': typeof AuthenticatedNewRoute
+  '/request/$id': typeof AuthenticatedRequestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -59,12 +67,13 @@ export interface FileRoutesById {
   '/login': typeof LoginRoute
   '/_authenticated/feed': typeof AuthenticatedFeedRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
+  '/_authenticated/request/$id': typeof AuthenticatedRequestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/feed' | '/new'
+  fullPaths: '/' | '/login' | '/feed' | '/new' | '/request/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/feed' | '/new'
+  to: '/' | '/login' | '/feed' | '/new' | '/request/$id'
   id:
     | '__root__'
     | '/'
@@ -72,6 +81,7 @@ export interface FileRouteTypes {
     | '/login'
     | '/_authenticated/feed'
     | '/_authenticated/new'
+    | '/_authenticated/request/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -117,17 +127,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedFeedRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/request/$id': {
+      id: '/_authenticated/request/$id'
+      path: '/request/$id'
+      fullPath: '/request/$id'
+      preLoaderRoute: typeof AuthenticatedRequestIdRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedFeedRoute: typeof AuthenticatedFeedRoute
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
+  AuthenticatedRequestIdRoute: typeof AuthenticatedRequestIdRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedFeedRoute: AuthenticatedFeedRoute,
   AuthenticatedNewRoute: AuthenticatedNewRoute,
+  AuthenticatedRequestIdRoute: AuthenticatedRequestIdRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
