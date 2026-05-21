@@ -29,6 +29,7 @@ type RequestDetail = {
   status: string;
   accepted_bid_id: string | null;
   created_at: string;
+  photo_urls: string[] | null;
   profiles: { display_name: string; city: string | null } | null;
 };
 
