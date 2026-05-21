@@ -435,7 +435,7 @@ function NewRequestPage() {
         {/* Locatie + budget */}
         <fieldset className="space-y-4">
           <legend className="font-display text-sm font-semibold uppercase tracking-wide text-muted-foreground">
-            5. Locatie & budget
+            6. Locatie & budget
           </legend>
           <div className="grid gap-4 sm:grid-cols-2">
             <div className="space-y-2">
