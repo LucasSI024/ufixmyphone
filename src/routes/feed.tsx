@@ -1,11 +1,14 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
-import { Smartphone, MapPin, Euro, Clock, Plus, Inbox } from "lucide-react";
+import { useState, useMemo } from "react";
+import { Smartphone, MapPin, Euro, Clock, Plus, Inbox, Search, X } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { nl } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
 import { Header } from "@/components/header";
+import { REPAIR_CATEGORIES } from "@/lib/categories";
 
 export const Route = createFileRoute("/feed")({
   head: () => ({ meta: [{ title: "Open reparaties — Fixbod" }] }),
@@ -19,6 +22,7 @@ type RequestRow = {
   problem_description: string;
   city: string;
   budget_max: number | null;
+  category: string | null;
   status: string;
   created_at: string;
   owner_id: string;
@@ -26,34 +30,95 @@ type RequestRow = {
 };
 
 function FeedPage() {
+  const [category, setCategory] = useState<string | null>(null);
+  const [city, setCity] = useState("");
+
   const { data, isLoading } = useQuery({
     queryKey: ["feed-requests"],
     queryFn: async () => {
       const { data, error } = await supabase
         .from("repair_requests")
-        .select("id, device_brand, device_model, problem_description, city, budget_max, status, created_at, owner_id, bids(count)")
+        .select("id, device_brand, device_model, problem_description, city, budget_max, category, status, created_at, owner_id, bids(count)")
         .eq("status", "open")
         .order("created_at", { ascending: false })
-        .limit(50);
+        .limit(200);
       if (error) throw error;
       return data as unknown as RequestRow[];
     },
   });
 
+  const filtered = useMemo(() => {
+    if (!data) return [];
+    const c = city.trim().toLowerCase();
+    return data.filter((r) => {
+      if (category && r.category !== category) return false;
+      if (c && !r.city.toLowerCase().includes(c)) return false;
+      return true;
+    });
+  }, [data, category, city]);
+
   return (
     <div className="min-h-screen">
       <Header />
       <main className="container mx-auto max-w-4xl px-4 py-8">
-        <div className="mb-8 flex items-end justify-between gap-4">
+        <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <h1 className="font-display text-3xl font-bold sm:text-4xl">Open reparaties</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Bekijk wat er nu wordt aangeboden — bieden of plaatsen kan na inloggen.
+              Filter op categorie of stad om snel de juiste reparaties te vinden.
             </p>
           </div>
           <Button asChild className="shadow-glow">
             <Link to="/new"><Plus className="h-4 w-4" /> Plaatsen</Link>
           </Button>
+        </div>
+
+        {/* Filters */}
+        <div className="mb-6 space-y-3">
+          <div className="relative max-w-sm">
+            <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+            <Input
+              placeholder="Filter op stad..."
+              value={city}
+              onChange={(e) => setCity(e.target.value)}
+              className="pl-9"
+            />
+          </div>
+
+          <div className="flex flex-wrap gap-2">
+            <button
+              onClick={() => setCategory(null)}
+              className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                category === null
+                  ? "border-primary bg-primary text-primary-foreground"
+                  : "border-border/60 bg-background/40 text-muted-foreground hover:border-primary/50 hover:text-foreground"
+              }`}
+            >
+              Alle
+            </button>
+            {REPAIR_CATEGORIES.map((c) => (
+              <button
+                key={c}
+                onClick={() => setCategory(c === category ? null : c)}
+                className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
+                  category === c
+                    ? "border-primary bg-primary text-primary-foreground"
+                    : "border-border/60 bg-background/40 text-muted-foreground hover:border-primary/50 hover:text-foreground"
+                }`}
+              >
+                {c}
+              </button>
+            ))}
+          </div>
+
+          {(category || city) && (
+            <button
+              onClick={() => { setCategory(null); setCity(""); }}
+              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+            >
+              <X className="h-3 w-3" /> Filters wissen
+            </button>
+          )}
         </div>
 
         {isLoading ? (
@@ -62,12 +127,16 @@ function FeedPage() {
               <div key={i} className="h-32 animate-pulse rounded-2xl bg-surface" />
             ))}
           </div>
-        ) : !data || data.length === 0 ? (
+        ) : filtered.length === 0 ? (
           <div className="bg-gradient-card flex flex-col items-center rounded-2xl border border-border/60 p-12 text-center">
             <Inbox className="mb-4 h-12 w-12 text-muted-foreground" />
-            <h3 className="font-display text-xl font-semibold">Nog geen open reparaties</h3>
+            <h3 className="font-display text-xl font-semibold">
+              {data && data.length > 0 ? "Geen resultaten" : "Nog geen open reparaties"}
+            </h3>
             <p className="mt-2 max-w-sm text-sm text-muted-foreground">
-              Wees de eerste! Plaats je kapotte toestel en ontvang biedingen.
+              {data && data.length > 0
+                ? "Pas je filters aan of wis ze om alles te zien."
+                : "Wees de eerste! Plaats je kapotte toestel en ontvang biedingen."}
             </p>
             <Button asChild className="mt-6">
               <Link to="/new"><Plus className="h-4 w-4" /> Plaats reparatie</Link>
@@ -75,7 +144,7 @@ function FeedPage() {
           </div>
         ) : (
           <ul className="space-y-3">
-            {data.map((req) => (
+            {filtered.map((req) => (
               <li key={req.id}>
                 <Link
                   to="/request/$id"
@@ -95,6 +164,11 @@ function FeedPage() {
                           {req.bids[0]?.count ?? 0} bod{(req.bids[0]?.count ?? 0) === 1 ? "" : "den"}
                         </span>
                       </div>
+                      {req.category && (
+                        <span className="mt-1 inline-block rounded-full bg-accent/40 px-2 py-0.5 text-[11px] font-medium text-foreground">
+                          {req.category}
+                        </span>
+                      )}
                       <p className="mt-1 line-clamp-2 text-sm text-muted-foreground">{req.problem_description}</p>
                       <div className="mt-3 flex flex-wrap items-center gap-x-4 gap-y-1 text-xs text-muted-foreground">
                         <span className="flex items-center gap-1"><MapPin className="h-3.5 w-3.5" /> {req.city}</span>
