@@ -131,6 +131,7 @@ export type Database = {
         Row: {
           accepted_bid_id: string | null
           budget_max: number | null
+          category: string | null
           city: string
           created_at: string
           device_brand: string
@@ -146,6 +147,7 @@ export type Database = {
         Insert: {
           accepted_bid_id?: string | null
           budget_max?: number | null
+          category?: string | null
           city: string
           created_at?: string
           device_brand: string
@@ -161,6 +163,7 @@ export type Database = {
         Update: {
           accepted_bid_id?: string | null
           budget_max?: number | null
+          category?: string | null
           city?: string
           created_at?: string
           device_brand?: string
