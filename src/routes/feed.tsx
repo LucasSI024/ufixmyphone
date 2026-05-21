@@ -39,6 +39,8 @@ type RequestRow = {
 function FeedPage() {
   const [category, setCategory] = useState<string | null>(null);
   const [city, setCity] = useState("");
+  const [search, setSearch] = useState("");
+  const [sort, setSort] = useState<"newest" | "budget_high" | "budget_low">("newest");
 
   const { data, isLoading } = useQuery({
     queryKey: ["feed-requests"],
@@ -57,12 +59,23 @@ function FeedPage() {
   const filtered = useMemo(() => {
     if (!data) return [];
     const c = city.trim().toLowerCase();
-    return data.filter((r) => {
+    const s = search.trim().toLowerCase();
+    const result = data.filter((r) => {
       if (category && r.category !== category) return false;
       if (c && !r.city.toLowerCase().includes(c)) return false;
+      if (s) {
+        const hay = `${r.device_brand} ${r.device_model} ${r.problem_description} ${r.category ?? ""}`.toLowerCase();
+        if (!hay.includes(s)) return false;
+      }
       return true;
     });
-  }, [data, category, city]);
+    if (sort === "budget_high") {
+      result.sort((a, b) => (b.budget_max ?? 0) - (a.budget_max ?? 0));
+    } else if (sort === "budget_low") {
+      result.sort((a, b) => (a.budget_max ?? Number.MAX_SAFE_INTEGER) - (b.budget_max ?? Number.MAX_SAFE_INTEGER));
+    }
+    return result;
+  }, [data, category, city, search, sort]);
 
   return (
     <div className="min-h-screen">
@@ -70,9 +83,12 @@ function FeedPage() {
       <main className="container mx-auto max-w-4xl px-4 py-8">
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
+            <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
+              <Wrench className="h-3 w-3" /> Voor reparateurs
+            </div>
             <h1 className="font-display text-3xl font-bold sm:text-4xl">Open reparaties</h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Filter op categorie of stad om snel de juiste reparaties te vinden.
+              Zoek op merk, model, onderdeel of probleem. Filter op stad en categorie.
             </p>
           </div>
           <Button asChild className="shadow-glow">
@@ -81,18 +97,41 @@ function FeedPage() {
         </div>
 
         {/* Filters */}
-        <div className="mb-6 space-y-3">
-          <div className="relative max-w-sm">
+        <div className="bg-gradient-card mb-6 space-y-3 rounded-2xl border border-border/60 p-4">
+          <div className="relative">
             <Search className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
             <Input
-              placeholder="Filter op stad..."
-              value={city}
-              onChange={(e) => setCity(e.target.value)}
+              placeholder="Zoek op merk, model, onderdeel of probleem..."
+              value={search}
+              onChange={(e) => setSearch(e.target.value)}
               className="pl-9"
             />
           </div>
 
-          <div className="flex flex-wrap gap-2">
+          <div className="grid gap-3 sm:grid-cols-[1fr,200px]">
+            <div className="relative">
+              <MapPin className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-muted-foreground" />
+              <Input
+                placeholder="Stad of postcode..."
+                value={city}
+                onChange={(e) => setCity(e.target.value)}
+                className="pl-9"
+              />
+            </div>
+            <Select value={sort} onValueChange={(v) => setSort(v as typeof sort)}>
+              <SelectTrigger>
+                <ArrowUpDown className="mr-2 h-4 w-4 text-muted-foreground" />
+                <SelectValue />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="newest">Nieuwste eerst</SelectItem>
+                <SelectItem value="budget_high">Hoogste budget</SelectItem>
+                <SelectItem value="budget_low">Laagste budget</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="flex flex-wrap gap-2 pt-1">
             <button
               onClick={() => setCategory(null)}
               className={`rounded-full border px-3 py-1.5 text-xs font-medium transition ${
@@ -118,13 +157,16 @@ function FeedPage() {
             ))}
           </div>
 
-          {(category || city) && (
-            <button
-              onClick={() => { setCategory(null); setCity(""); }}
-              className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
-            >
-              <X className="h-3 w-3" /> Filters wissen
-            </button>
+          {(category || city || search || sort !== "newest") && (
+            <div className="flex items-center justify-between pt-1">
+              <span className="text-xs text-muted-foreground">{filtered.length} resultaten</span>
+              <button
+                onClick={() => { setCategory(null); setCity(""); setSearch(""); setSort("newest"); }}
+                className="inline-flex items-center gap-1 text-xs text-muted-foreground hover:text-foreground"
+              >
+                <X className="h-3 w-3" /> Filters wissen
+              </button>
+            </div>
           )}
         </div>
 
