@@ -148,7 +148,7 @@ function RequestDetailPage() {
           </div>
         </div>
 
-        <div className="mt-6 rounded-xl bg-background/40 p-4 text-sm leading-relaxed">
+        <div className="mt-6 whitespace-pre-line rounded-xl bg-background/40 p-4 text-sm leading-relaxed">
           {req.problem_description}
         </div>
 
