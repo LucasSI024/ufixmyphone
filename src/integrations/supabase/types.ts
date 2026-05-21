@@ -14,7 +14,128 @@ export type Database = {
   }
   public: {
     Tables: {
-      [_ in never]: never
+      bids: {
+        Row: {
+          created_at: string
+          id: string
+          message: string | null
+          price: number
+          repair_days: number
+          repairer_id: string
+          request_id: string
+          status: Database["public"]["Enums"]["bid_status"]
+          updated_at: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          price: number
+          repair_days?: number
+          repairer_id: string
+          request_id: string
+          status?: Database["public"]["Enums"]["bid_status"]
+          updated_at?: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          message?: string | null
+          price?: number
+          repair_days?: number
+          repairer_id?: string
+          request_id?: string
+          status?: Database["public"]["Enums"]["bid_status"]
+          updated_at?: string
+        }
+        Relationships: [
+          {
+            foreignKeyName: "bids_request_id_fkey"
+            columns: ["request_id"]
+            isOneToOne: false
+            referencedRelation: "repair_requests"
+            referencedColumns: ["id"]
+          },
+        ]
+      }
+      profiles: {
+        Row: {
+          avatar_url: string | null
+          bio: string | null
+          city: string | null
+          created_at: string
+          display_name: string
+          id: string
+          is_repairer: boolean
+          updated_at: string
+        }
+        Insert: {
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          created_at?: string
+          display_name: string
+          id: string
+          is_repairer?: boolean
+          updated_at?: string
+        }
+        Update: {
+          avatar_url?: string | null
+          bio?: string | null
+          city?: string | null
+          created_at?: string
+          display_name?: string
+          id?: string
+          is_repairer?: boolean
+          updated_at?: string
+        }
+        Relationships: []
+      }
+      repair_requests: {
+        Row: {
+          accepted_bid_id: string | null
+          budget_max: number | null
+          city: string
+          created_at: string
+          device_brand: string
+          device_model: string
+          id: string
+          owner_id: string
+          photo_url: string | null
+          problem_description: string
+          status: Database["public"]["Enums"]["request_status"]
+          updated_at: string
+        }
+        Insert: {
+          accepted_bid_id?: string | null
+          budget_max?: number | null
+          city: string
+          created_at?: string
+          device_brand: string
+          device_model: string
+          id?: string
+          owner_id: string
+          photo_url?: string | null
+          problem_description: string
+          status?: Database["public"]["Enums"]["request_status"]
+          updated_at?: string
+        }
+        Update: {
+          accepted_bid_id?: string | null
+          budget_max?: number | null
+          city?: string
+          created_at?: string
+          device_brand?: string
+          device_model?: string
+          id?: string
+          owner_id?: string
+          photo_url?: string | null
+          problem_description?: string
+          status?: Database["public"]["Enums"]["request_status"]
+          updated_at?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
@@ -23,7 +144,8 @@ export type Database = {
       [_ in never]: never
     }
     Enums: {
-      [_ in never]: never
+      bid_status: "pending" | "accepted" | "rejected" | "withdrawn"
+      request_status: "open" | "in_progress" | "completed" | "cancelled"
     }
     CompositeTypes: {
       [_ in never]: never
@@ -150,6 +272,9 @@ export type CompositeTypes<
 
 export const Constants = {
   public: {
-    Enums: {},
+    Enums: {
+      bid_status: ["pending", "accepted", "rejected", "withdrawn"],
+      request_status: ["open", "in_progress", "completed", "cancelled"],
+    },
   },
 } as const
