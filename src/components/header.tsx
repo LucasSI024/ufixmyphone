@@ -3,6 +3,7 @@ import { Wrench, Plus, User as UserIcon, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { NotificationBell } from "@/components/notification-bell";
 import { cn } from "@/lib/utils";
 
 export function Header() {
