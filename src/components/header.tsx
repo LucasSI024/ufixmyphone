@@ -42,7 +42,7 @@ export function Header() {
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
-          {user && navItem("/feed", "Reparaties")}
+          {navItem("/feed", "Reparaties")}
           {user && navItem("/account", "Mijn account")}
         </nav>
 

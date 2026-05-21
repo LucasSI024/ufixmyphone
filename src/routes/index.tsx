@@ -1,17 +1,13 @@
-import { createFileRoute, Link, Navigate } from "@tanstack/react-router";
-import { Wrench, Smartphone, Euro, Users, ArrowRight, CheckCircle2 } from "lucide-react";
+import { createFileRoute, Link } from "@tanstack/react-router";
+import { Wrench, Smartphone, Euro, Users, ArrowRight, CheckCircle2, Eye } from "lucide-react";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
-import { useAuth } from "@/hooks/use-auth";
 
 export const Route = createFileRoute("/")({
   component: Landing,
 });
 
 function Landing() {
-  const { user, loading } = useAuth();
-  if (!loading && user) return <Navigate to="/feed" />;
-
   return (
     <div className="min-h-screen">
       <Header />
@@ -40,14 +36,18 @@ function Landing() {
 
             <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="w-full text-base shadow-glow sm:w-auto">
-                <Link to="/login">
-                  Plaats je reparatie <ArrowRight className="h-4 w-4" />
+                <Link to="/feed">
+                  <Eye className="h-4 w-4" /> Bekijk reparaties
                 </Link>
               </Button>
               <Button asChild size="lg" variant="ghost" className="w-full text-base sm:w-auto">
-                <Link to="/login">Ik repareer telefoons</Link>
+                <Link to="/login">Plaats je reparatie <ArrowRight className="h-4 w-4" /></Link>
               </Button>
             </div>
+
+            <p className="mt-4 text-xs text-muted-foreground">
+              Bekijken kan zonder account. Plaatsen of bieden alleen ingelogd.
+            </p>
 
             <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
               <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Gratis plaatsen</div>
