@@ -10,14 +10,21 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as LoginRouteImport } from './routes/login'
+import { Route as FeedRouteImport } from './routes/feed'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
 import { Route as IndexRouteImport } from './routes/index'
+import { Route as RequestIdRouteImport } from './routes/request.$id'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const FeedRoute = FeedRouteImport.update({
+  id: '/feed',
+  path: '/feed',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedRoute = AuthenticatedRouteImport.update({
@@ -27,6 +34,11 @@ const AuthenticatedRoute = AuthenticatedRouteImport.update({
 const IndexRoute = IndexRouteImport.update({
   id: '/',
   path: '/',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const RequestIdRoute = RequestIdRouteImport.update({
+  id: '/request/$id',
+  path: '/request/$id',
   getParentRoute: () => rootRouteImport,
 } as any)
 const AuthenticatedNewRoute = AuthenticatedNewRouteImport.update({
@@ -42,42 +54,52 @@ const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
+  '/feed': typeof FeedRoute
   '/login': typeof LoginRoute
   '/account': typeof AuthenticatedAccountRoute
   '/new': typeof AuthenticatedNewRoute
+  '/request/$id': typeof RequestIdRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
+  '/feed': typeof FeedRoute
   '/login': typeof LoginRoute
   '/account': typeof AuthenticatedAccountRoute
   '/new': typeof AuthenticatedNewRoute
+  '/request/$id': typeof RequestIdRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
   '/': typeof IndexRoute
   '/_authenticated': typeof AuthenticatedRouteWithChildren
+  '/feed': typeof FeedRoute
   '/login': typeof LoginRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
+  '/request/$id': typeof RequestIdRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
-  fullPaths: '/' | '/login' | '/account' | '/new'
+  fullPaths: '/' | '/feed' | '/login' | '/account' | '/new' | '/request/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/login' | '/account' | '/new'
+  to: '/' | '/feed' | '/login' | '/account' | '/new' | '/request/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
+    | '/feed'
     | '/login'
     | '/_authenticated/account'
     | '/_authenticated/new'
+    | '/request/$id'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
   IndexRoute: typeof IndexRoute
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
+  FeedRoute: typeof FeedRoute
   LoginRoute: typeof LoginRoute
+  RequestIdRoute: typeof RequestIdRoute
 }
 
 declare module '@tanstack/react-router' {
@@ -87,6 +109,13 @@ declare module '@tanstack/react-router' {
       path: '/login'
       fullPath: '/login'
       preLoaderRoute: typeof LoginRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/feed': {
+      id: '/feed'
+      path: '/feed'
+      fullPath: '/feed'
+      preLoaderRoute: typeof FeedRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated': {
@@ -101,6 +130,13 @@ declare module '@tanstack/react-router' {
       path: '/'
       fullPath: '/'
       preLoaderRoute: typeof IndexRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/request/$id': {
+      id: '/request/$id'
+      path: '/request/$id'
+      fullPath: '/request/$id'
+      preLoaderRoute: typeof RequestIdRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/_authenticated/new': {
@@ -137,7 +173,9 @@ const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
 const rootRouteChildren: RootRouteChildren = {
   IndexRoute: IndexRoute,
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
+  FeedRoute: FeedRoute,
   LoginRoute: LoginRoute,
+  RequestIdRoute: RequestIdRoute,
 }
 export const routeTree = rootRouteImport
   ._addFileChildren(rootRouteChildren)
