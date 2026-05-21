@@ -82,6 +82,8 @@ function NewRequestPage() {
     budget_max: "",
   });
   const [extras, setExtras] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<PendingPhoto[]>([]);
+  const fileInputRef = useRef<HTMLInputElement>(null);
 
   const upd =
     (k: keyof typeof form) =>
@@ -91,6 +93,35 @@ function NewRequestPage() {
   const toggleExtra = (label: string, checked: boolean) =>
     setExtras((x) => (checked ? [...x, label] : x.filter((v) => v !== label)));
 
+  const handleFiles = (files: FileList | null) => {
+    if (!files || files.length === 0) return;
+    const accepted: PendingPhoto[] = [];
+    for (const file of Array.from(files)) {
+      if (photos.length + accepted.length >= MAX_PHOTOS) {
+        toast.error(`Maximaal ${MAX_PHOTOS} foto's.`);
+        break;
+      }
+      if (!ACCEPTED_TYPES.includes(file.type)) {
+        toast.error(`${file.name}: alleen JPG, PNG, WEBP of HEIC.`);
+        continue;
+      }
+      if (file.size > MAX_FILE_BYTES) {
+        toast.error(`${file.name} is groter dan 5 MB.`);
+        continue;
+      }
+      accepted.push({ file, previewUrl: URL.createObjectURL(file) });
+    }
+    if (accepted.length > 0) setPhotos((p) => [...p, ...accepted]);
+    if (fileInputRef.current) fileInputRef.current.value = "";
+  };
+
+  const removePhoto = (idx: number) => {
+    setPhotos((p) => {
+      URL.revokeObjectURL(p[idx].previewUrl);
+      return p.filter((_, i) => i !== idx);
+    });
+  };
+
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!user) return;
@@ -99,33 +130,24 @@ function NewRequestPage() {
       return;
     }
 
-    // Bundle structured answers into one rich description.
-    const description = [
-      `**Probleem:** ${form.problem_type}`,
-      `**Wanneer ontstaan:** ${form.problem_when}`,
-      form.cause.trim() && `**Hoe gebeurd:** ${form.cause.trim()}`,
-      `**Toestand toestel:** ${form.condition}`,
-      form.tried.trim() && `**Al geprobeerd:** ${form.tried.trim()}`,
-      extras.length > 0 && `**Extra gebreken:** ${extras.join(", ")}`,
-      "",
-      form.details.trim(),
-    ]
-      .filter(Boolean)
-      .join("\n");
-
     setBusy(true);
-    const { data, error } = await supabase
-      .from("repair_requests")
-      .insert({
-        owner_id: user.id,
-        device_brand: form.device_brand.trim(),
-        device_model: form.device_model.trim(),
-        problem_description: description,
-        city: form.city.trim(),
-        budget_max: form.budget_max ? Number(form.budget_max) : null,
-      })
-      .select("id")
-      .single();
+
+    // Upload photos to storage
+    const uploadedUrls: string[] = [];
+    for (const p of photos) {
+      const ext = p.file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("repair-photos")
+        .upload(path, p.file, { contentType: p.file.type, upsert: false });
+      if (upErr) {
+        setBusy(false);
+        return toast.error(`Upload mislukt: ${upErr.message}`);
+      }
+      const { data: pub } = supabase.storage.from("repair-photos").getPublicUrl(path);
+      uploadedUrls.push(pub.publicUrl);
+    }
+
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Je reparatie staat live!");
