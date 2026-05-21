@@ -38,7 +38,7 @@ export function Header() {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-mint shadow-glow">
             <Wrench className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
           </div>
-          <span className="font-display text-xl font-bold tracking-tight">Fixbod</span>
+          <span className="font-display text-xl font-bold tracking-tight">I Will Make It</span>
         </Link>
 
         <nav className="hidden items-center gap-6 md:flex">
