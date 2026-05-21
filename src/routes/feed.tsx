@@ -1,12 +1,19 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery } from "@tanstack/react-query";
 import { useState, useMemo } from "react";
-import { Smartphone, MapPin, Euro, Clock, Plus, Inbox, Search, X } from "lucide-react";
+import { Smartphone, MapPin, Euro, Clock, Plus, Inbox, Search, X, Wrench, ArrowUpDown } from "lucide-react";
 import { formatDistanceToNow } from "date-fns";
 import { nl } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
+import {
+  Select,
+  SelectContent,
+  SelectItem,
+  SelectTrigger,
+  SelectValue,
+} from "@/components/ui/select";
 import { Header } from "@/components/header";
 import { REPAIR_CATEGORIES } from "@/lib/categories";
 
