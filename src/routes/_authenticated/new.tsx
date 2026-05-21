@@ -148,11 +148,39 @@ function NewRequestPage() {
       uploadedUrls.push(pub.publicUrl);
     }
 
+    // Bundle structured answers into one rich description.
+    const description = [
+      `**Probleem:** ${form.problem_type}`,
+      `**Wanneer ontstaan:** ${form.problem_when}`,
+      form.cause.trim() && `**Hoe gebeurd:** ${form.cause.trim()}`,
+      `**Toestand toestel:** ${form.condition}`,
+      form.tried.trim() && `**Al geprobeerd:** ${form.tried.trim()}`,
+      extras.length > 0 && `**Extra gebreken:** ${extras.join(", ")}`,
+      "",
+      form.details.trim(),
+    ]
+      .filter(Boolean)
+      .join("\n");
+
+    const { data, error } = await supabase
+      .from("repair_requests")
+      .insert({
+        owner_id: user.id,
+        device_brand: form.device_brand.trim(),
+        device_model: form.device_model.trim(),
+        problem_description: description,
+        city: form.city.trim(),
+        budget_max: form.budget_max ? Number(form.budget_max) : null,
+        photo_urls: uploadedUrls,
+      })
+      .select("id")
+      .single();
     setBusy(false);
     if (error) return toast.error(error.message);
     toast.success("Je reparatie staat live!");
     navigate({ to: "/request/$id", params: { id: data.id } });
   };
+
 
   return (
     <main className="container mx-auto max-w-2xl px-4 py-8">
