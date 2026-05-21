@@ -1,7 +1,7 @@
 import { createFileRoute, useNavigate } from "@tanstack/react-router";
-import { useState, type FormEvent } from "react";
+import { useState, useRef, type FormEvent } from "react";
 import { toast } from "sonner";
-import { Smartphone } from "lucide-react";
+import { Smartphone, ImagePlus, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
@@ -16,6 +16,12 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
+
+const MAX_PHOTOS = 5;
+const MAX_FILE_BYTES = 5 * 1024 * 1024; // 5 MB
+const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"];
+
+type PendingPhoto = { file: File; previewUrl: string };
 
 export const Route = createFileRoute("/_authenticated/new")({
   head: () => ({ meta: [{ title: "Reparatie plaatsen — Fixbod" }] }),
