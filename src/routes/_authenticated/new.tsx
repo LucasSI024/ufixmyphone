@@ -63,6 +63,15 @@ function NewRequestPage() {
         </div>
       </div>
 
+      <div className="mb-6 space-y-3 rounded-2xl border border-primary/30 bg-primary/5 p-5 text-sm leading-relaxed">
+        <p className="font-display text-base font-semibold text-primary">Tips voor een goed bod</p>
+        <ul className="list-disc space-y-1.5 pl-5 text-muted-foreground">
+          <li><strong className="text-foreground">Wees zo duidelijk mogelijk</strong> in je omschrijving — hoe meer details (wat, wanneer, hoe gebeurd), hoe scherper de biedingen.</li>
+          <li>Voeg ook bekende <strong className="text-foreground">extra gebreken</strong> toe als die er zijn (accu, knoppen, water, eerder gerepareerd).</li>
+          <li>Komt de reparateur tijdens de reparatie <strong className="text-foreground">onverwachte schade</strong> tegen? Dan moet die dit duidelijk aantonen — met <strong className="text-foreground">foto's of video</strong> — vóórdat er extra kosten in rekening worden gebracht. Zo blijft het voor iedereen eerlijk.</li>
+        </ul>
+      </div>
+
       <form onSubmit={onSubmit} className="bg-gradient-card shadow-card space-y-5 rounded-2xl border border-border/60 p-6 sm:p-8">
         <div className="grid gap-4 sm:grid-cols-2">
           <div className="space-y-2">
