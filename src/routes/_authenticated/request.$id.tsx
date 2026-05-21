@@ -153,6 +153,27 @@ function RequestDetailPage() {
           {req.problem_description}
         </div>
 
+        {req.photo_urls && req.photo_urls.length > 0 && (
+          <div className="mt-4 grid grid-cols-2 gap-2 sm:grid-cols-3">
+            {req.photo_urls.map((url, idx) => (
+              <a
+                key={url}
+                href={url}
+                target="_blank"
+                rel="noreferrer"
+                className="group relative aspect-square overflow-hidden rounded-xl border border-border/60 bg-background/40"
+              >
+                <img
+                  src={url}
+                  alt={`Foto ${idx + 1} van ${req.device_brand} ${req.device_model}`}
+                  loading="lazy"
+                  className="h-full w-full object-cover transition group-hover:scale-105"
+                />
+              </a>
+            ))}
+          </div>
+        )}
+
         {isOwner && req.status === "open" && (
           <div className="mt-4 flex justify-end">
             <Button variant="ghost" size="sm" onClick={handleDelete}>
