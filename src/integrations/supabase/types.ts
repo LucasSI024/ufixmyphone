@@ -58,6 +58,42 @@ export type Database = {
           },
         ]
       }
+      notifications: {
+        Row: {
+          bid_id: string | null
+          body: string | null
+          created_at: string
+          id: string
+          read: boolean
+          request_id: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Insert: {
+          bid_id?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          read?: boolean
+          request_id?: string | null
+          title: string
+          type: Database["public"]["Enums"]["notification_type"]
+          user_id: string
+        }
+        Update: {
+          bid_id?: string | null
+          body?: string | null
+          created_at?: string
+          id?: string
+          read?: boolean
+          request_id?: string | null
+          title?: string
+          type?: Database["public"]["Enums"]["notification_type"]
+          user_id?: string
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -145,6 +181,11 @@ export type Database = {
     }
     Enums: {
       bid_status: "pending" | "accepted" | "rejected" | "withdrawn"
+      notification_type:
+        | "new_bid"
+        | "bid_accepted"
+        | "bid_rejected"
+        | "request_status_changed"
       request_status: "open" | "in_progress" | "completed" | "cancelled"
     }
     CompositeTypes: {
@@ -274,6 +315,12 @@ export const Constants = {
   public: {
     Enums: {
       bid_status: ["pending", "accepted", "rejected", "withdrawn"],
+      notification_type: [
+        "new_bid",
+        "bid_accepted",
+        "bid_rejected",
+        "request_status_changed",
+      ],
       request_status: ["open", "in_progress", "completed", "cancelled"],
     },
   },

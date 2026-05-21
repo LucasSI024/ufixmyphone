@@ -3,6 +3,7 @@ import { Wrench, Plus, User as UserIcon, LogOut } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
+import { NotificationBell } from "@/components/notification-bell";
 import { cn } from "@/lib/utils";
 
 export function Header() {
@@ -48,6 +49,7 @@ export function Header() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
+              <NotificationBell />
               <Button asChild size="sm" variant="default" className="hidden sm:inline-flex">
                 <Link to="/new">
                   <Plus className="h-4 w-4" />
