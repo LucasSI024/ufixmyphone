@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Wrench, Smartphone, Euro, Users, ArrowRight, CheckCircle2, Eye } from "lucide-react";
+import { Wrench, Smartphone, Euro, Users, ArrowRight, CheckCircle2, Eye, Search, Camera, MapPin } from "lucide-react";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 
@@ -83,6 +83,58 @@ function Landing() {
                 <p className="mt-2 text-sm text-muted-foreground">{step.desc}</p>
               </div>
             ))}
+          </div>
+        </div>
+      </section>
+
+      {/* Two paths */}
+      <section className="py-20">
+        <div className="container mx-auto max-w-6xl px-4">
+          <h2 className="text-center font-display text-3xl font-bold sm:text-4xl">
+            Twee zijden, één marktplaats
+          </h2>
+          <p className="mx-auto mt-3 max-w-xl text-center text-muted-foreground">
+            Of je nu een kapot toestel hebt of als reparateur klussen zoekt — Fixbod is voor jou gemaakt.
+          </p>
+
+          <div className="mt-12 grid gap-6 md:grid-cols-2">
+            {/* Owners */}
+            <div className="bg-gradient-card shadow-card relative overflow-hidden rounded-2xl border border-border/60 p-8">
+              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                <Smartphone className="h-6 w-6" />
+              </div>
+              <h3 className="font-display text-2xl font-semibold">Heb je iets kapot?</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Beschrijf je toestel via ons stap-voor-stap formulier zodat reparateurs meteen een goed bod kunnen doen.
+              </p>
+              <ul className="mt-5 space-y-2.5 text-sm">
+                <li className="flex items-start gap-2"><Camera className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Foto's & duidelijke vraagstelling</li>
+                <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Vink bekende extra gebreken aan</li>
+                <li className="flex items-start gap-2"><Euro className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Vergelijk biedingen op prijs én levertijd</li>
+              </ul>
+              <Button asChild className="mt-6 w-full shadow-glow">
+                <Link to="/new">Plaats je reparatie <ArrowRight className="h-4 w-4" /></Link>
+              </Button>
+            </div>
+
+            {/* Repairers */}
+            <div className="bg-gradient-card shadow-card relative overflow-hidden rounded-2xl border border-border/60 p-8">
+              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                <Wrench className="h-6 w-6" />
+              </div>
+              <h3 className="font-display text-2xl font-semibold">Ben je reparateur?</h3>
+              <p className="mt-2 text-sm text-muted-foreground">
+                Vind klussen die bij jou passen. Zoek op onderdeel, filter op stad en categorie en bied direct.
+              </p>
+              <ul className="mt-5 space-y-2.5 text-sm">
+                <li className="flex items-start gap-2"><Search className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Zoek op merk, model of onderdeel</li>
+                <li className="flex items-start gap-2"><MapPin className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Filter op stad — lokaal of landelijk</li>
+                <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Sorteer op nieuwste of hoogste budget</li>
+              </ul>
+              <Button asChild variant="outline" className="mt-6 w-full">
+                <Link to="/feed">Bekijk open reparaties <ArrowRight className="h-4 w-4" /></Link>
+              </Button>
+            </div>
           </div>
         </div>
       </section>
