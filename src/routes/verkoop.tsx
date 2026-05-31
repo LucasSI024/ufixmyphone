@@ -35,13 +35,7 @@ export const Route = createFileRoute("/verkoop")({
   component: VerkoopPage,
 });
 
-const BRAND_BASE: Record<string, number> = {
-  apple: 520,
-  samsung: 380,
-  google: 300,
-  oneplus: 260,
-  other: 180,
-};
+// Brand base prices live in src/lib/phones.ts (per model).
 
 const STORAGE_MULT: Record<string, number> = {
   "64": 0.85,
