@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Zap, ShieldCheck, Euro, Battery, Smartphone, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Zap, ShieldCheck, Euro, Battery, Smartphone, ArrowRight, CheckCircle2, Sparkles, Palette } from "lucide-react";
+import { BRANDS, getBrand, getModel } from "@/lib/phones";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
@@ -34,13 +35,7 @@ export const Route = createFileRoute("/verkoop")({
   component: VerkoopPage,
 });
 
-const BRAND_BASE: Record<string, number> = {
-  apple: 520,
-  samsung: 380,
-  google: 300,
-  oneplus: 260,
-  other: 180,
-};
+// Brand base prices live in src/lib/phones.ts (per model).
 
 const STORAGE_MULT: Record<string, number> = {
   "64": 0.85,
@@ -98,10 +93,13 @@ const EXTRAS_BONUS: Record<string, number> = {
 };
 
 function VerkoopPage() {
+  const initialBrand = BRANDS[0];
+  const initialModel = initialBrand.models[0];
   const [form, setForm] = useState({
-    brand: "apple",
-    model: "",
-    storage: "128",
+    brand: initialBrand.id,
+    model: initialModel.id,
+    storage: initialModel.storages.includes("128") ? "128" : initialModel.storages[0],
+    color: initialModel.colors[0],
     age: "1",
     condition: "good",
     battery: "85",
@@ -117,8 +115,38 @@ function VerkoopPage() {
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  const brand = getBrand(form.brand);
+  const model = getModel(form.brand, form.model) ?? brand.models[0];
+
+  // When brand changes, reset model/storage/color to that brand's defaults.
+  useEffect(() => {
+    const b = getBrand(form.brand);
+    if (!b.models.find((m) => m.id === form.model)) {
+      const m = b.models[0];
+      setForm((f) => ({
+        ...f,
+        model: m.id,
+        storage: m.storages.includes("128") ? "128" : m.storages[0],
+        color: m.colors[0],
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.brand]);
+
+  // When model changes, snap storage/color to available options for that model.
+  useEffect(() => {
+    const m = getModel(form.brand, form.model);
+    if (!m) return;
+    setForm((f) => ({
+      ...f,
+      storage: m.storages.includes(f.storage) ? f.storage : (m.storages.includes("128") ? "128" : m.storages[0]),
+      color: m.colors.includes(f.color) ? f.color : m.colors[0],
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.model]);
+
   const price = useMemo(() => {
-    const base = BRAND_BASE[form.brand] ?? 200;
+    const base = model.basePrice;
     const p =
       base *
       (STORAGE_MULT[form.storage] ?? 1) *
@@ -130,7 +158,7 @@ function VerkoopPage() {
       (WORKS_MULT[form.works] ?? 1) +
       (EXTRAS_BONUS[form.extras] ?? 0);
     return Math.max(20, Math.round(p / 5) * 5);
-  }, [form]);
+  }, [form, model]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
@@ -272,30 +300,46 @@ function VerkoopPage() {
                   <Select value={form.brand} onValueChange={(v) => set("brand", v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="apple">Apple</SelectItem>
-                      <SelectItem value="samsung">Samsung</SelectItem>
-                      <SelectItem value="google">Google</SelectItem>
-                      <SelectItem value="oneplus">OnePlus</SelectItem>
-                      <SelectItem value="other">Ander merk</SelectItem>
+                      {BRANDS.map((b) => (
+                        <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </Field>
                 <Field label="Model">
-                  <Input
-                    placeholder="bijv. iPhone 13 Pro"
-                    value={form.model}
-                    onChange={(e) => set("model", e.target.value)}
-                  />
+                  <Select value={form.model} onValueChange={(v) => set("model", v)}>
+                    <SelectTrigger><SelectValue placeholder="Kies een model" /></SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      {brand.models.map((m) => (
+                        <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field label="Opslag">
                   <Select value={form.storage} onValueChange={(v) => set("storage", v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="64">64 GB</SelectItem>
-                      <SelectItem value="128">128 GB</SelectItem>
-                      <SelectItem value="256">256 GB</SelectItem>
-                      <SelectItem value="512">512 GB</SelectItem>
-                      <SelectItem value="1024">1 TB</SelectItem>
+                      {model.storages.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s === "1024" ? "1 TB" : `${s} GB`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="Kleur">
+                  <Select value={form.color} onValueChange={(v) => set("color", v)}>
+                    <SelectTrigger>
+                      <div className="flex items-center gap-2">
+                        <Palette className="h-3.5 w-3.5 text-muted-foreground" />
+                        <SelectValue />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {model.colors.map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </Field>
@@ -420,8 +464,9 @@ function VerkoopPage() {
                 <div className="font-display text-5xl font-bold tracking-tight">€ {price}</div>
 
                 <dl className="mt-6 space-y-2.5 text-sm">
-                  <Row k="Model" v={form.model || "Nog niet ingevuld"} />
-                  <Row k="Opslag" v={`${form.storage === "1024" ? "1 TB" : `${form.storage} GB`}`} />
+                  <Row k="Model" v={`${brand.name} ${model.name}`} />
+                  <Row k="Opslag" v={form.storage === "1024" ? "1 TB" : `${form.storage} GB`} />
+                  <Row k="Kleur" v={form.color} />
                   <Row
                     k="Conditie"
                     v={
