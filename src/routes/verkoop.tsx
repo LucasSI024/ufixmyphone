@@ -464,8 +464,9 @@ function VerkoopPage() {
                 <div className="font-display text-5xl font-bold tracking-tight">€ {price}</div>
 
                 <dl className="mt-6 space-y-2.5 text-sm">
-                  <Row k="Model" v={form.model || "Nog niet ingevuld"} />
-                  <Row k="Opslag" v={`${form.storage === "1024" ? "1 TB" : `${form.storage} GB`}`} />
+                  <Row k="Model" v={`${brand.name} ${model.name}`} />
+                  <Row k="Opslag" v={form.storage === "1024" ? "1 TB" : `${form.storage} GB`} />
+                  <Row k="Kleur" v={form.color} />
                   <Row
                     k="Conditie"
                     v={
