@@ -9,6 +9,7 @@
 // Additionally, you should also exclude this file from your linter and/or formatter to prevent it from being checked or modified.
 
 import { Route as rootRouteImport } from './routes/__root'
+import { Route as VerkoopRouteImport } from './routes/verkoop'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -18,6 +19,11 @@ import { Route as RequestIdRouteImport } from './routes/request.$id'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
 
+const VerkoopRoute = VerkoopRouteImport.update({
+  id: '/verkoop',
+  path: '/verkoop',
+  getParentRoute: () => rootRouteImport,
+} as any)
 const LoginRoute = LoginRouteImport.update({
   id: '/login',
   path: '/login',
@@ -62,6 +68,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/feed': typeof FeedRoute
   '/login': typeof LoginRoute
+  '/verkoop': typeof VerkoopRoute
   '/account': typeof AuthenticatedAccountRoute
   '/new': typeof AuthenticatedNewRoute
   '/request/$id': typeof RequestIdRoute
@@ -71,6 +78,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/feed': typeof FeedRoute
   '/login': typeof LoginRoute
+  '/verkoop': typeof VerkoopRoute
   '/account': typeof AuthenticatedAccountRoute
   '/new': typeof AuthenticatedNewRoute
   '/request/$id': typeof RequestIdRoute
@@ -82,6 +90,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/feed': typeof FeedRoute
   '/login': typeof LoginRoute
+  '/verkoop': typeof VerkoopRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
   '/request/$id': typeof RequestIdRoute
@@ -93,18 +102,28 @@ export interface FileRouteTypes {
     | '/'
     | '/feed'
     | '/login'
+    | '/verkoop'
     | '/account'
     | '/new'
     | '/request/$id'
     | '/u/$id'
   fileRoutesByTo: FileRoutesByTo
-  to: '/' | '/feed' | '/login' | '/account' | '/new' | '/request/$id' | '/u/$id'
+  to:
+    | '/'
+    | '/feed'
+    | '/login'
+    | '/verkoop'
+    | '/account'
+    | '/new'
+    | '/request/$id'
+    | '/u/$id'
   id:
     | '__root__'
     | '/'
     | '/_authenticated'
     | '/feed'
     | '/login'
+    | '/verkoop'
     | '/_authenticated/account'
     | '/_authenticated/new'
     | '/request/$id'
@@ -116,12 +135,20 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   FeedRoute: typeof FeedRoute
   LoginRoute: typeof LoginRoute
+  VerkoopRoute: typeof VerkoopRoute
   RequestIdRoute: typeof RequestIdRoute
   UIdRoute: typeof UIdRoute
 }
 
 declare module '@tanstack/react-router' {
   interface FileRoutesByPath {
+    '/verkoop': {
+      id: '/verkoop'
+      path: '/verkoop'
+      fullPath: '/verkoop'
+      preLoaderRoute: typeof VerkoopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
     '/login': {
       id: '/login'
       path: '/login'
@@ -200,6 +227,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   FeedRoute: FeedRoute,
   LoginRoute: LoginRoute,
+  VerkoopRoute: VerkoopRoute,
   RequestIdRoute: RequestIdRoute,
   UIdRoute: UIdRoute,
 }
