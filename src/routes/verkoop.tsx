@@ -93,10 +93,13 @@ const EXTRAS_BONUS: Record<string, number> = {
 };
 
 function VerkoopPage() {
+  const initialBrand = BRANDS[0];
+  const initialModel = initialBrand.models[0];
   const [form, setForm] = useState({
-    brand: "apple",
-    model: "",
-    storage: "128",
+    brand: initialBrand.id,
+    model: initialModel.id,
+    storage: initialModel.storages.includes("128") ? "128" : initialModel.storages[0],
+    color: initialModel.colors[0],
     age: "1",
     condition: "good",
     battery: "85",
@@ -112,8 +115,38 @@ function VerkoopPage() {
 
   const set = (k: keyof typeof form, v: string) => setForm((f) => ({ ...f, [k]: v }));
 
+  const brand = getBrand(form.brand);
+  const model = getModel(form.brand, form.model) ?? brand.models[0];
+
+  // When brand changes, reset model/storage/color to that brand's defaults.
+  useEffect(() => {
+    const b = getBrand(form.brand);
+    if (!b.models.find((m) => m.id === form.model)) {
+      const m = b.models[0];
+      setForm((f) => ({
+        ...f,
+        model: m.id,
+        storage: m.storages.includes("128") ? "128" : m.storages[0],
+        color: m.colors[0],
+      }));
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.brand]);
+
+  // When model changes, snap storage/color to available options for that model.
+  useEffect(() => {
+    const m = getModel(form.brand, form.model);
+    if (!m) return;
+    setForm((f) => ({
+      ...f,
+      storage: m.storages.includes(f.storage) ? f.storage : (m.storages.includes("128") ? "128" : m.storages[0]),
+      color: m.colors.includes(f.color) ? f.color : m.colors[0],
+    }));
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [form.model]);
+
   const price = useMemo(() => {
-    const base = BRAND_BASE[form.brand] ?? 200;
+    const base = model.basePrice;
     const p =
       base *
       (STORAGE_MULT[form.storage] ?? 1) *
@@ -125,7 +158,7 @@ function VerkoopPage() {
       (WORKS_MULT[form.works] ?? 1) +
       (EXTRAS_BONUS[form.extras] ?? 0);
     return Math.max(20, Math.round(p / 5) * 5);
-  }, [form]);
+  }, [form, model]);
 
   const submit = (e: React.FormEvent) => {
     e.preventDefault();
