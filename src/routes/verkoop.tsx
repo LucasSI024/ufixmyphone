@@ -300,30 +300,46 @@ function VerkoopPage() {
                   <Select value={form.brand} onValueChange={(v) => set("brand", v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="apple">Apple</SelectItem>
-                      <SelectItem value="samsung">Samsung</SelectItem>
-                      <SelectItem value="google">Google</SelectItem>
-                      <SelectItem value="oneplus">OnePlus</SelectItem>
-                      <SelectItem value="other">Ander merk</SelectItem>
+                      {BRANDS.map((b) => (
+                        <SelectItem key={b.id} value={b.id}>{b.name}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </Field>
                 <Field label="Model">
-                  <Input
-                    placeholder="bijv. iPhone 13 Pro"
-                    value={form.model}
-                    onChange={(e) => set("model", e.target.value)}
-                  />
+                  <Select value={form.model} onValueChange={(v) => set("model", v)}>
+                    <SelectTrigger><SelectValue placeholder="Kies een model" /></SelectTrigger>
+                    <SelectContent className="max-h-80">
+                      {brand.models.map((m) => (
+                        <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
                 </Field>
                 <Field label="Opslag">
                   <Select value={form.storage} onValueChange={(v) => set("storage", v)}>
                     <SelectTrigger><SelectValue /></SelectTrigger>
                     <SelectContent>
-                      <SelectItem value="64">64 GB</SelectItem>
-                      <SelectItem value="128">128 GB</SelectItem>
-                      <SelectItem value="256">256 GB</SelectItem>
-                      <SelectItem value="512">512 GB</SelectItem>
-                      <SelectItem value="1024">1 TB</SelectItem>
+                      {model.storages.map((s) => (
+                        <SelectItem key={s} value={s}>
+                          {s === "1024" ? "1 TB" : `${s} GB`}
+                        </SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="Kleur">
+                  <Select value={form.color} onValueChange={(v) => set("color", v)}>
+                    <SelectTrigger>
+                      <div className="flex items-center gap-2">
+                        <Palette className="h-3.5 w-3.5 text-muted-foreground" />
+                        <SelectValue />
+                      </div>
+                    </SelectTrigger>
+                    <SelectContent className="max-h-72">
+                      {model.colors.map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
                     </SelectContent>
                   </Select>
                 </Field>
