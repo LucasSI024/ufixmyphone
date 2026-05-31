@@ -1,6 +1,7 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { useMemo, useState } from "react";
-import { Zap, ShieldCheck, Euro, Battery, Smartphone, ArrowRight, CheckCircle2, Sparkles } from "lucide-react";
+import { useEffect, useMemo, useState } from "react";
+import { Zap, ShieldCheck, Euro, Battery, Smartphone, ArrowRight, CheckCircle2, Sparkles, Palette } from "lucide-react";
+import { BRANDS, getBrand, getModel } from "@/lib/phones";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
