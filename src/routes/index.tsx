@@ -58,6 +58,35 @@ function Landing() {
         </div>
       </section>
 
+      {/* Sell your phone CTA */}
+      <section className="py-16">
+        <div className="container mx-auto max-w-5xl px-4">
+          <a
+            href="https://example.com"
+            target="_blank"
+            rel="noopener noreferrer"
+            className="bg-gradient-card shadow-card group relative flex flex-col items-start gap-6 overflow-hidden rounded-2xl border border-border/60 p-8 transition-all hover:shadow-glow sm:flex-row sm:items-center sm:justify-between"
+          >
+            <div className="flex items-start gap-4">
+              <div className="inline-flex h-12 w-12 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                <Euro className="h-6 w-6" />
+              </div>
+              <div>
+                <h3 className="font-display text-xl font-semibold sm:text-2xl">
+                  Liever je telefoon verkopen?
+                </h3>
+                <p className="mt-1 text-sm text-muted-foreground">
+                  Verkoop je oude of kapotte toestel snel en eerlijk via onze verkooppagina.
+                </p>
+              </div>
+            </div>
+            <span className="inline-flex shrink-0 items-center gap-2 rounded-full bg-primary px-5 py-2.5 text-sm font-medium text-primary-foreground transition-transform group-hover:translate-x-1">
+              Verkoop je telefoon <ArrowRight className="h-4 w-4" />
+            </span>
+          </a>
+        </div>
+      </section>
+
       {/* How it works */}
       <section className="border-y border-border/60 bg-surface/30 py-20">
         <div className="container mx-auto max-w-6xl px-4">
