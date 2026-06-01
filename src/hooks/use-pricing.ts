@@ -27,9 +27,14 @@ async function fetchPricing(): Promise<Pricing> {
     defects: (r.defects ?? {}) as Record<DefectKey, number>,
   }));
 
+  const dbModels: IPhoneModel[] = mapped.length ? mapped : DEFAULT_PRICING.models;
+  // Voeg vaste Android-modellen (Samsung, Pixel) altijd toe — niet in DB
+  const existingKeys = new Set(dbModels.map(m => m.key));
+  const combined = [...dbModels, ...ANDROID_MODELS.filter(m => !existingKeys.has(m.key))];
+
   const d: any = settingsRow?.data ?? {};
   return {
-    models: mapped.length ? mapped : DEFAULT_PRICING.models,
+    models: combined,
     storage: d.storageOptions ?? STORAGE_OPTIONS,
     conditions: d.conditions ?? CONDITIONS,
     batteries: d.batteries ?? BATTERIES,
