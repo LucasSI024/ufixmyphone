@@ -33,12 +33,10 @@ function ReparateurPage() {
 
   // Als ingelogde gebruiker zonder KvK terugkomt (bv. na Google), vraag KvK
   const [pendingKvk, setPendingKvk] = useState(false);
-  const [repairerStatus, setRepairerStatus] = useState<string | null>(null);
   useEffect(() => {
     if (!user) return;
     (async () => {
       const data = await ensureProfile(user);
-      setRepairerStatus(data.repairer_status);
       if (!data.kvk_number) setPendingKvk(true);
       else if (data.repairer_status === "approved") navigate({ to: "/feed" });
     })();
@@ -63,7 +61,6 @@ function ReparateurPage() {
       toast.error(error.message);
       return false;
     }
-    setRepairerStatus("approved");
     setPendingKvk(false);
     toast.success("KvK opgeslagen. Je kan nu als reparateur bieden.");
     return true;
