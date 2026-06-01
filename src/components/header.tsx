@@ -51,6 +51,11 @@ export function Header() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
+              {isAdmin && (
+                <Button asChild size="icon" variant="ghost" title="Beheer">
+                  <Link to="/admin/inkoop-prijzen"><Shield className="h-5 w-5" /></Link>
+                </Button>
+              )}
               <NotificationBell />
               <Button asChild size="sm" variant="default" className="hidden sm:inline-flex">
                 <Link to="/new">
