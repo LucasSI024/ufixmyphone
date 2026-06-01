@@ -8,6 +8,7 @@ export const REPAIR_CATEGORIES = [
   "Waterschade",
   "Gaat niet aan",
   "Software",
+  "iPhone inkoop",
   "Anders",
 ] as const;
 
