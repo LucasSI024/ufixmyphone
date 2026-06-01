@@ -1,5 +1,5 @@
 import { createFileRoute, Link } from "@tanstack/react-router";
-import { Wrench, Smartphone, Euro, Users, ArrowRight, CheckCircle2, Eye, Search, Camera, MapPin } from "lucide-react";
+import { Wrench, Smartphone, Euro, Users, ArrowRight, CheckCircle2, Eye, Search, Camera, MapPin, FileText, MessageSquare, Scale, ShieldCheck, Star, Lock } from "lucide-react";
 import { Header } from "@/components/header";
 import { Button } from "@/components/ui/button";
 
@@ -14,7 +14,7 @@ function Landing() {
 
       {/* Hero */}
       <section className="bg-gradient-hero relative overflow-hidden">
-        <div className="container mx-auto max-w-6xl px-4 pb-24 pt-20 sm:pt-28">
+        <div className="container mx-auto max-w-6xl px-4 pb-16 pt-16 sm:pt-24">
           <div className="mx-auto max-w-3xl text-center">
             <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-medium text-primary">
               <span className="relative flex h-2 w-2">
@@ -24,19 +24,39 @@ function Landing() {
               De marktplaats voor telefoonreparaties
             </div>
 
-            <h1 className="font-display text-5xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
-              Plaats je reparatie.<br />
-              <span className="text-gradient-mint">Reparateurs brengen<br />offertes uit.</span>
+            <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
+              Eén aanvraag.<br />
+              <span className="text-gradient-mint">Meerdere reparateurs.<br />Jij kiest.</span>
             </h1>
 
-            <p className="mx-auto mt-6 max-w-xl text-lg text-muted-foreground">
-              UFixMyPhone is een online marktplaats waar reparateurs concurreren om jouw telefoonreparatie.
-              Vergelijk prijs, locatie en beoordelingen — en kies zelf de beste reparateur.
+            <p className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
+              Plaats gratis je reparatieaanvraag op UFixMyPhone. Reparateurs uit heel Nederland brengen
+              een offerte uit — jij vergelijkt op prijs, locatie en beoordelingen en kiest zelf wie de klus krijgt.
             </p>
 
-            <div className="mt-10 flex flex-col items-center justify-center gap-3 sm:flex-row">
+            {/* 4-step visual — readable in 5s */}
+            <ol className="mx-auto mt-8 grid max-w-2xl grid-cols-2 gap-2 text-left sm:grid-cols-4 sm:gap-3">
+              {[
+                { n: "1", icon: FileText, t: "Plaats aanvraag" },
+                { n: "2", icon: MessageSquare, t: "Ontvang offertes" },
+                { n: "3", icon: Scale, t: "Vergelijk" },
+                { n: "4", icon: CheckCircle2, t: "Kies reparateur" },
+              ].map((s) => (
+                <li key={s.n} className="bg-gradient-card flex items-center gap-2.5 rounded-xl border border-border/60 px-3 py-2.5">
+                  <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
+                    <s.icon className="h-3.5 w-3.5" />
+                  </div>
+                  <div className="min-w-0">
+                    <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Stap {s.n}</div>
+                    <div className="text-xs font-semibold leading-tight">{s.t}</div>
+                  </div>
+                </li>
+              ))}
+            </ol>
+
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="w-full text-base shadow-glow sm:w-auto">
-                <Link to="/login">Plaats je reparatie <ArrowRight className="h-4 w-4" /></Link>
+                <Link to="/login">Plaats gratis je aanvraag <ArrowRight className="h-4 w-4" /></Link>
               </Button>
               <Button asChild size="lg" variant="ghost" className="w-full text-base sm:w-auto">
                 <Link to="/feed">
@@ -46,46 +66,58 @@ function Landing() {
             </div>
 
             <p className="mt-4 text-xs text-muted-foreground">
-              Bekijken kan zonder account. Plaatsen of bieden alleen ingelogd.
+              Gratis & vrijblijvend · Geen verplichting tot kiezen · Bekijken kan zonder account
             </p>
 
-            <div className="mt-12 flex flex-wrap items-center justify-center gap-x-8 gap-y-2 text-sm text-muted-foreground">
-              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Transparant & eerlijk</div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Vergelijk offertes</div>
-              <div className="flex items-center gap-2"><CheckCircle2 className="h-4 w-4 text-primary" /> Direct contact met reparateur</div>
+            <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground sm:text-sm">
+              <div className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-primary" /> Geverifieerde reparateurs</div>
+              <div className="flex items-center gap-1.5"><Star className="h-4 w-4 text-primary" /> Reviews van klanten</div>
+              <div className="flex items-center gap-1.5"><Lock className="h-4 w-4 text-primary" /> Veilig via UFixMyPhone</div>
             </div>
           </div>
         </div>
       </section>
 
-      {/* How it works */}
+      {/* How it works — uitgebreid */}
       <section className="border-y border-border/60 bg-surface/30 py-20">
         <div className="container mx-auto max-w-6xl px-4">
-          <h2 className="text-center font-display text-3xl font-bold sm:text-4xl">
-            Zo werkt het
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-muted-foreground">
-            Reparateurs concurreren om jouw opdracht — jij bepaalt.
-          </p>
+          <div className="mx-auto max-w-2xl text-center">
+            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
+              Zo werkt de marktplaats
+            </div>
+            <h2 className="font-display text-3xl font-bold sm:text-4xl">
+              Van kapot naar gerepareerd in 4 stappen
+            </h2>
+            <p className="mt-3 text-muted-foreground">
+              UFixMyPhone repareert niet zelf — wij brengen jou in contact met meerdere reparateurs die met elkaar concurreren om jouw opdracht.
+            </p>
+          </div>
 
-          <div className="mt-14 grid gap-6 md:grid-cols-3">
+          <div className="mt-14 grid gap-6 sm:grid-cols-2 lg:grid-cols-4">
             {[
-              { icon: Smartphone, num: "01", title: "Plaats je aanvraag", desc: "Kies je toestel, beschrijf het probleem en upload eventueel foto's. Klaar in 1 minuut." },
-              { icon: Users, num: "02", title: "Ontvang offertes", desc: "Reparateurs uit heel Nederland brengen een offerte uit met prijs, locatie en levertijd." },
-              { icon: Euro, num: "03", title: "Vergelijk & kies", desc: "Vergelijk prijs, locatie en beoordelingen. Jij kiest zelf welke reparateur de opdracht krijgt." },
+              { icon: FileText, num: "01", title: "Plaats je aanvraag", desc: "Kies je toestel, beschrijf het probleem en upload foto's. Klaar in 1 minuut." },
+              { icon: MessageSquare, num: "02", title: "Ontvang offertes", desc: "Geverifieerde reparateurs brengen een offerte uit met prijs, locatie en levertijd." },
+              { icon: Scale, num: "03", title: "Vergelijk transparant", desc: "Vergelijk alle offertes naast elkaar — prijs, afstand én klantbeoordelingen." },
+              { icon: CheckCircle2, num: "04", title: "Kies zelf je reparateur", desc: "Jij beslist. Accepteer de offerte die het beste past en kom direct in contact." },
             ].map((step) => (
               <div key={step.num} className="bg-gradient-card shadow-card relative overflow-hidden rounded-2xl border border-border/60 p-6">
                 <div className="absolute right-4 top-4 font-mono text-xs text-muted-foreground/50">{step.num}</div>
                 <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary">
                   <step.icon className="h-6 w-6" />
                 </div>
-                <h3 className="font-display text-xl font-semibold">{step.title}</h3>
+                <h3 className="font-display text-lg font-semibold">{step.title}</h3>
                 <p className="mt-2 text-sm text-muted-foreground">{step.desc}</p>
               </div>
             ))}
           </div>
+
+          <p className="mx-auto mt-10 max-w-2xl text-center text-sm text-muted-foreground">
+            <strong className="text-foreground">Belangrijk:</strong> UFixMyPhone is een platform, geen reparatiebedrijf.
+            De reparatie zelf wordt uitgevoerd door de reparateur die jij kiest.
+          </p>
         </div>
       </section>
+
 
       {/* Two paths */}
       <section className="py-20">
