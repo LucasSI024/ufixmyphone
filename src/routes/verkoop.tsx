@@ -1,804 +1,585 @@
-import { createFileRoute, Link } from "@tanstack/react-router";
-import { useEffect, useMemo, useState } from "react";
-import { BRANDS, getBrand, getModel } from "@/lib/phones";
+import { createFileRoute, Link, useNavigate } from "@tanstack/react-router";
+import { useEffect, useMemo, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
+import {
+  Smartphone, Camera, Battery, Shield, ImagePlus, X, Sparkles,
+  CheckCircle2, Info, Upload, ArrowRight,
+} from "lucide-react";
+import { BRANDS, getModel } from "@/lib/phones";
+import { supabase } from "@/integrations/supabase/client";
+import { useAuth } from "@/hooks/use-auth";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import {
+  Select, SelectContent, SelectItem, SelectTrigger, SelectValue,
+} from "@/components/ui/select";
+import { Checkbox } from "@/components/ui/checkbox";
+import { Header } from "@/components/header";
 
 export const Route = createFileRoute("/verkoop")({
   head: () => ({
     meta: [
-      { title: "Verkoop je telefoon snel | Direct een bod" },
+      { title: "Verkoop je iPhone — Direct een eerlijke prijsindicatie | UFixMyPhone" },
       {
         name: "description",
         content:
-          "Verkoop je telefoon snel en eenvoudig. Vul de staat van je toestel in en ontvang direct een indicatieve prijs.",
+          "Binnen 1 minuut een realistische prijsindicatie voor je iPhone. Laat je toestel beoordelen door geverifieerde reparateurs en opkopers.",
       },
-      { property: "og:title", content: "Verkoop je telefoon snel | Direct een bod" },
+      { property: "og:title", content: "Verkoop je iPhone via UFixMyPhone" },
       {
         property: "og:description",
-        content: "Snel. Veilig. Duidelijk. Ontvang binnen 1 minuut een indicatie voor je toestel.",
-      },
-    ],
-    links: [
-      { rel: "preconnect", href: "https://fonts.googleapis.com" },
-      { rel: "preconnect", href: "https://fonts.gstatic.com", crossOrigin: "" },
-      {
-        rel: "stylesheet",
-        href: "https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap",
+        content: "Eerlijke prijs door concurrentie. Plaats je toestel, ontvang biedingen, kies zelf.",
       },
     ],
   }),
   component: VerkoopPage,
 });
 
-// ── Pricing multipliers ──────────────────────────────────────────────────────
-const STORAGE_MULT: Record<string, number> = { "64": 0.85, "128": 1, "256": 1.12, "512": 1.25, "1024": 1.4 };
-const AGE_MULT: Record<string, number> = { "0": 1.1, "1": 1, "2": 0.85, "3": 0.7, "4": 0.55 };
-const CONDITION_MULT: Record<string, number> = { new: 1.1, good: 1, normal: 0.85, damaged: 0.6 };
-const BATTERY_MULT: Record<string, number> = { "95": 1.05, "90": 1, "85": 0.95, "80": 0.88, "<80": 0.78 };
-const SCREEN_MULT: Record<string, number> = { clean: 1, light: 0.92, cracked: 0.55 };
-const WATER_MULT: Record<string, number> = { no: 1, maybe: 0.75, yes: 0.4 };
-const WORKS_MULT: Record<string, number> = { yes: 1, mostly: 0.85, no: 0.5 };
-const EXTRAS_BONUS: Record<string, number> = { none: 0, box: 15, full: 35 };
+// ── Apple-only modellen ─────────────────────────────────────────────────
+const APPLE = BRANDS.find((b) => b.id === "apple")!;
 
-const CONDITION_LABEL: Record<string, string> = {
-  new: "Als nieuw",
-  good: "Goede staat",
-  normal: "Normale slijtage",
-  damaged: "Zichtbare schade",
+// ── Multipliers / aftrekposten (gebaseerd op Excel-inkoopcalculator) ────
+const STORAGE_MULT: Record<string, number> = {
+  "64": 0.85, "128": 1, "256": 1.12, "512": 1.25, "1024": 1.4,
 };
-const BATTERY_LABEL: Record<string, string> = {
-  "95": "95% of hoger",
-  "90": "90% - 94%",
-  "85": "85% - 89%",
-  "80": "80% - 84%",
-  "<80": "Onder 80%",
+const BATTERY_MULT: Record<string, number> = {
+  "95": 1.0, "90": 0.95, "85": 0.9, "80": 0.82, "<80": 0.7,
 };
+// Defecten: vermenigvuldigers (1 = perfect, lager = minder waard)
+const SCREEN_MULT: Record<string, number> = { perfect: 1, scratches: 0.9, cracked: 0.55, broken: 0.35 };
+const BACK_MULT:   Record<string, number> = { perfect: 1, scratches: 0.93, cracked: 0.75, broken: 0.55 };
+const CAMERA_MULT: Record<string, number> = { ok: 1, blurry: 0.85, defect: 0.7 };
+const FACEID_MULT: Record<string, number> = { ok: 1, defect: 0.75 };
+const CHARGE_MULT: Record<string, number> = { ok: 1, flaky: 0.85, defect: 0.65 };
+const AUDIO_MULT:  Record<string, number> = { ok: 1, partial: 0.9, defect: 0.75 };
+const HOUSING_MULT:Record<string, number> = { perfect: 1, dings: 0.92, bent: 0.7 };
+const AGE_MULT:    Record<string, number> = { "0": 1.05, "1": 1, "2": 0.92, "3": 0.82, "4": 0.7 };
+
+// Overige defecten — vaste aftrek (€) per item
+const OTHER_DEFECT_DEDUCT: Record<string, number> = {
+  "Waterschade gehad": 80,
+  "Eerder gerepareerd (niet-origineel scherm)": 60,
+  "Eerder gerepareerd (niet-originele accu)": 30,
+  "iCloud / Apple ID nog gekoppeld": 100,
+  "Knoppen werken niet goed": 25,
+  "True Tone werkt niet meer": 20,
+  "Trilfunctie werkt niet": 15,
+};
+
+const LABELS = {
+  screen:  { perfect: "Perfect — geen krassen", scratches: "Lichte krasjes", cracked: "Barst in scherm", broken: "Scherm kapot / lijnen" },
+  back:    { perfect: "Perfect", scratches: "Lichte krasjes", cracked: "Barst / gebroken glas", broken: "Achterkant deels weg" },
+  camera:  { ok: "Werkt perfect", blurry: "Wazig / vlekken", defect: "Werkt niet" },
+  faceid:  { ok: "Werkt", defect: "Werkt niet" },
+  charge:  { ok: "Werkt", flaky: "Wisselvallig", defect: "Werkt niet" },
+  audio:   { ok: "Alles werkt", partial: "Eén speaker zacht", defect: "Speaker of microfoon defect" },
+  housing: { perfect: "Perfect", dings: "Deukjes / krassen", bent: "Verbogen / zware schade" },
+} as const;
+
+const MAX_PHOTOS = 6;
+const MAX_FILE_BYTES = 7 * 1024 * 1024;
+const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"];
+
+type PendingPhoto = { file: File; previewUrl: string; label?: string };
 
 function VerkoopPage() {
-  const initialBrand = BRANDS[0];
-  const initialModel = initialBrand.models[0];
+  const { user } = useAuth();
+  const navigate = useNavigate();
+  const [busy, setBusy] = useState(false);
+
+  const defaultModel = APPLE.models[0];
   const [f, setF] = useState({
-    brand: initialBrand.id,
-    model: initialModel.id,
-    storage: initialModel.storages.includes("128") ? "128" : initialModel.storages[0],
-    color: initialModel.colors[0],
+    model: defaultModel.id,
+    storage: defaultModel.storages.includes("128") ? "128" : defaultModel.storages[0],
+    color: defaultModel.colors[0],
     age: "1",
-    condition: "good",
-    battery: "85",
-    screen: "light",
-    water: "no",
-    works: "yes",
-    extras: "none",
+    battery: "90",
+    screen: "perfect" as keyof typeof LABELS.screen,
+    back: "perfect" as keyof typeof LABELS.back,
+    camera: "ok" as keyof typeof LABELS.camera,
+    faceid: "ok" as keyof typeof LABELS.faceid,
+    charge: "ok" as keyof typeof LABELS.charge,
+    audio: "ok" as keyof typeof LABELS.audio,
+    housing: "perfect" as keyof typeof LABELS.housing,
+    notes: "",
     name: "",
     email: "",
     phone: "",
-    notes: "",
+    city: "",
   });
-  const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) => setF((p) => ({ ...p, [k]: v }));
+  const [otherDefects, setOtherDefects] = useState<string[]>([]);
+  const [photos, setPhotos] = useState<PendingPhoto[]>([]);
+  const fileRef = useRef<HTMLInputElement>(null);
 
-  const brand = getBrand(f.brand);
-  const model = getModel(f.brand, f.model) ?? brand.models[0];
+  const set = <K extends keyof typeof f>(k: K, v: (typeof f)[K]) =>
+    setF((p) => ({ ...p, [k]: v }));
 
+  const model = getModel("apple", f.model) ?? defaultModel;
+
+  // Reset storage/color als model wisselt
   useEffect(() => {
-    const b = getBrand(f.brand);
-    if (!b.models.find((m) => m.id === f.model)) {
-      const m = b.models[0];
-      setF((p) => ({
-        ...p,
-        model: m.id,
-        storage: m.storages.includes("128") ? "128" : m.storages[0],
-        color: m.colors[0],
-      }));
-    }
-    // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [f.brand]);
-
-  useEffect(() => {
-    const m = getModel(f.brand, f.model);
+    const m = getModel("apple", f.model);
     if (!m) return;
     setF((p) => ({
       ...p,
-      storage: m.storages.includes(p.storage) ? p.storage : m.storages.includes("128") ? "128" : m.storages[0],
+      storage: m.storages.includes(p.storage) ? p.storage : (m.storages.includes("128") ? "128" : m.storages[0]),
       color: m.colors.includes(p.color) ? p.color : m.colors[0],
     }));
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, [f.model]);
 
-  const price = useMemo(() => {
-    const p =
-      model.basePrice *
-        (STORAGE_MULT[f.storage] ?? 1) *
-        (AGE_MULT[f.age] ?? 1) *
-        (CONDITION_MULT[f.condition] ?? 1) *
-        (BATTERY_MULT[f.battery] ?? 1) *
-        (SCREEN_MULT[f.screen] ?? 1) *
-        (WATER_MULT[f.water] ?? 1) *
-        (WORKS_MULT[f.works] ?? 1) +
-      (EXTRAS_BONUS[f.extras] ?? 0);
-    return Math.max(20, Math.round(p / 5) * 5);
-  }, [f, model]);
+  // ── Prijsberekening ───────────────────────────────────────────────────
+  const { price, basePrice, breakdown } = useMemo(() => {
+    const base = model.basePrice * (STORAGE_MULT[f.storage] ?? 1);
+    const mults: Array<{ label: string; mult: number }> = [
+      { label: "Leeftijd", mult: AGE_MULT[f.age] ?? 1 },
+      { label: "Batterij", mult: BATTERY_MULT[f.battery] ?? 1 },
+      { label: "Scherm", mult: SCREEN_MULT[f.screen] },
+      { label: "Achterkant", mult: BACK_MULT[f.back] },
+      { label: "Camera", mult: CAMERA_MULT[f.camera] },
+      { label: "Face ID", mult: FACEID_MULT[f.faceid] },
+      { label: "Laadpoort", mult: CHARGE_MULT[f.charge] },
+      { label: "Speakers / mic", mult: AUDIO_MULT[f.audio] },
+      { label: "Behuizing", mult: HOUSING_MULT[f.housing] },
+    ];
+    let p = base;
+    for (const m of mults) p *= m.mult;
+    const otherDed = otherDefects.reduce((s, d) => s + (OTHER_DEFECT_DEDUCT[d] ?? 0), 0);
+    p -= otherDed;
+    const final = Math.max(20, Math.round(p / 5) * 5);
+    return {
+      price: final,
+      basePrice: Math.round(base),
+      breakdown: { mults, otherDed },
+    };
+  }, [f, model, otherDefects]);
 
-  const batteryPct = f.battery === "<80" ? 65 : Number(f.battery);
-
-  const submit = (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!f.name || !f.email) {
-      toast.error("Vul je naam en e-mailadres in");
-      return;
+  // ── Foto's ────────────────────────────────────────────────────────────
+  const handleFiles = (files: FileList | null, label?: string) => {
+    if (!files?.length) return;
+    const accepted: PendingPhoto[] = [];
+    for (const file of Array.from(files)) {
+      if (photos.length + accepted.length >= MAX_PHOTOS) {
+        toast.error(`Maximaal ${MAX_PHOTOS} foto's.`);
+        break;
+      }
+      if (!ACCEPTED_TYPES.includes(file.type)) {
+        toast.error(`${file.name}: alleen JPG, PNG, WEBP of HEIC.`); continue;
+      }
+      if (file.size > MAX_FILE_BYTES) {
+        toast.error(`${file.name} is groter dan 7 MB.`); continue;
+      }
+      accepted.push({ file, previewUrl: URL.createObjectURL(file), label });
     }
-    toast.success(`Bedankt ${f.name}! Je indicatie van € ${price} is verzonden.`);
+    if (accepted.length) setPhotos((p) => [...p, ...accepted]);
+    if (fileRef.current) fileRef.current.value = "";
   };
 
+  const removePhoto = (idx: number) =>
+    setPhotos((p) => {
+      URL.revokeObjectURL(p[idx].previewUrl);
+      return p.filter((_, i) => i !== idx);
+    });
+
+  // ── Submit ────────────────────────────────────────────────────────────
+  const onSubmit = async (e: FormEvent) => {
+    e.preventDefault();
+    if (!f.name.trim() || !f.email.trim() || !f.city.trim()) {
+      toast.error("Vul je naam, e-mail en stad in.");
+      return;
+    }
+    if (!user) {
+      toast("Maak even een account aan om je toestel aan te bieden.", {
+        description: "Zo kunnen reparateurs je veilig contacteren met een bod.",
+      });
+      navigate({ to: "/login" });
+      return;
+    }
+
+    setBusy(true);
+
+    // Upload foto's
+    const uploaded: string[] = [];
+    for (const p of photos) {
+      const ext = p.file.name.split(".").pop()?.toLowerCase() ?? "jpg";
+      const path = `${user.id}/${crypto.randomUUID()}.${ext}`;
+      const { error: upErr } = await supabase.storage
+        .from("repair-photos")
+        .upload(path, p.file, { contentType: p.file.type, upsert: false });
+      if (upErr) {
+        setBusy(false);
+        toast.error(`Foto upload mislukt: ${upErr.message}`);
+        return;
+      }
+      const { data: pub } = supabase.storage.from("repair-photos").getPublicUrl(path);
+      uploaded.push(pub.publicUrl);
+    }
+
+    const desc = [
+      `**iPhone te koop — prijsindicatie € ${price}**`,
+      ``,
+      `**Toestel:** ${model.name} — ${f.storage === "1024" ? "1 TB" : `${f.storage} GB`} — ${f.color}`,
+      `**Leeftijd:** ${f.age === "0" ? "< 1 jaar" : `${f.age}${f.age === "4" ? "+" : ""} jaar`}`,
+      `**Batterij:** ${f.battery === "<80" ? "< 80%" : `${f.battery}%+`}`,
+      ``,
+      `**Conditie**`,
+      `- Scherm: ${LABELS.screen[f.screen]}`,
+      `- Achterkant: ${LABELS.back[f.back]}`,
+      `- Camera: ${LABELS.camera[f.camera]}`,
+      `- Face ID / Touch ID: ${LABELS.faceid[f.faceid]}`,
+      `- Laadpoort: ${LABELS.charge[f.charge]}`,
+      `- Speakers / microfoon: ${LABELS.audio[f.audio]}`,
+      `- Behuizing: ${LABELS.housing[f.housing]}`,
+      otherDefects.length ? `\n**Overige defecten:** ${otherDefects.join(", ")}` : "",
+      f.notes.trim() ? `\n**Toelichting verkoper:**\n${f.notes.trim()}` : "",
+      ``,
+      `Aangeboden door ${f.name} — contact via UFixMyPhone.`,
+    ].filter(Boolean).join("\n");
+
+    const { data, error } = await supabase
+      .from("repair_requests")
+      .insert({
+        owner_id: user.id,
+        device_brand: "Apple",
+        device_model: model.name,
+        problem_description: desc,
+        category: "iPhone inkoop",
+        city: f.city.trim(),
+        budget_max: price,
+        photo_urls: uploaded,
+      })
+      .select("id")
+      .single();
+
+    setBusy(false);
+    if (error) return toast.error(error.message);
+    toast.success(`Je iPhone staat live! Indicatie € ${price}.`);
+    navigate({ to: "/request/$id", params: { id: data.id } });
+  };
+
+  // ── UI ────────────────────────────────────────────────────────────────
   return (
-    <div className="td-root">
-      <style>{CSS}</style>
-      <div className="aurora" aria-hidden />
-      <div className="grid-lines" aria-hidden />
+    <div className="min-h-screen bg-background">
+      <Header />
 
-      <div className="wrap">
-        <header className="topbar">
-          <div className="container nav">
-            <Link to="/" className="brand">
-              <div className="brand-badge">T</div>
-              <div>
-                TelefoonDeal
-                <br />
-                <span className="brand-sub">Snel. Veilig. Duidelijk.</span>
-              </div>
-            </Link>
-            <nav className="nav-links">
-              <a href="#voordelen">Voordelen</a>
-              <a href="#hoe-werkt-het">Hoe werkt het</a>
-              <a href="#formulier" className="btn btn-primary">Bereken je prijs</a>
-            </nav>
-          </div>
-        </header>
-
-        <main>
-          {/* Hero */}
-          <section className="hero">
-            <div className="container hero-grid">
-              <div>
-                <div className="eyebrow"><span className="pulse" /> Binnen 1 minuut jouw indicatie</div>
-                <h1>
-                  Verkoop je telefoon met een <span className="gradient-text">strakke, snelle check</span>
-                </h1>
-                <p className="lead">
-                  Laat direct zien in welke staat je toestel is. Op basis van merk, model, opslag, batterij en
-                  schade ontvang je meteen een duidelijke indicatieve prijs. Snel geregeld, zonder gedoe.
-                </p>
-                <div className="hero-actions">
-                  <a className="btn btn-primary" href="#formulier">Bereken je prijs</a>
-                  <a className="btn btn-secondary" href="#hoe-werkt-het">Bekijk hoe het werkt</a>
-                </div>
-                <div className="stats">
-                  <div className="stat"><strong>24u</strong><span>Snelle terugkoppeling mogelijk</span></div>
-                  <div className="stat"><strong>1 min</strong><span>Invullen van het formulier</span></div>
-                  <div className="stat"><strong>100%</strong><span>Indicatie op basis van conditie</span></div>
-                </div>
-              </div>
-
-              <div className="phone-stage" aria-hidden>
-                <div className="ring" />
-                <div className="ring2" />
-                <div className="ring3" />
-                <div className="floating-chip chip-a">⚡ Snelle beoordeling</div>
-                <div className="floating-chip chip-b">🔋 Batterij telt mee</div>
-                <div className="floating-chip chip-c">📦 Meer details = beter bod</div>
-                <div className="floating-chip chip-d">✅ Direct indicatie</div>
-
-                <div className="phone">
-                  <div className="phone-notch" />
-                  <div className="screen">
-                    <div className="screen-content">
-                      <div className="mini-pill">Live prijscheck</div>
-                      <div className="price-card">
-                        <div className="pc-sub">Indicatie voor {brand.name} {model.name}</div>
-                        <div className="price-value">€ {price}</div>
-                        <div className="pc-meta">
-                          Gebaseerd op {CONDITION_LABEL[f.condition].toLowerCase()} + batterij {batteryPct}%
-                        </div>
-                      </div>
-                      <div className="feature-card">
-                        <div className="fc-title">Conditie-analyse</div>
-                        <div className="feature-list">
-                          <div>Scherm: {f.screen === "clean" ? "geen krassen" : f.screen === "light" ? "lichte gebruikssporen" : "barst / schade"}</div>
-                          <div>Werking: {f.works === "yes" ? "alles werkend" : f.works === "mostly" ? "grotendeels werkend" : "defecten aanwezig"}</div>
-                          <div>Water: {f.water === "no" ? "geen schade" : f.water === "maybe" ? "twijfelachtig" : "ja"}</div>
-                        </div>
-                      </div>
-                      <div className="feature-card">
-                        <div className="fc-row">
-                          <span className="fc-title">Batterij-score</span>
-                          <span>{batteryPct}%</span>
-                        </div>
-                        <div className="progress"><span style={{ width: `${batteryPct}%` }} /></div>
-                      </div>
-                    </div>
-                  </div>
-                </div>
-              </div>
+      {/* HERO */}
+      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-primary/5 via-background to-background">
+        <div className="container mx-auto px-4 py-12 sm:py-20">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
+              <Sparkles className="h-3.5 w-3.5" />
+              Marktplaats voor iPhones — eerlijke prijs door concurrentie
             </div>
-          </section>
+            <h1 className="mt-6 font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+              Binnen 1 minuut je <span className="bg-gradient-mint bg-clip-text text-transparent">iPhone-prijs</span>. Direct duidelijkheid.
+            </h1>
+            <p className="mt-5 text-lg text-muted-foreground">
+              Beantwoord een paar simpele vragen, krijg meteen een realistische prijsindicatie en laat
+              reparateurs en opkopers met elkaar concurreren om je toestel.
+            </p>
+            <div className="mt-7 flex flex-wrap justify-center gap-3">
+              <Button asChild size="lg" className="rounded-xl">
+                <a href="#calculator"><Smartphone className="mr-2 h-4 w-4" />Bereken mijn prijs</a>
+              </Button>
+              <Button asChild size="lg" variant="outline" className="rounded-xl">
+                <Link to="/feed">Bekijk aangeboden toestellen</Link>
+              </Button>
+            </div>
+            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Gratis & vrijblijvend</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Geen verplichting</span>
+              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Geverifieerde kopers</span>
+            </div>
+          </div>
+        </div>
+      </section>
 
-          {/* Form */}
-          <section id="formulier">
-            <div className="container">
-              <div className="section-head">
-                <div>
-                  <h2>Vul de staat van de telefoon in</h2>
-                  <p>Hoe completer de informatie, hoe scherper de indicatie. De uiteindelijke prijs wordt bevestigd na controle van het toestel.</p>
-                </div>
-              </div>
-
-              <form onSubmit={submit} className="form-layout">
-                <div className="glass form-card">
-                  <div className="form-grid">
-                    <SelectField label="Merk" value={f.brand} onChange={(v) => set("brand", v)}>
-                      {BRANDS.map((b) => <option key={b.id} value={b.id}>{b.name}</option>)}
-                    </SelectField>
-
-                    <SelectField label="Model" value={f.model} onChange={(v) => set("model", v)}>
-                      {brand.models.map((m) => <option key={m.id} value={m.id}>{m.name}</option>)}
-                    </SelectField>
-
-                    <SelectField label="Opslag" value={f.storage} onChange={(v) => set("storage", v)}>
-                      {model.storages.map((s) => (
-                        <option key={s} value={s}>{s === "1024" ? "1 TB" : `${s} GB`}</option>
+      {/* CALCULATOR */}
+      <section id="calculator" className="container mx-auto px-4 py-10 sm:py-14">
+        <form onSubmit={onSubmit} className="grid gap-6 lg:grid-cols-[1fr_360px]">
+          {/* Linker kolom — vragen */}
+          <div className="space-y-5">
+            {/* STAP 1 */}
+            <Card step={1} icon={<Smartphone className="h-4 w-4" />} title="Welke iPhone heb je?">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Model">
+                  <Select value={f.model} onValueChange={(v) => set("model", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent className="max-h-[300px]">
+                      {APPLE.models.map((m) => (
+                        <SelectItem key={m.id} value={m.id}>{m.name}</SelectItem>
                       ))}
-                    </SelectField>
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="Opslag">
+                  <Select value={f.storage} onValueChange={(v) => set("storage", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      {model.storages.map((s) => (
+                        <SelectItem key={s} value={s}>{s === "1024" ? "1 TB" : `${s} GB`}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="Kleur">
+                  <Select value={f.color} onValueChange={(v) => set("color", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent className="max-h-[260px]">
+                      {model.colors.map((c) => (
+                        <SelectItem key={c} value={c}>{c}</SelectItem>
+                      ))}
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <Field label="Leeftijd">
+                  <Select value={f.age} onValueChange={(v) => set("age", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="0">Minder dan 1 jaar</SelectItem>
+                      <SelectItem value="1">1 jaar</SelectItem>
+                      <SelectItem value="2">2 jaar</SelectItem>
+                      <SelectItem value="3">3 jaar</SelectItem>
+                      <SelectItem value="4">4+ jaar</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+              </div>
+            </Card>
 
-                    <SelectField label="Kleur" value={f.color} onChange={(v) => set("color", v)}>
-                      {model.colors.map((c) => <option key={c} value={c}>{c}</option>)}
-                    </SelectField>
+            {/* STAP 2 — Batterij + scherm + achterkant (hoofdfactoren) */}
+            <Card step={2} icon={<Battery className="h-4 w-4" />} title="Belangrijkste conditie">
+              <div className="grid gap-4 sm:grid-cols-3">
+                <Field label="Batterijconditie">
+                  <Select value={f.battery} onValueChange={(v) => set("battery", v)}>
+                    <SelectTrigger><SelectValue /></SelectTrigger>
+                    <SelectContent>
+                      <SelectItem value="95">95% of hoger</SelectItem>
+                      <SelectItem value="90">90% – 94%</SelectItem>
+                      <SelectItem value="85">85% – 89%</SelectItem>
+                      <SelectItem value="80">80% – 84%</SelectItem>
+                      <SelectItem value="<80">Onder 80%</SelectItem>
+                    </SelectContent>
+                  </Select>
+                </Field>
+                <OptionField
+                  label="Scherm"
+                  value={f.screen}
+                  onChange={(v) => set("screen", v as typeof f.screen)}
+                  options={LABELS.screen}
+                />
+                <OptionField
+                  label="Achterkant"
+                  value={f.back}
+                  onChange={(v) => set("back", v as typeof f.back)}
+                  options={LABELS.back}
+                />
+              </div>
+            </Card>
 
-                    <SelectField label="Leeftijd toestel" value={f.age} onChange={(v) => set("age", v)}>
-                      <option value="0">Minder dan 1 jaar</option>
-                      <option value="1">1 jaar</option>
-                      <option value="2">2 jaar</option>
-                      <option value="3">3 jaar</option>
-                      <option value="4">4+ jaar</option>
-                    </SelectField>
+            {/* STAP 3 — Functionaliteit */}
+            <Card step={3} icon={<Shield className="h-4 w-4" />} title="Werkt alles?">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <OptionField label="Camera (voor + achter)" value={f.camera}
+                  onChange={(v) => set("camera", v as typeof f.camera)} options={LABELS.camera} />
+                <OptionField label="Face ID / Touch ID" value={f.faceid}
+                  onChange={(v) => set("faceid", v as typeof f.faceid)} options={LABELS.faceid} />
+                <OptionField label="Laadpoort" value={f.charge}
+                  onChange={(v) => set("charge", v as typeof f.charge)} options={LABELS.charge} />
+                <OptionField label="Speakers & microfoon" value={f.audio}
+                  onChange={(v) => set("audio", v as typeof f.audio)} options={LABELS.audio} />
+                <OptionField label="Behuizing / frame" value={f.housing}
+                  onChange={(v) => set("housing", v as typeof f.housing)} options={LABELS.housing} />
+              </div>
 
-                    <SelectField label="Algemene staat" value={f.condition} onChange={(v) => set("condition", v)}>
-                      <option value="new">Als nieuw</option>
-                      <option value="good">Goede staat</option>
-                      <option value="normal">Normale slijtage</option>
-                      <option value="damaged">Zichtbare schade</option>
-                    </SelectField>
+              <div className="mt-5">
+                <Label className="mb-2 block text-sm font-medium">Overige defecten (optioneel)</Label>
+                <div className="grid gap-2 sm:grid-cols-2">
+                  {Object.keys(OTHER_DEFECT_DEDUCT).map((d) => {
+                    const checked = otherDefects.includes(d);
+                    return (
+                      <label key={d}
+                        className={`flex cursor-pointer items-start gap-2 rounded-lg border p-3 text-sm transition ${
+                          checked ? "border-primary bg-primary/5" : "border-border hover:border-primary/40"
+                        }`}>
+                        <Checkbox
+                          checked={checked}
+                          onCheckedChange={(c) =>
+                            setOtherDefects((x) => (c ? [...x, d] : x.filter((v) => v !== d)))
+                          }
+                          className="mt-0.5"
+                        />
+                        <span className="flex-1">
+                          {d}
+                          <span className="ml-1 text-xs text-muted-foreground">−€{OTHER_DEFECT_DEDUCT[d]}</span>
+                        </span>
+                      </label>
+                    );
+                  })}
+                </div>
+              </div>
+            </Card>
 
-                    <SelectField label="Batterijconditie" value={f.battery} onChange={(v) => set("battery", v)}>
-                      <option value="95">95% of hoger</option>
-                      <option value="90">90% - 94%</option>
-                      <option value="85">85% - 89%</option>
-                      <option value="80">80% - 84%</option>
-                      <option value="<80">Onder 80%</option>
-                    </SelectField>
-
-                    <SelectField label="Schermstatus" value={f.screen} onChange={(v) => set("screen", v)}>
-                      <option value="clean">Geen krassen of barsten</option>
-                      <option value="light">Lichte gebruikssporen</option>
-                      <option value="cracked">Barst / zware schade</option>
-                    </SelectField>
-
-                    <SelectField label="Waterschade" value={f.water} onChange={(v) => set("water", v)}>
-                      <option value="no">Nee</option>
-                      <option value="maybe">Twijfelachtig</option>
-                      <option value="yes">Ja</option>
-                    </SelectField>
-
-                    <SelectField label="Werkt alles naar behoren?" value={f.works} onChange={(v) => set("works", v)}>
-                      <option value="yes">Ja</option>
-                      <option value="mostly">Grotendeels</option>
-                      <option value="no">Nee</option>
-                    </SelectField>
-
-                    <SelectField label="Extra's" value={f.extras} onChange={(v) => set("extras", v)}>
-                      <option value="none">Geen</option>
-                      <option value="box">Originele doos aanwezig</option>
-                      <option value="full">Doos + oplader</option>
-                    </SelectField>
-
-                    <div className="field full">
-                      <label>Naam</label>
-                      <input value={f.name} onChange={(e) => set("name", e.target.value)} placeholder="Jouw naam" />
-                    </div>
-                    <div className="field">
-                      <label>E-mailadres</label>
-                      <input type="email" value={f.email} onChange={(e) => set("email", e.target.value)} placeholder="naam@email.nl" />
-                    </div>
-                    <div className="field">
-                      <label>Telefoonnummer</label>
-                      <input type="tel" value={f.phone} onChange={(e) => set("phone", e.target.value)} placeholder="06 12345678" />
-                    </div>
-                    <div className="field full">
-                      <label>Extra toelichting</label>
-                      <textarea
-                        rows={4}
-                        value={f.notes}
-                        onChange={(e) => set("notes", e.target.value)}
-                        placeholder="Bijvoorbeeld: camera werkt minder goed, achterkant heeft krasjes, scherm is ooit vervangen..."
-                      />
-                      <div className="hint">Deze pagina geeft een indicatieve prijs. De definitieve prijs volgt na beoordeling van het toestel.</div>
-                    </div>
-                    <div className="field full">
-                      <button className="btn btn-primary btn-full" type="submit">Ontvang indicatie</button>
-                    </div>
+            {/* STAP 4 — Foto's */}
+            <Card step={4} icon={<Camera className="h-4 w-4" />} title="Voeg foto's toe">
+              <p className="mb-3 text-sm text-muted-foreground">
+                Foto's geven kopers vertrouwen en zorgen voor scherpere biedingen. Aanrader: voorkant, achterkant,
+                zijkanten en eventuele schade.
+              </p>
+              <div className="grid grid-cols-2 gap-3 sm:grid-cols-3">
+                {photos.map((p, i) => (
+                  <div key={i} className="group relative aspect-square overflow-hidden rounded-xl border bg-muted">
+                    <img src={p.previewUrl} alt="" className="h-full w-full object-cover" />
+                    <button type="button" onClick={() => removePhoto(i)}
+                      className="absolute right-1.5 top-1.5 rounded-full bg-background/90 p-1 shadow opacity-0 group-hover:opacity-100 transition">
+                      <X className="h-3.5 w-3.5" />
+                    </button>
                   </div>
-                </div>
+                ))}
+                {photos.length < MAX_PHOTOS && (
+                  <button type="button" onClick={() => fileRef.current?.click()}
+                    className="flex aspect-square flex-col items-center justify-center gap-1 rounded-xl border-2 border-dashed border-border bg-muted/30 text-sm text-muted-foreground transition hover:border-primary hover:bg-primary/5 hover:text-primary">
+                    <ImagePlus className="h-6 w-6" />
+                    Foto toevoegen
+                  </button>
+                )}
+              </div>
+              <input ref={fileRef} type="file" accept="image/*" multiple className="hidden"
+                onChange={(e) => handleFiles(e.target.files)} />
+              <p className="mt-2 text-xs text-muted-foreground">
+                Max {MAX_PHOTOS} foto's, 7 MB per stuk. JPG, PNG, WEBP of HEIC.
+              </p>
+            </Card>
 
-                <aside className="glass quote-card">
-                  <div className="quote-top">
-                    <div className="badge">⚙️ Slimme prijsindicatie</div>
-                    <div className="quote-live">Live update</div>
-                  </div>
-                  <div className="quote-label">Jouw huidige indicatie</div>
-                  <div className="quote-value">€ {price}</div>
-
-                  <div className="quote-meta">
-                    <div className="quote-row"><span>Model</span><strong>{brand.name} {model.name}</strong></div>
-                    <div className="quote-row"><span>Opslag</span><strong>{f.storage === "1024" ? "1 TB" : `${f.storage} GB`}</strong></div>
-                    <div className="quote-row"><span>Kleur</span><strong>{f.color}</strong></div>
-                    <div className="quote-row"><span>Conditie</span><strong>{CONDITION_LABEL[f.condition]}</strong></div>
-                    <div className="quote-row"><span>Batterij</span><strong>{BATTERY_LABEL[f.battery]}</strong></div>
-                    <div className="quote-row"><span>Status</span><strong>Indicatief bod</strong></div>
-                  </div>
-
-                  <div className="tiny">
-                    Deze berekening is bedoeld als indicatie. De definitieve inkoopprijs kan afwijken op basis van controle
-                    van werking, originaliteit van onderdelen en verborgen schade.
-                  </div>
-                </aside>
-              </form>
-            </div>
-          </section>
-
-          {/* Benefits */}
-          <section id="voordelen">
-            <div className="container">
-              <div className="section-head">
-                <div>
-                  <h2>Waarom dit prettig werkt</h2>
-                  <p>Kleuren, beweging en overzicht zorgen voor een rustige maar overtuigende flow. Dat maakt invullen laagdrempelig en vergroot de kans dat bezoekers doorgaan.</p>
+            {/* STAP 5 — Contact */}
+            <Card step={5} icon={<Upload className="h-4 w-4" />} title="Jouw gegevens">
+              <div className="grid gap-4 sm:grid-cols-2">
+                <Field label="Naam *">
+                  <Input value={f.name} onChange={(e) => set("name", e.target.value)} placeholder="Voor- en achternaam" />
+                </Field>
+                <Field label="Stad *">
+                  <Input value={f.city} onChange={(e) => set("city", e.target.value)} placeholder="Bijv. Amsterdam" />
+                </Field>
+                <Field label="E-mail *">
+                  <Input type="email" value={f.email} onChange={(e) => set("email", e.target.value)} placeholder="naam@email.nl" />
+                </Field>
+                <Field label="Telefoon (optioneel)">
+                  <Input type="tel" value={f.phone} onChange={(e) => set("phone", e.target.value)} placeholder="06 12345678" />
+                </Field>
+                <div className="sm:col-span-2">
+                  <Field label="Toelichting (optioneel)">
+                    <Textarea rows={3} value={f.notes} onChange={(e) => set("notes", e.target.value)}
+                      placeholder="Iets dat kopers zeker moeten weten? Bv. reparatiegeschiedenis, originele doos, etc." />
+                  </Field>
                 </div>
               </div>
-              <div className="benefits">
-                <div className="glass benefit-card">
-                  <div className="icon">⚡</div>
-                  <h3>Snel gevoel</h3>
-                  <p>Frisse accentkleuren en subtiele animaties geven bezoekers het gevoel dat het proces modern, direct en eenvoudig is.</p>
-                </div>
-                <div className="glass benefit-card">
-                  <div className="icon">🔒</div>
-                  <h3>Vertrouwen</h3>
-                  <p>Donkere premium achtergrond met heldere contrasten straalt waarde en controle uit, zonder druk of onrustig te ogen.</p>
-                </div>
-                <div className="glass benefit-card">
-                  <div className="icon">💶</div>
-                  <h3>Focus op actie</h3>
-                  <p>De prijsindicatie beweegt mee met het formulier, waardoor bezoekers sneller willen afronden en hun gegevens achterlaten.</p>
-                </div>
-              </div>
-            </div>
-          </section>
-
-          {/* How it works */}
-          <section id="hoe-werkt-het">
-            <div className="container">
-              <div className="section-head">
-                <div>
-                  <h2>Hoe het werkt</h2>
-                  <p>Een simpele flow die logisch aanvoelt en direct duidelijk maakt wat iemand moet doen.</p>
-                </div>
-              </div>
-              <div className="steps">
-                <div className="glass step">
-                  <div className="step-no">1</div>
-                  <h3>Vul toestelgegevens in</h3>
-                  <p>Kies merk, model, opslag en geef de staat van scherm, batterij en werking door.</p>
-                </div>
-                <div className="glass step">
-                  <div className="step-no">2</div>
-                  <h3>Ontvang direct indicatie</h3>
-                  <p>De calculator laat meteen een indicatieve prijs zien op basis van de ingevulde conditie.</p>
-                </div>
-                <div className="glass step">
-                  <div className="step-no">3</div>
-                  <h3>Laat het toestel beoordelen</h3>
-                  <p>Na controle van het toestel volgt de definitieve prijs. Zo blijft het duidelijk en professioneel.</p>
-                </div>
-              </div>
-
-              <div className="glass cta">
-                <div>
-                  <h3>Klaar om je telefoon te verkopen?</h3>
-                  <p>Vul het formulier in en ontvang direct een indicatieve prijs voor je toestel.</p>
-                </div>
-                <a className="btn btn-primary" href="#formulier">Start nu</a>
-              </div>
-            </div>
-          </section>
-        </main>
-
-        <footer>
-          <div className="container footer-line">
-            <div>© {new Date().getFullYear()} TelefoonDeal</div>
-            <div>
-              <Link to="/" className="footer-link">← Terug naar I Will Make It</Link>
-              <span className="footer-sep"> • </span>
-              Indicatieve prijsweergave • Definitieve prijs na controle
-            </div>
+            </Card>
           </div>
-        </footer>
-      </div>
+
+          {/* Rechter kolom — sticky prijs */}
+          <aside className="lg:sticky lg:top-6 lg:self-start">
+            <div className="overflow-hidden rounded-2xl border border-primary/30 bg-gradient-card shadow-card">
+              <div className="bg-gradient-mint px-5 py-4 text-primary-foreground">
+                <div className="flex items-center justify-between text-xs uppercase tracking-wide opacity-90">
+                  <span>Live prijsindicatie</span>
+                  <span className="inline-flex items-center gap-1">
+                    <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> Update
+                  </span>
+                </div>
+                <div className="mt-2 font-display text-5xl font-bold tabular-nums">€ {price}</div>
+                <div className="mt-1 text-sm opacity-90">
+                  {model.name} — {f.storage === "1024" ? "1 TB" : `${f.storage} GB`}
+                </div>
+              </div>
+
+              <div className="space-y-1.5 px-5 py-4 text-sm">
+                <Row k="Basis (model + opslag)" v={`€ ${basePrice}`} />
+                {breakdown.mults.map((m) => (
+                  <Row key={m.label} k={m.label} v={`× ${m.mult.toFixed(2)}`}
+                    muted={m.mult === 1} />
+                ))}
+                {breakdown.otherDed > 0 && (
+                  <Row k="Overige defecten" v={`− € ${breakdown.otherDed}`} />
+                )}
+              </div>
+
+              <div className="border-t border-border/60 bg-muted/30 px-5 py-4">
+                <div className="mb-3 flex gap-2 rounded-lg bg-background/60 p-2.5 text-xs text-muted-foreground">
+                  <Info className="h-4 w-4 shrink-0 text-primary" />
+                  <span>
+                    Dit is een <strong className="text-foreground">prijsindicatie</strong>, geen gegarandeerd
+                    bod. Kopers brengen na controle een definitief bod uit.
+                  </span>
+                </div>
+                <Button type="submit" disabled={busy} size="lg" className="w-full rounded-xl">
+                  {busy ? "Bezig..." : (<>Laat mijn toestel beoordelen <ArrowRight className="ml-2 h-4 w-4" /></>)}
+                </Button>
+                <p className="mt-2 text-center text-xs text-muted-foreground">
+                  Gratis & vrijblijvend · je kiest zelf welk bod je accepteert
+                </p>
+              </div>
+            </div>
+          </aside>
+        </form>
+      </section>
     </div>
   );
 }
 
-function SelectField({
-  label,
-  value,
-  onChange,
-  children,
-}: {
-  label: string;
-  value: string;
-  onChange: (v: string) => void;
-  children: React.ReactNode;
+// ── Subcomponents ───────────────────────────────────────────────────────
+function Card({ step, icon, title, children }: {
+  step: number; icon: React.ReactNode; title: string; children: React.ReactNode;
 }) {
   return (
-    <div className="field">
-      <label>{label}</label>
-      <select value={value} onChange={(e) => onChange(e.target.value)}>{children}</select>
+    <section className="rounded-2xl border border-border/60 bg-card p-5 shadow-sm sm:p-6">
+      <header className="mb-4 flex items-center gap-3">
+        <div className="flex h-8 w-8 items-center justify-center rounded-lg bg-primary/10 text-primary">
+          {icon}
+        </div>
+        <div>
+          <div className="text-xs font-semibold uppercase tracking-wide text-muted-foreground">Stap {step}</div>
+          <h2 className="font-display text-lg font-semibold leading-tight">{title}</h2>
+        </div>
+      </header>
+      {children}
+    </section>
+  );
+}
+
+function Field({ label, children }: { label: string; children: React.ReactNode }) {
+  return (
+    <div className="space-y-1.5">
+      <Label className="text-sm font-medium">{label}</Label>
+      {children}
     </div>
   );
 }
 
-// ─── Scoped TelefoonDeal styling ─────────────────────────────────────────────
-const CSS = `
-.td-root {
-  --bg: #fafbfc;
-  --card: #ffffff;
-  --card-border: rgba(15, 23, 42, 0.08);
-  --text: #0f172a;
-  --muted: #64748b;
-  --accent: #4f6df4;
-  --accent-2: #7d96f8;
-  --warm: #f59e0b;
-  --shadow: 0 8px 30px -12px rgba(15, 23, 42, 0.12);
-  --radius: 20px;
-  font-family: 'Inter', ui-sans-serif, system-ui, sans-serif;
-  color: var(--text);
-  min-height: 100vh;
-  position: relative;
-  overflow-x: hidden;
-  background:
-    radial-gradient(ellipse 80% 50% at 50% -10%, rgba(79, 109, 244, 0.10), transparent 60%),
-    radial-gradient(ellipse 60% 40% at 100% 100%, rgba(125, 150, 248, 0.07), transparent 70%),
-    linear-gradient(180deg, #fafbfc 0%, #f4f6fb 100%);
-}
-.td-root * { box-sizing: border-box; }
-.td-root a { color: inherit; text-decoration: none; }
-.td-root h1, .td-root h2, .td-root h3 { font-family: inherit; }
-
-.td-root .aurora {
-  position: absolute; top: -10vw; left: -8vw;
-  width: 42vw; height: 42vw; border-radius: 999px;
-  filter: blur(90px); pointer-events: none; z-index: 0;
-  background: rgba(79, 109, 244, 0.16);
-  animation: td-floatBlob 16s ease-in-out infinite alternate;
-}
-.td-root .aurora::before, .td-root .aurora::after {
-  content: ""; position: absolute; border-radius: 999px; filter: blur(90px); pointer-events: none;
-  animation: td-floatBlob 19s ease-in-out infinite alternate;
-}
-.td-root .aurora::before { top: 40vh; left: 75vw; width: 30vw; height: 30vw; background: rgba(125, 150, 248, 0.16); }
-.td-root .aurora::after  { top: 115vh; left: 12vw; width: 28vw; height: 28vw; background: rgba(79, 109, 244, 0.10); animation-duration: 22s; }
-@keyframes td-floatBlob {
-  0% { transform: translate3d(0,0,0) scale(1); }
-  100% { transform: translate3d(4vw, 5vh, 0) scale(1.08); }
+function OptionField<T extends string>({
+  label, value, onChange, options,
+}: {
+  label: string; value: T; onChange: (v: T) => void; options: Record<string, string>;
+}) {
+  return (
+    <Field label={label}>
+      <Select value={value} onValueChange={(v) => onChange(v as T)}>
+        <SelectTrigger><SelectValue /></SelectTrigger>
+        <SelectContent>
+          {Object.entries(options).map(([k, v]) => (
+            <SelectItem key={k} value={k}>{v}</SelectItem>
+          ))}
+        </SelectContent>
+      </Select>
+    </Field>
+  );
 }
 
-.td-root .grid-lines {
-  position: absolute; inset: 0;
-  background-image:
-    linear-gradient(rgba(15, 23, 42, 0.04) 1px, transparent 1px),
-    linear-gradient(90deg, rgba(15, 23, 42, 0.04) 1px, transparent 1px);
-  background-size: 38px 38px;
-  mask-image: linear-gradient(180deg, rgba(255,255,255,.5), rgba(255,255,255,.05));
-  pointer-events: none; z-index: 0;
+function Row({ k, v, muted }: { k: string; v: string; muted?: boolean }) {
+  return (
+    <div className={`flex justify-between ${muted ? "text-muted-foreground/70" : "text-foreground"}`}>
+      <span>{k}</span><span className="tabular-nums">{v}</span>
+    </div>
+  );
 }
-
-.td-root .wrap { position: relative; z-index: 1; }
-.td-root .container { width: min(1180px, calc(100% - 32px)); margin: 0 auto; }
-
-.td-root .topbar {
-  position: sticky; top: 0;
-  backdrop-filter: blur(14px);
-  background: rgba(255, 255, 255, 0.78);
-  border-bottom: 1px solid rgba(15, 23, 42, 0.06);
-  z-index: 10;
-}
-.td-root .nav { display: flex; align-items: center; justify-content: space-between; padding: 16px 0; }
-.td-root .brand { display: flex; align-items: center; gap: 12px; font-weight: 800; letter-spacing: .02em; color: var(--text); }
-.td-root .brand-badge {
-  width: 42px; height: 42px; border-radius: 14px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  display: grid; place-items: center; color: #ffffff;
-  box-shadow: 0 10px 30px rgba(79, 109, 244, 0.35); font-weight: 900;
-}
-.td-root .brand-sub { font-size: 12px; color: var(--muted); font-weight: 600; }
-.td-root .nav-links { display: flex; gap: 18px; align-items: center; color: var(--muted); font-size: 14px; }
-.td-root .nav-links a:hover { color: var(--text); }
-
-.td-root .btn {
-  display: inline-flex; align-items: center; justify-content: center; gap: 10px;
-  padding: 14px 18px; border-radius: 14px; border: 1px solid transparent;
-  cursor: pointer; transition: .24s ease; font-weight: 700; font: inherit; font-weight: 700;
-}
-.td-root .btn-primary {
-  color: #ffffff;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  box-shadow: 0 14px 40px rgba(79, 109, 244, 0.28);
-}
-.td-root .btn-primary:hover { transform: translateY(-2px) scale(1.01); }
-.td-root .btn-secondary { color: var(--text); border-color: rgba(15, 23, 42, 0.12); background: #ffffff; }
-.td-root .btn-secondary:hover { background: #f4f6fb; }
-.td-root .btn-full { width: 100%; padding: 16px 18px; font-size: 16px; }
-
-.td-root .hero { padding: 66px 0 30px; }
-.td-root .hero-grid { display: grid; grid-template-columns: 1.08fr .92fr; gap: 28px; align-items: center; }
-.td-root .eyebrow {
-  display: inline-flex; align-items: center; gap: 8px;
-  padding: 10px 14px; border-radius: 999px;
-  background: rgba(79, 109, 244, 0.08); border: 1px solid rgba(79, 109, 244, 0.16);
-  color: var(--accent); font-size: 14px; margin-bottom: 20px; font-weight: 600;
-}
-.td-root .pulse {
-  width: 10px; height: 10px; border-radius: 999px; background: var(--accent);
-  box-shadow: 0 0 0 0 rgba(79, 109, 244, 0.6);
-  animation: td-pulse 1.8s infinite;
-}
-@keyframes td-pulse {
-  0% { box-shadow: 0 0 0 0 rgba(79, 109, 244, 0.6); }
-  70% { box-shadow: 0 0 0 16px rgba(79, 109, 244, 0); }
-  100% { box-shadow: 0 0 0 0 rgba(79, 109, 244, 0); }
-}
-.td-root h1 {
-  font-size: clamp(38px, 6vw, 68px); line-height: 1.02;
-  margin: 0 0 18px; letter-spacing: -0.04em; max-width: 11ch; font-weight: 800;
-}
-.td-root .gradient-text {
-  background: linear-gradient(135deg, var(--accent) 0%, var(--accent-2) 100%);
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.td-root .lead { margin: 0; color: var(--muted); font-size: 18px; line-height: 1.65; max-width: 58ch; }
-.td-root .hero-actions { display: flex; flex-wrap: wrap; gap: 12px; margin-top: 26px; }
-.td-root .stats { display: grid; grid-template-columns: repeat(3, 1fr); gap: 12px; margin-top: 28px; }
-.td-root .stat {
-  padding: 16px; border-radius: 16px;
-  background: #ffffff; border: 1px solid var(--card-border);
-  box-shadow: var(--shadow);
-}
-.td-root .stat strong { display: block; font-size: 24px; margin-bottom: 6px; color: var(--accent); }
-.td-root .stat span { color: var(--muted); font-size: 14px; }
-
-.td-root .phone-stage { position: relative; min-height: 600px; display: grid; place-items: center; }
-.td-root .ring, .td-root .ring2, .td-root .ring3 {
-  position: absolute; border: 1px solid rgba(79, 109, 244, 0.18); border-radius: 999px;
-  animation: td-spin 24s linear infinite;
-}
-.td-root .ring { width: 440px; height: 440px; }
-.td-root .ring2 { width: 340px; height: 340px; animation-direction: reverse; animation-duration: 18s; }
-.td-root .ring3 { width: 250px; height: 250px; animation-duration: 14s; }
-@keyframes td-spin { to { transform: rotate(360deg); } }
-
-.td-root .floating-chip {
-  position: absolute; padding: 12px 14px; border-radius: 16px;
-  background: #ffffff; border: 1px solid var(--card-border);
-  color: var(--text);
-  box-shadow: var(--shadow);
-  animation: td-bob 5s ease-in-out infinite; font-size: 14px; font-weight: 600;
-}
-.td-root .chip-a { top: 18%; left: 2%; }
-.td-root .chip-b { top: 14%; right: 2%; animation-delay: .8s; }
-.td-root .chip-c { bottom: 12%; left: 8%; animation-delay: .35s; }
-.td-root .chip-d { bottom: 18%; right: 5%; animation-delay: 1.1s; }
-@keyframes td-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-12px); } }
-
-.td-root .phone {
-  position: relative; width: min(340px, 70vw); aspect-ratio: 9/19.5;
-  border-radius: 42px;
-  background: linear-gradient(180deg, #1a2238 0%, #0f172a 100%);
-  box-shadow: 0 30px 90px rgba(15, 23, 42, 0.25), inset 0 0 0 1px rgba(255,255,255,.08);
-  padding: 16px; transform: rotate(-7deg);
-  animation: td-phoneFloat 5.8s ease-in-out infinite;
-}
-@keyframes td-phoneFloat {
-  0%,100% { transform: rotate(-7deg) translateY(0px); }
-  50% { transform: rotate(-5deg) translateY(-12px); }
-}
-.td-root .phone::before {
-  content: ""; position: absolute; inset: 8px; border-radius: 34px;
-  background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,0));
-  pointer-events: none;
-}
-.td-root .phone-notch {
-  width: 40%; height: 28px; background: #05070c;
-  border-radius: 0 0 18px 18px; margin: 0 auto; position: relative; z-index: 2;
-}
-.td-root .screen {
-  margin-top: 8px; height: calc(100% - 36px);
-  border-radius: 32px; overflow: hidden;
-  background:
-    radial-gradient(circle at 20% 10%, rgba(125, 150, 248, .35), transparent 30%),
-    radial-gradient(circle at 80% 80%, rgba(79, 109, 244, .30), transparent 25%),
-    linear-gradient(180deg, #243259 0%, #1c2748 40%, #131c36 100%);
-  position: relative;
-}
-.td-root .screen::after {
-  content: ""; position: absolute; inset: 0;
-  background: linear-gradient(125deg, transparent 35%, rgba(255,255,255,.16) 49%, transparent 61%);
-  transform: translateX(-110%);
-  animation: td-shine 4.8s ease-in-out infinite;
-}
-@keyframes td-shine {
-  0%, 15% { transform: translateX(-120%); }
-  55%,100% { transform: translateX(130%); }
-}
-.td-root .screen-content {
-  position: relative; z-index: 1; padding: 22px 18px 18px; height: 100%;
-  display: flex; flex-direction: column; gap: 14px; color: #f4f8ff;
-}
-.td-root .mini-pill {
-  display: inline-flex; align-self: flex-start; padding: 8px 12px; border-radius: 999px;
-  background: rgba(255,255,255,.14); color: #ffffff; font-size: 12px; font-weight: 700;
-  border: 1px solid rgba(255,255,255,.18);
-}
-.td-root .price-card, .td-root .feature-card {
-  border-radius: 18px; background: rgba(255,255,255,.10);
-  border: 1px solid rgba(255,255,255,.16); padding: 16px; backdrop-filter: blur(16px);
-  color: #f4f8ff;
-}
-.td-root .pc-sub { color: #d6e1ff; font-size: 14px; }
-.td-root .price-value { font-size: 30px; font-weight: 800; margin-top: 8px; color: #ffffff; }
-.td-root .pc-meta { color: #c2cffd; font-size: 12px; margin-top: 6px; }
-.td-root .fc-title { font-weight: 700; margin-bottom: 10px; }
-.td-root .fc-row { display: flex; justify-content: space-between; align-items: center; margin-bottom: 8px; }
-.td-root .feature-list { display: grid; gap: 8px; color: #dbe3ff; font-size: 13px; }
-.td-root .progress { height: 10px; border-radius: 999px; background: rgba(255,255,255,.14); overflow: hidden; }
-.td-root .progress > span {
-  display: block; height: 100%;
-  background: linear-gradient(90deg, var(--accent), var(--accent-2));
-  border-radius: inherit; transition: width .4s ease;
-}
-
-.td-root section { padding: 42px 0; }
-.td-root .section-head { display: flex; justify-content: space-between; align-items: end; gap: 20px; margin-bottom: 20px; }
-.td-root .section-head h2 { margin: 0; font-size: clamp(28px, 4vw, 44px); line-height: 1.1; letter-spacing: -0.03em; font-weight: 800; }
-.td-root .section-head p { margin: 0; color: var(--muted); max-width: 54ch; }
-
-.td-root .glass {
-  background: var(--card); border: 1px solid var(--card-border);
-  border-radius: var(--radius); box-shadow: var(--shadow);
-}
-
-.td-root .form-layout { display: grid; grid-template-columns: 1.15fr .85fr; gap: 22px; }
-.td-root .form-card { padding: 24px; }
-.td-root .form-grid { display: grid; grid-template-columns: repeat(2, 1fr); gap: 14px; }
-.td-root .field { display: flex; flex-direction: column; gap: 8px; }
-.td-root .field.full { grid-column: 1 / -1; }
-.td-root .field label { font-size: 14px; color: var(--text); font-weight: 600; }
-.td-root .field input, .td-root .field select, .td-root .field textarea {
-  width: 100%; padding: 13px 14px; border-radius: 12px;
-  border: 1px solid rgba(15, 23, 42, 0.12);
-  background: #ffffff; color: var(--text);
-  outline: none; transition: .22s ease; font: inherit;
-}
-.td-root .field select {
-  appearance: none;
-  background-image: url("data:image/svg+xml;utf8,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 12 8' fill='none'><path d='M1 1.5L6 6.5L11 1.5' stroke='%2364748b' stroke-width='1.6' stroke-linecap='round'/></svg>");
-  background-repeat: no-repeat; background-position: right 14px center; background-size: 12px;
-  padding-right: 38px;
-}
-.td-root .field select option { background: #ffffff; color: var(--text); }
-.td-root .field input::placeholder, .td-root .field textarea::placeholder { color: #94a3b8; }
-.td-root .field input:focus, .td-root .field select:focus, .td-root .field textarea:focus {
-  border-color: var(--accent);
-  box-shadow: 0 0 0 4px rgba(79, 109, 244, 0.12);
-}
-.td-root .hint { color: var(--muted); font-size: 13px; }
-
-.td-root .quote-card { padding: 24px; position: sticky; top: 96px; overflow: hidden; align-self: start; }
-.td-root .quote-card::before {
-  content: ""; position: absolute; inset: 0;
-  background: radial-gradient(circle at top right, rgba(79, 109, 244, 0.10), transparent 40%);
-  pointer-events: none;
-}
-.td-root .quote-top { display: flex; align-items: center; justify-content: space-between; gap: 16px; margin-bottom: 18px; position: relative; z-index: 1; }
-.td-root .badge {
-  display: inline-flex; align-items: center; gap: 8px; padding: 8px 12px; border-radius: 999px;
-  background: rgba(79, 109, 244, 0.08); border: 1px solid rgba(79, 109, 244, 0.16);
-  font-size: 13px; color: var(--accent); font-weight: 600;
-}
-.td-root .quote-live { color: var(--muted); font-size: 13px; }
-.td-root .quote-label { position: relative; z-index: 1; color: var(--muted); font-size: 14px; }
-.td-root .quote-value {
-  font-size: clamp(36px, 6vw, 56px); font-weight: 900; letter-spacing: -0.04em;
-  margin: 8px 0 10px; position: relative; z-index: 1;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  -webkit-background-clip: text; background-clip: text; color: transparent;
-}
-.td-root .quote-meta { display: grid; gap: 4px; position: relative; z-index: 1; }
-.td-root .quote-row {
-  display: flex; justify-content: space-between; gap: 12px;
-  padding: 12px 0; border-bottom: 1px solid rgba(15, 23, 42, 0.06);
-  color: var(--muted);
-}
-.td-root .quote-row strong { color: var(--text); text-align: right; }
-.td-root .tiny { font-size: 12px; color: var(--muted); line-height: 1.5; margin-top: 16px; position: relative; z-index: 1; }
-
-.td-root .benefits { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.td-root .benefit-card { padding: 22px; position: relative; overflow: hidden; }
-.td-root .benefit-card::after {
-  content: ""; position: absolute; inset: auto -20% -45% auto;
-  width: 180px; height: 180px;
-  background: radial-gradient(circle, rgba(79, 109, 244, 0.10), transparent 58%);
-  pointer-events: none;
-}
-.td-root .icon {
-  width: 50px; height: 50px; border-radius: 14px;
-  display: grid; place-items: center;
-  background: rgba(79, 109, 244, 0.10); border: 1px solid rgba(79, 109, 244, 0.16);
-  margin-bottom: 14px; font-size: 22px;
-}
-.td-root .benefit-card h3 { margin: 0 0 8px; font-size: 20px; font-weight: 700; }
-.td-root .benefit-card p { margin: 0; color: var(--muted); line-height: 1.65; }
-
-.td-root .steps { display: grid; grid-template-columns: repeat(3, 1fr); gap: 16px; }
-.td-root .step { padding: 22px; }
-.td-root .step-no {
-  width: 42px; height: 42px; border-radius: 12px; display: grid; place-items: center;
-  font-weight: 800; margin-bottom: 14px;
-  background: linear-gradient(135deg, var(--accent), var(--accent-2));
-  color: #ffffff;
-  box-shadow: 0 8px 20px rgba(79, 109, 244, 0.30);
-}
-.td-root .step h3 { margin: 0 0 10px; font-weight: 700; }
-.td-root .step p { margin: 0; color: var(--muted); line-height: 1.65; }
-
-.td-root .cta {
-  padding: 26px; display: flex; align-items: center; justify-content: space-between;
-  gap: 20px; margin-top: 18px;
-  background: linear-gradient(135deg, rgba(79, 109, 244, 0.06), rgba(125, 150, 248, 0.06));
-}
-.td-root .cta h3 { margin: 0 0 6px; font-size: 28px; font-weight: 800; }
-.td-root .cta p { margin: 0; color: var(--muted); }
-
-.td-root footer { padding: 30px 0 60px; color: var(--muted); font-size: 14px; }
-.td-root .footer-line {
-  display: flex; justify-content: space-between; gap: 16px; flex-wrap: wrap;
-  padding-top: 14px; border-top: 1px solid rgba(15, 23, 42, 0.08);
-}
-.td-root .footer-link { color: var(--accent); font-weight: 600; }
-.td-root .footer-link:hover { text-decoration: underline; }
-.td-root .footer-sep { color: rgba(15, 23, 42, 0.2); }
-
-@media (max-width: 980px) {
-  .td-root .hero-grid,
-  .td-root .form-layout,
-  .td-root .benefits,
-  .td-root .steps { grid-template-columns: 1fr; }
-  .td-root .phone-stage { min-height: 480px; }
-  .td-root .quote-card { position: static; }
-}
-@media (max-width: 720px) {
-  .td-root .nav-links a:not(.btn) { display: none; }
-  .td-root .stats { grid-template-columns: 1fr; }
-  .td-root .form-grid { grid-template-columns: 1fr; }
-  .td-root .hero { padding-top: 42px; }
-  .td-root .phone { width: min(290px, 75vw); }
-  .td-root .chip-a, .td-root .chip-b, .td-root .chip-c, .td-root .chip-d { font-size: 12px; }
-  .td-root .cta { flex-direction: column; align-items: flex-start; }
-}
-`;
