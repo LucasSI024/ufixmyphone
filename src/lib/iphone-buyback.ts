@@ -115,6 +115,72 @@ export const IPHONES: IPhoneModel[] = [
     defects:{screen_glass:80,display_oled:100,back_glass:90,housing_frame:135,battery_replace:50,rear_camera:70,front_camera:65,face_id:95,speaker_mic:55,charging_port:60,buttons:55,wifi_cellular:105,not_powering_on:170,water_damage:245}},
 ];
 
+// Aanvullende populaire Android-toestellen (Samsung, Google Pixel).
+// Worden gemerged met de iPhone-modellen uit de database in `useIphonePricing`.
+// Defectwaarden zijn richtlijn — Face ID-veld wordt gebruikt voor vingerafdruk/biometrie.
+export const ANDROID_MODELS: IPhoneModel[] = [
+  // ─── Samsung Galaxy S ───
+  { key:"samsung_s25_ultra", name:"Samsung Galaxy S25 Ultra", generation:"Samsung S", baseStorage:256, baseValue:1080, riskBuffer:45,
+    defects:{screen_glass:200,display_oled:310,back_glass:180,housing_frame:330,battery_replace:85,rear_camera:160,front_camera:120,face_id:90,speaker_mic:85,charging_port:100,buttons:80,wifi_cellular:185,not_powering_on:330,water_damage:480}},
+  { key:"samsung_s25_plus", name:"Samsung Galaxy S25+", generation:"Samsung S", baseStorage:256, baseValue:830, riskBuffer:45,
+    defects:{screen_glass:175,display_oled:260,back_glass:160,housing_frame:280,battery_replace:80,rear_camera:135,front_camera:110,face_id:80,speaker_mic:80,charging_port:90,buttons:75,wifi_cellular:165,not_powering_on:290,water_damage:410}},
+  { key:"samsung_s25", name:"Samsung Galaxy S25", generation:"Samsung S", baseStorage:128, baseValue:680, riskBuffer:45,
+    defects:{screen_glass:160,display_oled:230,back_glass:150,housing_frame:250,battery_replace:75,rear_camera:120,front_camera:105,face_id:75,speaker_mic:75,charging_port:85,buttons:70,wifi_cellular:155,not_powering_on:270,water_damage:380}},
+  { key:"samsung_s24_ultra", name:"Samsung Galaxy S24 Ultra", generation:"Samsung S", baseStorage:256, baseValue:830, riskBuffer:40,
+    defects:{screen_glass:180,display_oled:275,back_glass:165,housing_frame:295,battery_replace:80,rear_camera:140,front_camera:115,face_id:85,speaker_mic:80,charging_port:95,buttons:75,wifi_cellular:170,not_powering_on:300,water_damage:430}},
+  { key:"samsung_s24_plus", name:"Samsung Galaxy S24+", generation:"Samsung S", baseStorage:256, baseValue:620, riskBuffer:40,
+    defects:{screen_glass:155,display_oled:225,back_glass:145,housing_frame:240,battery_replace:75,rear_camera:120,front_camera:100,face_id:75,speaker_mic:75,charging_port:85,buttons:70,wifi_cellular:150,not_powering_on:260,water_damage:370}},
+  { key:"samsung_s24", name:"Samsung Galaxy S24", generation:"Samsung S", baseStorage:128, baseValue:510, riskBuffer:40,
+    defects:{screen_glass:140,display_oled:200,back_glass:135,housing_frame:220,battery_replace:70,rear_camera:110,front_camera:95,face_id:70,speaker_mic:70,charging_port:80,buttons:65,wifi_cellular:140,not_powering_on:240,water_damage:340}},
+  { key:"samsung_s24_fe", name:"Samsung Galaxy S24 FE", generation:"Samsung S", baseStorage:128, baseValue:380, riskBuffer:40,
+    defects:{screen_glass:125,display_oled:175,back_glass:125,housing_frame:200,battery_replace:65,rear_camera:100,front_camera:90,face_id:65,speaker_mic:65,charging_port:75,buttons:60,wifi_cellular:130,not_powering_on:215,water_damage:310}},
+  { key:"samsung_s23_ultra", name:"Samsung Galaxy S23 Ultra", generation:"Samsung S", baseStorage:256, baseValue:640, riskBuffer:35,
+    defects:{screen_glass:160,display_oled:240,back_glass:150,housing_frame:260,battery_replace:75,rear_camera:125,front_camera:105,face_id:80,speaker_mic:75,charging_port:85,buttons:70,wifi_cellular:155,not_powering_on:270,water_damage:395}},
+  { key:"samsung_s23_plus", name:"Samsung Galaxy S23+", generation:"Samsung S", baseStorage:256, baseValue:470, riskBuffer:35,
+    defects:{screen_glass:140,display_oled:200,back_glass:135,housing_frame:220,battery_replace:70,rear_camera:110,front_camera:95,face_id:70,speaker_mic:70,charging_port:80,buttons:65,wifi_cellular:140,not_powering_on:240,water_damage:345}},
+  { key:"samsung_s23", name:"Samsung Galaxy S23", generation:"Samsung S", baseStorage:128, baseValue:390, riskBuffer:35,
+    defects:{screen_glass:130,display_oled:180,back_glass:125,housing_frame:200,battery_replace:65,rear_camera:100,front_camera:90,face_id:65,speaker_mic:65,charging_port:75,buttons:60,wifi_cellular:135,not_powering_on:225,water_damage:325}},
+  { key:"samsung_s23_fe", name:"Samsung Galaxy S23 FE", generation:"Samsung S", baseStorage:128, baseValue:290, riskBuffer:35,
+    defects:{screen_glass:115,display_oled:160,back_glass:115,housing_frame:180,battery_replace:60,rear_camera:90,front_camera:85,face_id:60,speaker_mic:60,charging_port:70,buttons:60,wifi_cellular:125,not_powering_on:200,water_damage:290}},
+  { key:"samsung_s22_ultra", name:"Samsung Galaxy S22 Ultra", generation:"Samsung S", baseStorage:128, baseValue:440, riskBuffer:35,
+    defects:{screen_glass:140,display_oled:205,back_glass:135,housing_frame:225,battery_replace:70,rear_camera:110,front_camera:95,face_id:70,speaker_mic:70,charging_port:80,buttons:65,wifi_cellular:140,not_powering_on:245,water_damage:355}},
+  { key:"samsung_s22", name:"Samsung Galaxy S22", generation:"Samsung S", baseStorage:128, baseValue:270, riskBuffer:30,
+    defects:{screen_glass:110,display_oled:150,back_glass:110,housing_frame:170,battery_replace:60,rear_camera:85,front_camera:80,face_id:55,speaker_mic:60,charging_port:70,buttons:55,wifi_cellular:120,not_powering_on:195,water_damage:280}},
+  // ─── Samsung Galaxy A ───
+  { key:"samsung_a55", name:"Samsung Galaxy A55", generation:"Samsung A", baseStorage:128, baseValue:270, riskBuffer:30,
+    defects:{screen_glass:105,display_oled:145,back_glass:105,housing_frame:165,battery_replace:55,rear_camera:85,front_camera:75,face_id:55,speaker_mic:60,charging_port:70,buttons:55,wifi_cellular:115,not_powering_on:190,water_damage:270}},
+  { key:"samsung_a54", name:"Samsung Galaxy A54", generation:"Samsung A", baseStorage:128, baseValue:210, riskBuffer:30,
+    defects:{screen_glass:95,display_oled:130,back_glass:100,housing_frame:155,battery_replace:55,rear_camera:80,front_camera:70,face_id:55,speaker_mic:55,charging_port:65,buttons:55,wifi_cellular:110,not_powering_on:180,water_damage:260}},
+  { key:"samsung_a35", name:"Samsung Galaxy A35", generation:"Samsung A", baseStorage:128, baseValue:190, riskBuffer:30,
+    defects:{screen_glass:90,display_oled:120,back_glass:95,housing_frame:145,battery_replace:50,rear_camera:75,front_camera:70,face_id:50,speaker_mic:55,charging_port:65,buttons:50,wifi_cellular:105,not_powering_on:175,water_damage:250}},
+  { key:"samsung_a15", name:"Samsung Galaxy A15", generation:"Samsung A", baseStorage:128, baseValue:105, riskBuffer:25,
+    defects:{screen_glass:75,display_oled:95,back_glass:85,housing_frame:130,battery_replace:45,rear_camera:65,front_camera:60,face_id:45,speaker_mic:50,charging_port:55,buttons:50,wifi_cellular:95,not_powering_on:155,water_damage:225}},
+  // ─── Samsung Z Fold/Flip ───
+  { key:"samsung_zfold6", name:"Samsung Galaxy Z Fold 6", generation:"Samsung Z", baseStorage:256, baseValue:1180, riskBuffer:65,
+    defects:{screen_glass:280,display_oled:430,back_glass:200,housing_frame:380,battery_replace:95,rear_camera:170,front_camera:130,face_id:85,speaker_mic:90,charging_port:110,buttons:85,wifi_cellular:200,not_powering_on:380,water_damage:540}},
+  { key:"samsung_zflip6", name:"Samsung Galaxy Z Flip 6", generation:"Samsung Z", baseStorage:256, baseValue:680, riskBuffer:55,
+    defects:{screen_glass:220,display_oled:340,back_glass:170,housing_frame:290,battery_replace:85,rear_camera:135,front_camera:110,face_id:75,speaker_mic:80,charging_port:95,buttons:75,wifi_cellular:170,not_powering_on:310,water_damage:430}},
+  { key:"samsung_zflip5", name:"Samsung Galaxy Z Flip 5", generation:"Samsung Z", baseStorage:256, baseValue:430, riskBuffer:50,
+    defects:{screen_glass:190,display_oled:290,back_glass:155,housing_frame:255,battery_replace:80,rear_camera:115,front_camera:100,face_id:70,speaker_mic:75,charging_port:85,buttons:70,wifi_cellular:155,not_powering_on:275,water_damage:380}},
+  // ─── Google Pixel ───
+  { key:"pixel_9_pro_xl", name:"Google Pixel 9 Pro XL", generation:"Pixel", baseStorage:128, baseValue:830, riskBuffer:40,
+    defects:{screen_glass:175,display_oled:260,back_glass:160,housing_frame:280,battery_replace:80,rear_camera:135,front_camera:110,face_id:80,speaker_mic:80,charging_port:90,buttons:75,wifi_cellular:165,not_powering_on:290,water_damage:410}},
+  { key:"pixel_9_pro", name:"Google Pixel 9 Pro", generation:"Pixel", baseStorage:128, baseValue:720, riskBuffer:40,
+    defects:{screen_glass:160,display_oled:235,back_glass:150,housing_frame:255,battery_replace:75,rear_camera:125,front_camera:105,face_id:75,speaker_mic:75,charging_port:85,buttons:70,wifi_cellular:155,not_powering_on:270,water_damage:385}},
+  { key:"pixel_9", name:"Google Pixel 9", generation:"Pixel", baseStorage:128, baseValue:580, riskBuffer:40,
+    defects:{screen_glass:145,display_oled:210,back_glass:140,housing_frame:230,battery_replace:70,rear_camera:115,front_camera:100,face_id:70,speaker_mic:70,charging_port:80,buttons:65,wifi_cellular:145,not_powering_on:250,water_damage:355}},
+  { key:"pixel_8_pro", name:"Google Pixel 8 Pro", generation:"Pixel", baseStorage:128, baseValue:510, riskBuffer:35,
+    defects:{screen_glass:140,display_oled:200,back_glass:135,housing_frame:220,battery_replace:70,rear_camera:110,front_camera:95,face_id:70,speaker_mic:70,charging_port:80,buttons:65,wifi_cellular:140,not_powering_on:240,water_damage:340}},
+  { key:"pixel_8", name:"Google Pixel 8", generation:"Pixel", baseStorage:128, baseValue:380, riskBuffer:35,
+    defects:{screen_glass:125,display_oled:175,back_glass:125,housing_frame:200,battery_replace:65,rear_camera:100,front_camera:90,face_id:65,speaker_mic:65,charging_port:75,buttons:60,wifi_cellular:130,not_powering_on:215,water_damage:310}},
+  { key:"pixel_8a", name:"Google Pixel 8a", generation:"Pixel", baseStorage:128, baseValue:300, riskBuffer:35,
+    defects:{screen_glass:115,display_oled:160,back_glass:115,housing_frame:180,battery_replace:60,rear_camera:90,front_camera:85,face_id:60,speaker_mic:60,charging_port:70,buttons:60,wifi_cellular:125,not_powering_on:200,water_damage:290}},
+  { key:"pixel_7_pro", name:"Google Pixel 7 Pro", generation:"Pixel", baseStorage:128, baseValue:340, riskBuffer:30,
+    defects:{screen_glass:120,display_oled:170,back_glass:120,housing_frame:190,battery_replace:65,rear_camera:95,front_camera:90,face_id:65,speaker_mic:65,charging_port:75,buttons:60,wifi_cellular:130,not_powering_on:215,water_damage:305}},
+  { key:"pixel_7", name:"Google Pixel 7", generation:"Pixel", baseStorage:128, baseValue:240, riskBuffer:30,
+    defects:{screen_glass:100,display_oled:140,back_glass:105,housing_frame:165,battery_replace:55,rear_camera:80,front_camera:80,face_id:55,speaker_mic:60,charging_port:70,buttons:55,wifi_cellular:115,not_powering_on:195,water_damage:285}},
+];
+
 export const STORAGE_OPTIONS: { gb: number; correction: number; label: string }[] = [
   { gb:64,   correction:0,   label:"64 GB" },
   { gb:128,  correction:45,  label:"128 GB" },
