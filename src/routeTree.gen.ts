@@ -18,6 +18,7 @@ import { Route as UIdRouteImport } from './routes/u.$id'
 import { Route as RequestIdRouteImport } from './routes/request.$id'
 import { Route as AuthenticatedNewRouteImport } from './routes/_authenticated/new'
 import { Route as AuthenticatedAccountRouteImport } from './routes/_authenticated/account'
+import { Route as AuthenticatedAdminInkoopPrijzenRouteImport } from './routes/_authenticated/admin.inkoop-prijzen'
 
 const VerkoopRoute = VerkoopRouteImport.update({
   id: '/verkoop',
@@ -63,6 +64,12 @@ const AuthenticatedAccountRoute = AuthenticatedAccountRouteImport.update({
   path: '/account',
   getParentRoute: () => AuthenticatedRoute,
 } as any)
+const AuthenticatedAdminInkoopPrijzenRoute =
+  AuthenticatedAdminInkoopPrijzenRouteImport.update({
+    id: '/admin/inkoop-prijzen',
+    path: '/admin/inkoop-prijzen',
+    getParentRoute: () => AuthenticatedRoute,
+  } as any)
 
 export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
@@ -73,6 +80,7 @@ export interface FileRoutesByFullPath {
   '/new': typeof AuthenticatedNewRoute
   '/request/$id': typeof RequestIdRoute
   '/u/$id': typeof UIdRoute
+  '/admin/inkoop-prijzen': typeof AuthenticatedAdminInkoopPrijzenRoute
 }
 export interface FileRoutesByTo {
   '/': typeof IndexRoute
@@ -83,6 +91,7 @@ export interface FileRoutesByTo {
   '/new': typeof AuthenticatedNewRoute
   '/request/$id': typeof RequestIdRoute
   '/u/$id': typeof UIdRoute
+  '/admin/inkoop-prijzen': typeof AuthenticatedAdminInkoopPrijzenRoute
 }
 export interface FileRoutesById {
   __root__: typeof rootRouteImport
@@ -95,6 +104,7 @@ export interface FileRoutesById {
   '/_authenticated/new': typeof AuthenticatedNewRoute
   '/request/$id': typeof RequestIdRoute
   '/u/$id': typeof UIdRoute
+  '/_authenticated/admin/inkoop-prijzen': typeof AuthenticatedAdminInkoopPrijzenRoute
 }
 export interface FileRouteTypes {
   fileRoutesByFullPath: FileRoutesByFullPath
@@ -107,6 +117,7 @@ export interface FileRouteTypes {
     | '/new'
     | '/request/$id'
     | '/u/$id'
+    | '/admin/inkoop-prijzen'
   fileRoutesByTo: FileRoutesByTo
   to:
     | '/'
@@ -117,6 +128,7 @@ export interface FileRouteTypes {
     | '/new'
     | '/request/$id'
     | '/u/$id'
+    | '/admin/inkoop-prijzen'
   id:
     | '__root__'
     | '/'
@@ -128,6 +140,7 @@ export interface FileRouteTypes {
     | '/_authenticated/new'
     | '/request/$id'
     | '/u/$id'
+    | '/_authenticated/admin/inkoop-prijzen'
   fileRoutesById: FileRoutesById
 }
 export interface RootRouteChildren {
@@ -205,17 +218,26 @@ declare module '@tanstack/react-router' {
       preLoaderRoute: typeof AuthenticatedAccountRouteImport
       parentRoute: typeof AuthenticatedRoute
     }
+    '/_authenticated/admin/inkoop-prijzen': {
+      id: '/_authenticated/admin/inkoop-prijzen'
+      path: '/admin/inkoop-prijzen'
+      fullPath: '/admin/inkoop-prijzen'
+      preLoaderRoute: typeof AuthenticatedAdminInkoopPrijzenRouteImport
+      parentRoute: typeof AuthenticatedRoute
+    }
   }
 }
 
 interface AuthenticatedRouteChildren {
   AuthenticatedAccountRoute: typeof AuthenticatedAccountRoute
   AuthenticatedNewRoute: typeof AuthenticatedNewRoute
+  AuthenticatedAdminInkoopPrijzenRoute: typeof AuthenticatedAdminInkoopPrijzenRoute
 }
 
 const AuthenticatedRouteChildren: AuthenticatedRouteChildren = {
   AuthenticatedAccountRoute: AuthenticatedAccountRoute,
   AuthenticatedNewRoute: AuthenticatedNewRoute,
+  AuthenticatedAdminInkoopPrijzenRoute: AuthenticatedAdminInkoopPrijzenRoute,
 }
 
 const AuthenticatedRouteWithChildren = AuthenticatedRoute._addFileChildren(
