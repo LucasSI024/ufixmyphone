@@ -149,7 +149,7 @@ function VerkoopPage() {
 
     const { data, error } = await supabase.from("repair_requests").insert({
       owner_id: user.id,
-      device_brand: "Apple",
+      device_brand: model.name.startsWith("Samsung") ? "Samsung" : model.name.startsWith("Google") ? "Google" : "Apple",
       device_model: model.name,
       problem_description: desc,
       category: "iPhone inkoop",
