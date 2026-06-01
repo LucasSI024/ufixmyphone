@@ -9,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
