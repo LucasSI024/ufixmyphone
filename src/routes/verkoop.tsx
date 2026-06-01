@@ -3,8 +3,11 @@ import { useMemo, useRef, useState, type FormEvent } from "react";
 import { toast } from "sonner";
 import {
   Smartphone, Camera, Battery, Shield, ImagePlus, X, Sparkles,
-  CheckCircle2, Info, Upload, ArrowRight, AlertTriangle, Lock,
+  CheckCircle2, Info, Upload, ArrowRight, AlertTriangle, Lock, Check, ChevronsUpDown,
 } from "lucide-react";
+import { cn } from "@/lib/utils";
+import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover";
+import { Command, CommandEmpty, CommandGroup, CommandInput, CommandItem, CommandList } from "@/components/ui/command";
 import {
   DEFECT_LABELS, calculate, getModelByKey,
   type DefectKey, type ConditionKey, type BatteryKey, type LockKey,
