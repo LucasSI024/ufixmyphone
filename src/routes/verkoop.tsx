@@ -212,15 +212,16 @@ function VerkoopPage() {
             {/* STAP 1 */}
             <Card step={1} icon={<Smartphone className="h-4 w-4" />} title="Welke iPhone heb je?">
               <div className="grid gap-4 sm:grid-cols-2">
-                <Field label="Model">
-                  <Select value={modelKey} onValueChange={(v) => setModelKey(v)}>
-                    <SelectTrigger><SelectValue /></SelectTrigger>
-                    <SelectContent className="max-h-[320px]">
-                      {IPHONES.map(m => (
-                        <SelectItem key={m.key} value={m.key}>{m.name}</SelectItem>
-                      ))}
-                    </SelectContent>
-                  </Select>
+                <Field label="Model (typ om te zoeken)">
+                  <ModelCombobox
+                    models={IPHONES}
+                    value={modelKey}
+                    onChange={(key) => {
+                      setModelKey(key);
+                      const m = IPHONES.find(x => x.key === key);
+                      if (m) setStorageGb(m.baseStorage);
+                    }}
+                  />
                 </Field>
                 <Field label="Opslag">
                   <Select value={String(storageGb)} onValueChange={(v) => setStorageGb(Number(v))}>
