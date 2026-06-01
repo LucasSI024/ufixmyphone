@@ -55,7 +55,7 @@ function ReparateurPage() {
       .update({
         kvk_number: kvkValue,
         is_repairer: true,
-        repairer_status: "pending",
+        repairer_status: "approved",
         ...(name ? { display_name: name } : {}),
       })
       .eq("id", userId);
@@ -63,9 +63,9 @@ function ReparateurPage() {
       toast.error(error.message);
       return false;
     }
-    setRepairerStatus("pending");
+    setRepairerStatus("approved");
     setPendingKvk(false);
-    toast.success("Aanmelding ontvangen. Zonder geldig KvK kan je niet worden goedgekeurd.");
+    toast.success("KvK opgeslagen. Je kan nu als reparateur bieden.");
     return true;
   };
 
