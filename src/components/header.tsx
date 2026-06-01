@@ -47,9 +47,10 @@ export function Header() {
           <div className="flex h-9 w-9 items-center justify-center rounded-lg bg-gradient-mint shadow-glow">
             <Wrench className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
           </div>
-          <span className="hidden font-display text-lg font-bold tracking-tight sm:inline">
+          <span className="font-display text-lg font-bold tracking-tight">
             UFixMyPhone
           </span>
+
         </Link>
 
         {/* Nav: Aanbod — Reparateur worden — Telefoon verkopen (naast elkaar) */}
