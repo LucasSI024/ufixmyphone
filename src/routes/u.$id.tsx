@@ -8,7 +8,7 @@ import { Header } from "@/components/header";
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/u/$id")({
-  head: () => ({ meta: [{ title: "Profiel — I Will Make It" }] }),
+  head: () => ({ meta: [{ title: "Profiel — UFixMyPhone" }] }),
   component: ProfilePage,
 });
 

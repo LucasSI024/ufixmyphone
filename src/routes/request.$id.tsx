@@ -16,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/header";
 
 export const Route = createFileRoute("/request/$id")({
-  head: () => ({ meta: [{ title: "Reparatie — I Will Make It" }] }),
+  head: () => ({ meta: [{ title: "Reparatie — UFixMyPhone" }] }),
   component: RequestDetailPage,
 });
 
