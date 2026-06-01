@@ -163,6 +163,8 @@ export type Database = {
           display_name: string
           id: string
           is_repairer: boolean
+          kvk_number: string | null
+          repairer_status: string
           updated_at: string
         }
         Insert: {
@@ -173,6 +175,8 @@ export type Database = {
           display_name: string
           id: string
           is_repairer?: boolean
+          kvk_number?: string | null
+          repairer_status?: string
           updated_at?: string
         }
         Update: {
@@ -183,6 +187,8 @@ export type Database = {
           display_name?: string
           id?: string
           is_repairer?: boolean
+          kvk_number?: string | null
+          repairer_status?: string
           updated_at?: string
         }
         Relationships: []

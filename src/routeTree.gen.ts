@@ -10,6 +10,7 @@
 
 import { Route as rootRouteImport } from './routes/__root'
 import { Route as VerkoopRouteImport } from './routes/verkoop'
+import { Route as ReparateurRouteImport } from './routes/reparateur'
 import { Route as LoginRouteImport } from './routes/login'
 import { Route as FeedRouteImport } from './routes/feed'
 import { Route as AuthenticatedRouteImport } from './routes/_authenticated'
@@ -23,6 +24,11 @@ import { Route as AuthenticatedAdminInkoopPrijzenRouteImport } from './routes/_a
 const VerkoopRoute = VerkoopRouteImport.update({
   id: '/verkoop',
   path: '/verkoop',
+  getParentRoute: () => rootRouteImport,
+} as any)
+const ReparateurRoute = ReparateurRouteImport.update({
+  id: '/reparateur',
+  path: '/reparateur',
   getParentRoute: () => rootRouteImport,
 } as any)
 const LoginRoute = LoginRouteImport.update({
@@ -75,6 +81,7 @@ export interface FileRoutesByFullPath {
   '/': typeof IndexRoute
   '/feed': typeof FeedRoute
   '/login': typeof LoginRoute
+  '/reparateur': typeof ReparateurRoute
   '/verkoop': typeof VerkoopRoute
   '/account': typeof AuthenticatedAccountRoute
   '/new': typeof AuthenticatedNewRoute
@@ -86,6 +93,7 @@ export interface FileRoutesByTo {
   '/': typeof IndexRoute
   '/feed': typeof FeedRoute
   '/login': typeof LoginRoute
+  '/reparateur': typeof ReparateurRoute
   '/verkoop': typeof VerkoopRoute
   '/account': typeof AuthenticatedAccountRoute
   '/new': typeof AuthenticatedNewRoute
@@ -99,6 +107,7 @@ export interface FileRoutesById {
   '/_authenticated': typeof AuthenticatedRouteWithChildren
   '/feed': typeof FeedRoute
   '/login': typeof LoginRoute
+  '/reparateur': typeof ReparateurRoute
   '/verkoop': typeof VerkoopRoute
   '/_authenticated/account': typeof AuthenticatedAccountRoute
   '/_authenticated/new': typeof AuthenticatedNewRoute
@@ -112,6 +121,7 @@ export interface FileRouteTypes {
     | '/'
     | '/feed'
     | '/login'
+    | '/reparateur'
     | '/verkoop'
     | '/account'
     | '/new'
@@ -123,6 +133,7 @@ export interface FileRouteTypes {
     | '/'
     | '/feed'
     | '/login'
+    | '/reparateur'
     | '/verkoop'
     | '/account'
     | '/new'
@@ -135,6 +146,7 @@ export interface FileRouteTypes {
     | '/_authenticated'
     | '/feed'
     | '/login'
+    | '/reparateur'
     | '/verkoop'
     | '/_authenticated/account'
     | '/_authenticated/new'
@@ -148,6 +160,7 @@ export interface RootRouteChildren {
   AuthenticatedRoute: typeof AuthenticatedRouteWithChildren
   FeedRoute: typeof FeedRoute
   LoginRoute: typeof LoginRoute
+  ReparateurRoute: typeof ReparateurRoute
   VerkoopRoute: typeof VerkoopRoute
   RequestIdRoute: typeof RequestIdRoute
   UIdRoute: typeof UIdRoute
@@ -160,6 +173,13 @@ declare module '@tanstack/react-router' {
       path: '/verkoop'
       fullPath: '/verkoop'
       preLoaderRoute: typeof VerkoopRouteImport
+      parentRoute: typeof rootRouteImport
+    }
+    '/reparateur': {
+      id: '/reparateur'
+      path: '/reparateur'
+      fullPath: '/reparateur'
+      preLoaderRoute: typeof ReparateurRouteImport
       parentRoute: typeof rootRouteImport
     }
     '/login': {
@@ -249,6 +269,7 @@ const rootRouteChildren: RootRouteChildren = {
   AuthenticatedRoute: AuthenticatedRouteWithChildren,
   FeedRoute: FeedRoute,
   LoginRoute: LoginRoute,
+  ReparateurRoute: ReparateurRoute,
   VerkoopRoute: VerkoopRoute,
   RequestIdRoute: RequestIdRoute,
   UIdRoute: UIdRoute,
