@@ -1,6 +1,7 @@
 import { Link, useNavigate, useRouterState } from "@tanstack/react-router";
-import { Wrench, Plus, User as UserIcon, LogOut } from "lucide-react";
+import { Wrench, Plus, User as UserIcon, LogOut, Shield } from "lucide-react";
 import { useAuth } from "@/hooks/use-auth";
+import { useIsAdmin } from "@/hooks/use-pricing";
 import { supabase } from "@/integrations/supabase/client";
 import { Button } from "@/components/ui/button";
 import { NotificationBell } from "@/components/notification-bell";
@@ -8,6 +9,7 @@ import { cn } from "@/lib/utils";
 
 export function Header() {
   const { user } = useAuth();
+  const { isAdmin } = useIsAdmin();
   const navigate = useNavigate();
   const pathname = useRouterState({ select: (s) => s.location.pathname });
 
@@ -49,6 +51,11 @@ export function Header() {
         <div className="flex items-center gap-2">
           {user ? (
             <>
+              {isAdmin && (
+                <Button asChild size="icon" variant="ghost" title="Beheer">
+                  <Link to="/admin/inkoop-prijzen"><Shield className="h-5 w-5" /></Link>
+                </Button>
+              )}
               <NotificationBell />
               <Button asChild size="sm" variant="default" className="hidden sm:inline-flex">
                 <Link to="/new">

@@ -58,6 +58,66 @@ export type Database = {
           },
         ]
       }
+      iphone_models: {
+        Row: {
+          base_storage: number
+          base_value: number
+          defects: Json
+          generation: string
+          key: string
+          name: string
+          risk_buffer: number
+          sort_order: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          base_storage: number
+          base_value: number
+          defects?: Json
+          generation: string
+          key: string
+          name: string
+          risk_buffer?: number
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          base_storage?: number
+          base_value?: number
+          defects?: Json
+          generation?: string
+          key?: string
+          name?: string
+          risk_buffer?: number
+          sort_order?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
+      iphone_settings: {
+        Row: {
+          data: Json
+          id: number
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          data: Json
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          data?: Json
+          id?: number
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       notifications: {
         Row: {
           bid_id: string | null
@@ -178,14 +238,42 @@ export type Database = {
         }
         Relationships: []
       }
+      user_roles: {
+        Row: {
+          created_at: string
+          id: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Insert: {
+          created_at?: string
+          id?: string
+          role: Database["public"]["Enums"]["app_role"]
+          user_id: string
+        }
+        Update: {
+          created_at?: string
+          id?: string
+          role?: Database["public"]["Enums"]["app_role"]
+          user_id?: string
+        }
+        Relationships: []
+      }
     }
     Views: {
       [_ in never]: never
     }
     Functions: {
-      [_ in never]: never
+      has_role: {
+        Args: {
+          _role: Database["public"]["Enums"]["app_role"]
+          _user_id: string
+        }
+        Returns: boolean
+      }
     }
     Enums: {
+      app_role: "admin" | "user"
       bid_status: "pending" | "accepted" | "rejected" | "withdrawn"
       notification_type:
         | "new_bid"
@@ -320,6 +408,7 @@ export type CompositeTypes<
 export const Constants = {
   public: {
     Enums: {
+      app_role: ["admin", "user"],
       bid_status: ["pending", "accepted", "rejected", "withdrawn"],
       notification_type: [
         "new_bid",
