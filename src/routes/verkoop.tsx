@@ -465,3 +465,60 @@ function Row({ k, v, muted }: { k: string; v: string; muted?: boolean }) {
     </div>
   );
 }
+
+function ModelCombobox({ models, value, onChange }: {
+  models: { key: string; name: string; generation: string }[];
+  value: string;
+  onChange: (key: string) => void;
+}) {
+  const [open, setOpen] = useState(false);
+  const selected = models.find(m => m.key === value);
+  return (
+    <Popover open={open} onOpenChange={setOpen}>
+      <PopoverTrigger asChild>
+        <button
+          type="button"
+          role="combobox"
+          aria-expanded={open}
+          className={cn(
+            "flex h-9 w-full items-center justify-between rounded-md border border-input bg-transparent px-3 py-1 text-sm shadow-sm transition-colors",
+            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-ring",
+          )}
+        >
+          <span className={selected ? "" : "text-muted-foreground"}>
+            {selected ? selected.name : "Kies of typ je telefoonmodel…"}
+          </span>
+          <ChevronsUpDown className="ml-2 h-4 w-4 shrink-0 opacity-50" />
+        </button>
+      </PopoverTrigger>
+      <PopoverContent className="w-[--radix-popover-trigger-width] p-0" align="start">
+        <Command
+          filter={(val, search) => {
+            const m = models.find(x => x.key === val);
+            if (!m) return 0;
+            const hay = `${m.name} ${m.generation}`.toLowerCase();
+            return hay.includes(search.toLowerCase()) ? 1 : 0;
+          }}
+        >
+          <CommandInput placeholder="Typ bv. iPhone 14, S24, Pixel…" />
+          <CommandList className="max-h-[320px]">
+            <CommandEmpty>Geen model gevonden.</CommandEmpty>
+            <CommandGroup>
+              {models.map(m => (
+                <CommandItem
+                  key={m.key}
+                  value={m.key}
+                  onSelect={(v) => { onChange(v); setOpen(false); }}
+                >
+                  <Check className={cn("mr-2 h-4 w-4", value === m.key ? "opacity-100" : "opacity-0")} />
+                  <span className="flex-1">{m.name}</span>
+                  <span className="ml-2 text-xs text-muted-foreground">{m.generation}</span>
+                </CommandItem>
+              ))}
+            </CommandGroup>
+          </CommandList>
+        </Command>
+      </PopoverContent>
+    </Popover>
+  );
+}
