@@ -153,12 +153,30 @@ export const LOCKS: { key: LockKey; label: string; blocking: boolean }[] = [
 
 // Instellingen tab
 export const SETTINGS = {
-  profitMargin: 65,          // €
-  maxBidPct: 0.78,           // van verkoopwaarde
-  roundTo: 5,                // €
-  minBid: 20,                // €
-  maxDefectStackPct: 0.78,   // cap op stapeling defecten
-  rangeWidthPct: 0.08,       // ±8% voor indicatieve range
+  profitMargin: 65,
+  maxBidPct: 0.78,
+  roundTo: 5,
+  minBid: 20,
+  maxDefectStackPct: 0.78,
+  rangeWidthPct: 0.08,
+};
+
+export type Pricing = {
+  models: IPhoneModel[];
+  storage: typeof STORAGE_OPTIONS;
+  conditions: typeof CONDITIONS;
+  batteries: typeof BATTERIES;
+  locks: typeof LOCKS;
+  settings: typeof SETTINGS;
+};
+
+export const DEFAULT_PRICING: Pricing = {
+  models: IPHONES,
+  storage: STORAGE_OPTIONS,
+  conditions: CONDITIONS,
+  batteries: BATTERIES,
+  locks: LOCKS,
+  settings: SETTINGS,
 };
 
 export type CalcInput = {
@@ -173,34 +191,34 @@ export type CalcInput = {
 export type CalcResult = {
   blocking: boolean;
   reason?: string;
-  resale: number;            // verkoopwaarde basis + opslag
-  adjustedResale: number;    // na conditie
+  resale: number;
+  adjustedResale: number;
   batteryCorrection: number;
   defectDeduction: number;
-  rawBid: number;            // voor afronding
-  estimate: number;          // indicatief bod (midden)
-  low: number;               // ondergrens
-  high: number;              // bovengrens
+  rawBid: number;
+  estimate: number;
+  low: number;
+  high: number;
 };
 
-export function getModelByKey(key: string): IPhoneModel {
-  return IPHONES.find(m => m.key === key) ?? IPHONES[0];
+export function getModelByKey(key: string, pricing: Pricing = DEFAULT_PRICING): IPhoneModel {
+  return pricing.models.find(m => m.key === key) ?? pricing.models[0];
 }
 
-export function calculate(input: CalcInput): CalcResult {
-  const model = getModelByKey(input.modelKey);
-  const storage = STORAGE_OPTIONS.find(s => s.gb === input.storageGb) ?? STORAGE_OPTIONS[1];
-  const cond = CONDITIONS.find(c => c.key === input.condition)!;
-  const bat = BATTERIES.find(b => b.key === input.battery)!;
-  const lock = LOCKS.find(l => l.key === input.lock)!;
+export function calculate(input: CalcInput, pricing: Pricing = DEFAULT_PRICING): CalcResult {
+  const model = getModelByKey(input.modelKey, pricing);
+  const storage = pricing.storage.find(s => s.gb === input.storageGb) ?? pricing.storage[1] ?? pricing.storage[0];
+  const cond = pricing.conditions.find(c => c.key === input.condition) ?? pricing.conditions[0];
+  const bat = pricing.batteries.find(b => b.key === input.battery) ?? pricing.batteries[0];
+  const lock = pricing.locks.find(l => l.key === input.lock) ?? pricing.locks[0];
+  const S = pricing.settings;
 
-  const resale = model.baseValue + storage.correction;
+  const resale = Number(model.baseValue) + Number(storage.correction);
   const adjustedResale = resale * cond.mult;
 
   if (lock.blocking) {
     return {
-      blocking: true,
-      reason: lock.label,
+      blocking: true, reason: lock.label,
       resale, adjustedResale,
       batteryCorrection: bat.correction,
       defectDeduction: 0,
@@ -208,19 +226,19 @@ export function calculate(input: CalcInput): CalcResult {
     };
   }
 
-  const rawDefects = input.defects.reduce((s, d) => s + (model.defects[d] ?? 0), 0);
-  const defectCap = adjustedResale * SETTINGS.maxDefectStackPct;
+  const rawDefects = input.defects.reduce((s, d) => s + Number(model.defects[d] ?? 0), 0);
+  const defectCap = adjustedResale * S.maxDefectStackPct;
   const defectDeduction = Math.min(rawDefects, defectCap);
 
   const provisional = adjustedResale + bat.correction - defectDeduction;
-  const afterMargin = provisional - SETTINGS.profitMargin - model.riskBuffer;
-  const cappedByMax = Math.min(afterMargin, resale * SETTINGS.maxBidPct);
-  const rawBid = Math.max(SETTINGS.minBid, cappedByMax);
+  const afterMargin = provisional - S.profitMargin - Number(model.riskBuffer);
+  const cappedByMax = Math.min(afterMargin, resale * S.maxBidPct);
+  const rawBid = Math.max(S.minBid, cappedByMax);
 
-  const r = SETTINGS.roundTo;
-  const estimate = Math.max(SETTINGS.minBid, Math.round(rawBid / r) * r);
-  const w = SETTINGS.rangeWidthPct;
-  const low = Math.max(SETTINGS.minBid, Math.round((estimate * (1 - w)) / r) * r);
+  const r = S.roundTo;
+  const estimate = Math.max(S.minBid, Math.round(rawBid / r) * r);
+  const w = S.rangeWidthPct;
+  const low = Math.max(S.minBid, Math.round((estimate * (1 - w)) / r) * r);
   const high = Math.max(estimate + r, Math.round((estimate * (1 + w)) / r) * r);
 
   return {
@@ -231,3 +249,4 @@ export function calculate(input: CalcInput): CalcResult {
     rawBid, estimate, low, high,
   };
 }
+
