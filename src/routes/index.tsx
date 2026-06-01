@@ -21,26 +21,40 @@ function Landing() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
               </span>
-              De marktplaats voor telefoonreparaties
+              Eerlijke prijs door concurrentie
             </div>
 
             <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
-              Eén aanvraag.<br />
-              <span className="text-gradient-mint">Meerdere reparateurs.<br />Jij kiest.</span>
+              Altijd een<br />
+              <span className="text-gradient-mint">eerlijke prijs<br />voor je reparatie.</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
-              Plaats gratis je reparatieaanvraag op UFixMyPhone. Reparateurs uit heel Nederland brengen
-              een offerte uit — jij vergelijkt op prijs, locatie en beoordelingen en kiest zelf wie de klus krijgt.
+              Geen overprijsde winkels meer. Op UFixMyPhone plaats je één aanvraag en laten
+              meerdere reparateurs een offerte uitbrengen. Zij concurreren — <strong className="text-foreground">jij betaalt nooit te veel</strong>.
             </p>
 
+            {/* Eerlijke-prijs proof strip */}
+            <div className="mx-auto mt-8 grid max-w-2xl grid-cols-3 gap-2 sm:gap-3">
+              {[
+                { big: "Tot 40%", small: "goedkoper dan winkel*" },
+                { big: "3-5", small: "offertes per aanvraag" },
+                { big: "100%", small: "transparant" },
+              ].map((s) => (
+                <div key={s.small} className="bg-gradient-card rounded-xl border border-primary/30 px-3 py-3 text-center shadow-glow">
+                  <div className="font-display text-xl font-bold text-primary sm:text-2xl">{s.big}</div>
+                  <div className="mt-0.5 text-[11px] leading-tight text-muted-foreground sm:text-xs">{s.small}</div>
+                </div>
+              ))}
+            </div>
+
             {/* 4-step visual — readable in 5s */}
-            <ol className="mx-auto mt-8 grid max-w-2xl grid-cols-2 gap-2 text-left sm:grid-cols-4 sm:gap-3">
+            <ol className="mx-auto mt-6 grid max-w-2xl grid-cols-2 gap-2 text-left sm:grid-cols-4 sm:gap-3">
               {[
                 { n: "1", icon: FileText, t: "Plaats aanvraag" },
                 { n: "2", icon: MessageSquare, t: "Ontvang offertes" },
-                { n: "3", icon: Scale, t: "Vergelijk" },
-                { n: "4", icon: CheckCircle2, t: "Kies reparateur" },
+                { n: "3", icon: Scale, t: "Vergelijk prijzen" },
+                { n: "4", icon: CheckCircle2, t: "Kies de beste" },
               ].map((s) => (
                 <li key={s.n} className="bg-gradient-card flex items-center gap-2.5 rounded-xl border border-border/60 px-3 py-2.5">
                   <div className="flex h-7 w-7 shrink-0 items-center justify-center rounded-lg bg-primary/15 text-primary">
@@ -56,7 +70,7 @@ function Landing() {
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
               <Button asChild size="lg" className="w-full text-base shadow-glow sm:w-auto">
-                <Link to="/login">Plaats gratis je aanvraag <ArrowRight className="h-4 w-4" /></Link>
+                <Link to="/login">Vergelijk gratis offertes <ArrowRight className="h-4 w-4" /></Link>
               </Button>
               <Button asChild size="lg" variant="ghost" className="w-full text-base sm:w-auto">
                 <Link to="/feed">
@@ -70,10 +84,12 @@ function Landing() {
             </p>
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground sm:text-sm">
+              <div className="flex items-center gap-1.5"><Euro className="h-4 w-4 text-primary" /> Eerlijke marktprijs</div>
               <div className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-primary" /> Geverifieerde reparateurs</div>
               <div className="flex items-center gap-1.5"><Star className="h-4 w-4 text-primary" /> Reviews van klanten</div>
-              <div className="flex items-center gap-1.5"><Lock className="h-4 w-4 text-primary" /> Veilig via UFixMyPhone</div>
             </div>
+
+            <p className="mt-3 text-[10px] text-muted-foreground/70">* Indicatie op basis van vergeleken offertes versus gemiddelde winkelprijs.</p>
           </div>
         </div>
       </section>
