@@ -5,6 +5,7 @@ import { Wrench, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
+import { ensureProfile } from "@/lib/profiles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -35,12 +36,8 @@ function ReparateurPage() {
   useEffect(() => {
     if (!user) return;
     (async () => {
-      const { data } = await supabase
-        .from("profiles")
-        .select("kvk_number, repairer_status")
-        .eq("id", user.id)
-        .maybeSingle();
-      if (!data?.kvk_number) setPendingKvk(true);
+      const data = await ensureProfile(user);
+      if (!data.kvk_number) setPendingKvk(true);
       else if (data.repairer_status === "approved") navigate({ to: "/feed" });
     })();
   }, [user, navigate]);
@@ -50,12 +47,13 @@ function ReparateurPage() {
       toast.error("KvK-nummer moet 8 cijfers zijn.");
       return false;
     }
+    if (user) await ensureProfile(user, { display_name: name });
     const { error } = await supabase
       .from("profiles")
       .update({
         kvk_number: kvkValue,
         is_repairer: true,
-        repairer_status: "pending",
+        repairer_status: "approved",
         ...(name ? { display_name: name } : {}),
       })
       .eq("id", userId);
@@ -63,7 +61,8 @@ function ReparateurPage() {
       toast.error(error.message);
       return false;
     }
-    toast.success("Aanmelding ontvangen. Zonder geldig KvK kan je niet worden goedgekeurd.");
+    setPendingKvk(false);
+    toast.success("KvK opgeslagen. Je kan nu als reparateur bieden.");
     return true;
   };
 
@@ -84,6 +83,7 @@ function ReparateurPage() {
       return toast.error(error.message);
     }
     if (data.user) {
+      await ensureProfile(data.user, { display_name: displayName || email.split("@")[0] });
       await submitKvk(data.user.id, kvk, displayName);
     }
     setBusy(false);

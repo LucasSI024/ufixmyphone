@@ -2,29 +2,23 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Smartphone, Euro, Plus } from "lucide-react";
+import { Smartphone, Euro, Plus, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { ensureProfile, type PublicProfile } from "@/lib/profiles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/_authenticated/account")({
-  head: () => ({ meta: [{ title: "Mijn account — I Will Make It" }] }),
+  head: () => ({ meta: [{ title: "Mijn account — UFixMyPhone" }] }),
   component: AccountPage,
 });
 
-type Profile = {
-  id: string;
-  display_name: string;
-  city: string | null;
-  bio: string | null;
-  is_repairer: boolean;
-};
+type Profile = PublicProfile;
 
 function AccountPage() {
   const { user } = useAuth();
@@ -34,9 +28,7 @@ function AccountPage() {
     queryKey: ["profile", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle();
-      if (error) throw error;
-      return data as Profile | null;
+      return ensureProfile(user!) as Promise<Profile>;
     },
   });
 
@@ -73,11 +65,12 @@ function AccountPage() {
 
   const save = async () => {
     if (!form || !user) return;
+    const displayName = form.display_name.trim();
+    if (displayName.length < 2) return toast.error("Vul een naam in van minimaal 2 tekens.");
     const { error } = await supabase.from("profiles").update({
-      display_name: form.display_name,
-      city: form.city,
-      bio: form.bio,
-      is_repairer: form.is_repairer,
+      display_name: displayName,
+      city: form.city?.trim() || null,
+      bio: form.bio?.trim() || null,
     }).eq("id", user.id);
     if (error) return toast.error(error.message);
     toast.success("Profiel opgeslagen");
@@ -110,12 +103,24 @@ function AccountPage() {
                 <Label htmlFor="bio">Bio</Label>
                 <Textarea id="bio" rows={3} value={form.bio ?? ""} onChange={(e) => setForm({ ...form, bio: e.target.value })} placeholder="Vertel kort over jezelf of je reparatiebedrijf..." />
               </div>
-              <div className="flex items-center justify-between rounded-xl border border-border/60 bg-background/40 p-4">
-                <div>
-                  <Label htmlFor="rep" className="text-base">Ik ben reparateur</Label>
-                  <p className="text-xs text-muted-foreground">Schakel in om biedingen te kunnen doen op reparaties.</p>
+              <div className="flex items-start gap-3 rounded-xl border border-border/60 bg-background/40 p-4">
+                <ShieldCheck className="mt-0.5 h-5 w-5 text-primary" />
+                <div className="flex-1">
+                  <div className="flex flex-wrap items-center gap-2">
+                    <p className="font-medium">Reparateurstatus</p>
+                    <Badge variant={form.repairer_status === "approved" ? "default" : "secondary"}>
+                      {form.repairer_status === "approved" ? "Goedgekeurd" : form.kvk_number ? "In behandeling" : "Niet aangemeld"}
+                    </Badge>
+                  </div>
+                  <p className="mt-1 text-xs text-muted-foreground">
+                    Reparateur worden gaat via KvK-verificatie. Zonder KvK kan je geen bod plaatsen.
+                  </p>
+                  {form.repairer_status !== "approved" && (
+                    <Button asChild variant="outline" size="sm" className="mt-3">
+                      <Link to="/reparateur">KvK invullen</Link>
+                    </Button>
+                  )}
                 </div>
-                <Switch id="rep" checked={form.is_repairer} onCheckedChange={(c) => setForm({ ...form, is_repairer: c })} />
               </div>
               <Button onClick={save} className="shadow-glow">Opslaan</Button>
             </div>

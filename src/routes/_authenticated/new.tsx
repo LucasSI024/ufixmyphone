@@ -4,6 +4,7 @@ import { toast } from "sonner";
 import { Smartphone, ImagePlus, X } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { ensureProfile } from "@/lib/profiles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -25,7 +26,7 @@ const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"];
 type PendingPhoto = { file: File; previewUrl: string };
 
 export const Route = createFileRoute("/_authenticated/new")({
-  head: () => ({ meta: [{ title: "Reparatie plaatsen — I Will Make It" }] }),
+  head: () => ({ meta: [{ title: "Reparatie plaatsen — UFixMyPhone" }] }),
   component: NewRequestPage,
 });
 
@@ -115,12 +116,28 @@ function NewRequestPage() {
   const onSubmit = async (e: FormEvent) => {
     e.preventDefault();
     if (!user) return;
+    if (!form.device_brand.trim() || !form.device_model.trim() || !form.problem_type || !form.problem_when || !form.condition || !form.city.trim()) {
+      toast.error("Vul alle verplichte velden in.");
+      return;
+    }
     if (form.details.trim().length < 20) {
       toast.error("Geef minimaal 20 tekens uitleg bij 'Extra details'.");
       return;
     }
+    const budget = form.budget_max ? Number(form.budget_max) : null;
+    if (budget != null && (!Number.isFinite(budget) || budget < 0)) {
+      toast.error("Vul een geldig budget in.");
+      return;
+    }
 
     setBusy(true);
+
+    try {
+      await ensureProfile(user);
+    } catch (err) {
+      setBusy(false);
+      return toast.error(err instanceof Error ? err.message : "Profiel aanmaken mislukt.");
+    }
 
     // Upload photos to storage
     const uploadedUrls: string[] = [];
@@ -161,7 +178,7 @@ function NewRequestPage() {
         problem_description: description,
         category: form.problem_type,
         city: form.city.trim(),
-        budget_max: form.budget_max ? Number(form.budget_max) : null,
+        budget_max: budget,
         photo_urls: uploadedUrls,
       })
       .select("id")

@@ -7,6 +7,7 @@ import { formatDistanceToNow } from "date-fns";
 import { nl } from "date-fns/locale";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { ensureProfile, getPublicProfiles, type PublicProfile } from "@/lib/profiles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -15,7 +16,7 @@ import { Badge } from "@/components/ui/badge";
 import { Header } from "@/components/header";
 
 export const Route = createFileRoute("/request/$id")({
-  head: () => ({ meta: [{ title: "Reparatie — I Will Make It" }] }),
+  head: () => ({ meta: [{ title: "Reparatie — UFixMyPhone" }] }),
   component: RequestDetailPage,
 });
 
@@ -31,7 +32,7 @@ type RequestDetail = {
   accepted_bid_id: string | null;
   created_at: string;
   photo_urls: string[] | null;
-  profiles: { display_name: string; city: string | null } | null;
+  profiles: Pick<PublicProfile, "display_name" | "city"> | null;
 };
 
 type Bid = {
@@ -42,7 +43,7 @@ type Bid = {
   repair_days: number;
   status: string;
   created_at: string;
-  profiles: { display_name: string; city: string | null } | null;
+  profiles: Pick<PublicProfile, "display_name" | "city"> | null;
 };
 
 function RequestDetailPage() {
@@ -56,11 +57,13 @@ function RequestDetailPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("repair_requests")
-        .select("*, profiles!repair_requests_owner_id_fkey(display_name, city)")
+        .select("*")
         .eq("id", id)
         .maybeSingle();
       if (error) throw error;
-      return data as unknown as RequestDetail | null;
+      if (!data) return null;
+      const profiles = await getPublicProfiles([data.owner_id]);
+      return { ...data, profiles: profiles.get(data.owner_id) ?? null } as unknown as RequestDetail;
     },
   });
 
@@ -69,12 +72,22 @@ function RequestDetailPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("bids")
-        .select("*, profiles!bids_repairer_id_fkey(display_name, city)")
+        .select("*")
         .eq("request_id", id)
         .order("price", { ascending: true });
       if (error) throw error;
-      return data as unknown as Bid[];
+      const profiles = await getPublicProfiles((data ?? []).map((bid) => bid.repairer_id));
+      return (data ?? []).map((bid) => ({
+        ...bid,
+        profiles: profiles.get(bid.repairer_id) ?? null,
+      })) as unknown as Bid[];
     },
+  });
+
+  const profileQuery = useQuery({
+    queryKey: ["profile", user?.id],
+    enabled: !!user,
+    queryFn: async () => ensureProfile(user!),
   });
 
   if (reqQuery.isLoading) {
@@ -100,6 +113,9 @@ function RequestDetailPage() {
 
   const isOwner = user?.id === req.owner_id;
   const myBid = bidsQuery.data?.find((b) => b.repairer_id === user?.id);
+  const myProfile = profileQuery.data;
+  const canBid = !!user && !isOwner && req.status === "open" && !myBid && myProfile?.is_repairer && myProfile.repairer_status === "approved";
+  const needsRepairerApproval = !!user && !isOwner && req.status === "open" && !myBid && !canBid;
 
   const handleDelete = async () => {
     if (!confirm("Weet je zeker dat je deze reparatie wilt verwijderen?")) return;
@@ -211,7 +227,18 @@ function RequestDetailPage() {
             </div>
           )}
 
-          {user && !isOwner && req.status === "open" && !myBid && (
+          {needsRepairerApproval && (
+            <div className="bg-gradient-card mt-4 flex flex-col items-start gap-3 rounded-2xl border border-border/60 p-5 sm:flex-row sm:items-center sm:justify-between">
+              <p className="text-sm text-muted-foreground">
+                Alleen goedgekeurde reparateurs met KvK-verificatie kunnen een bod plaatsen.
+              </p>
+              <Button asChild size="sm" variant="outline">
+                <Link to="/reparateur">KvK invullen</Link>
+              </Button>
+            </div>
+          )}
+
+          {canBid && (
             <BidForm requestId={req.id} userId={user.id} onDone={() => qc.invalidateQueries({ queryKey: ["bids", id] })} />
           )}
 

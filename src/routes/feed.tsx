@@ -18,7 +18,7 @@ import { Header } from "@/components/header";
 import { REPAIR_CATEGORIES } from "@/lib/categories";
 
 export const Route = createFileRoute("/feed")({
-  head: () => ({ meta: [{ title: "Open reparaties — I Will Make It" }] }),
+  head: () => ({ meta: [{ title: "Open reparaties — UFixMyPhone" }] }),
   component: FeedPage,
 });
 
