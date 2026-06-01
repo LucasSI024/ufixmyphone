@@ -2,14 +2,14 @@ import { createFileRoute, Link } from "@tanstack/react-router";
 import { useQuery, useQueryClient } from "@tanstack/react-query";
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Smartphone, Euro, Plus } from "lucide-react";
+import { Smartphone, Euro, Plus, ShieldCheck } from "lucide-react";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
+import { ensureProfile, type PublicProfile } from "@/lib/profiles";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Textarea } from "@/components/ui/textarea";
-import { Switch } from "@/components/ui/switch";
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
@@ -18,13 +18,7 @@ export const Route = createFileRoute("/_authenticated/account")({
   component: AccountPage,
 });
 
-type Profile = {
-  id: string;
-  display_name: string;
-  city: string | null;
-  bio: string | null;
-  is_repairer: boolean;
-};
+type Profile = PublicProfile;
 
 function AccountPage() {
   const { user } = useAuth();
@@ -34,9 +28,7 @@ function AccountPage() {
     queryKey: ["profile", user?.id],
     enabled: !!user,
     queryFn: async () => {
-      const { data, error } = await supabase.from("profiles").select("*").eq("id", user!.id).maybeSingle();
-      if (error) throw error;
-      return data as Profile | null;
+      return ensureProfile(user!) as Promise<Profile>;
     },
   });
 
@@ -73,11 +65,12 @@ function AccountPage() {
 
   const save = async () => {
     if (!form || !user) return;
+    const displayName = form.display_name.trim();
+    if (displayName.length < 2) return toast.error("Vul een naam in van minimaal 2 tekens.");
     const { error } = await supabase.from("profiles").update({
-      display_name: form.display_name,
-      city: form.city,
-      bio: form.bio,
-      is_repairer: form.is_repairer,
+      display_name: displayName,
+      city: form.city?.trim() || null,
+      bio: form.bio?.trim() || null,
     }).eq("id", user.id);
     if (error) return toast.error(error.message);
     toast.success("Profiel opgeslagen");
