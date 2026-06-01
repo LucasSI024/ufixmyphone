@@ -46,6 +46,8 @@ const DEFECT_KEYS = Object.keys(DEFECT_LABELS) as DefectKey[];
 function VerkoopPage() {
   const { user } = useAuth();
   const navigate = useNavigate();
+  const pricing = useIphonePricing();
+  const { models: IPHONES, storage: STORAGE_OPTIONS, conditions: CONDITIONS, batteries: BATTERIES, locks: LOCKS } = pricing;
   const [busy, setBusy] = useState(false);
 
   const [modelKey, setModelKey] = useState(IPHONES[0].key);
@@ -59,11 +61,11 @@ function VerkoopPage() {
   const [photos, setPhotos] = useState<PendingPhoto[]>([]);
   const fileRef = useRef<HTMLInputElement>(null);
 
-  const model = getModelByKey(modelKey);
+  const model = getModelByKey(modelKey, pricing);
 
   const result = useMemo(() => calculate({
     modelKey, storageGb, condition, battery, lock, defects,
-  }), [modelKey, storageGb, condition, battery, lock, defects]);
+  }, pricing), [modelKey, storageGb, condition, battery, lock, defects, pricing]);
 
   const toggleDefect = (k: DefectKey, on: boolean) =>
     setDefects(p => on ? [...p, k] : p.filter(x => x !== k));
