@@ -249,7 +249,8 @@ function AdminPricingPage() {
       if (parsed.settings) Object.assign(settingsPatch, parsed.settings);
 
       if (Object.keys(settingsPatch).length) {
-        const merged = { ...(live?.settingsRow?.data ?? {}), ...settingsPatch };
+        const existing = (live?.settingsRow?.data ?? {}) as Record<string, any>;
+        const merged = { ...existing, ...settingsPatch };
         const { error: sErr } = await supabase
           .from("iphone_settings")
           .upsert({ id: 1, data: merged, updated_by: user.id, updated_at: new Date().toISOString() });
