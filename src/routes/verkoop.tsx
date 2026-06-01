@@ -6,10 +6,10 @@ import {
   CheckCircle2, Info, Upload, ArrowRight, AlertTriangle, Lock,
 } from "lucide-react";
 import {
-  IPHONES, STORAGE_OPTIONS, CONDITIONS, BATTERIES, LOCKS,
   DEFECT_LABELS, calculate, getModelByKey,
   type DefectKey, type ConditionKey, type BatteryKey, type LockKey,
 } from "@/lib/iphone-buyback";
+import { useIphonePricing } from "@/hooks/use-pricing";
 import { supabase } from "@/integrations/supabase/client";
 import { useAuth } from "@/hooks/use-auth";
 import { Button } from "@/components/ui/button";
