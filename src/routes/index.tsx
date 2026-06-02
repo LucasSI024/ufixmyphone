@@ -14,12 +14,14 @@ function Landing() {
 
       {/* Hero */}
       <section className="bg-gradient-hero relative overflow-hidden">
-        <div className="container mx-auto max-w-6xl px-4 pb-16 pt-16 sm:pt-24">
+        <div className="bg-pattern-dots bg-pattern-mask pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="bg-grain pointer-events-none absolute inset-0 opacity-[0.15] mix-blend-overlay" aria-hidden="true" />
+        <div className="container relative mx-auto max-w-6xl px-4 pb-16 pt-16 sm:pt-24">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-medium text-primary">
-              <span className="relative flex h-2 w-2">
+            <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border-2 border-primary/40 bg-primary/15 px-5 py-2.5 text-sm font-semibold text-primary shadow-glow sm:text-base">
+              <span className="relative flex h-2.5 w-2.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
               </span>
               Eerlijke prijs door concurrentie
             </div>
