@@ -97,16 +97,18 @@ function Landing() {
       </section>
 
       {/* How it works — uitgebreid */}
-      <section className="border-y border-border/60 bg-surface/30 py-20">
-        <div className="container mx-auto max-w-6xl px-4">
-          <div className="mx-auto max-w-2xl text-center">
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
+      <section className="relative border-y border-border/60 bg-surface/30 py-24 sm:py-32">
+        <div className="bg-pattern-grid bg-pattern-mask pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="container relative mx-auto max-w-6xl px-4">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/15 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-primary">
               Zo werkt de marktplaats
             </div>
-            <h2 className="font-display text-3xl font-bold sm:text-4xl">
-              Van kapot naar gerepareerd in 4 stappen
+            <h2 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
+              Van kapot naar gerepareerd<br />
+              <span className="text-gradient-mint">in 4 simpele stappen</span>
             </h2>
-            <p className="mt-3 text-muted-foreground">
+            <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
               UFixMyPhone repareert niet zelf — wij brengen jou in contact met meerdere reparateurs die met elkaar concurreren om jouw opdracht.
             </p>
           </div>
