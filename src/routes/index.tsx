@@ -120,13 +120,13 @@ function Landing() {
               { icon: Scale, num: "03", title: "Vergelijk transparant", desc: "Vergelijk alle offertes naast elkaar — prijs, afstand én klantbeoordelingen." },
               { icon: CheckCircle2, num: "04", title: "Kies zelf je reparateur", desc: "Jij beslist. Accepteer de offerte die het beste past en kom direct in contact." },
             ].map((step) => (
-              <div key={step.num} className="bg-gradient-card shadow-card relative overflow-hidden rounded-2xl border border-border/60 p-6">
-                <div className="absolute right-4 top-4 font-mono text-xs text-muted-foreground/50">{step.num}</div>
-                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                  <step.icon className="h-6 w-6" />
+              <div key={step.num} className="bg-gradient-card shadow-card group relative overflow-hidden rounded-2xl border border-border/60 p-7 transition-all hover:border-primary/40 hover:shadow-glow">
+                <div className="absolute -right-2 -top-3 font-display text-6xl font-bold text-primary/10 transition-colors group-hover:text-primary/20">{step.num}</div>
+                <div className="relative mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                  <step.icon className="h-7 w-7" />
                 </div>
-                <h3 className="font-display text-lg font-semibold">{step.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{step.desc}</p>
+                <h3 className="relative font-display text-xl font-semibold">{step.title}</h3>
+                <p className="relative mt-2 text-sm text-muted-foreground">{step.desc}</p>
               </div>
             ))}
           </div>
