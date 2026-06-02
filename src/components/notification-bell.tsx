@@ -40,7 +40,7 @@ export function NotificationBell() {
     load();
 
     const channel = supabase
-      .channel(`notifications-${user.id}`)
+      .channel(`notifications:${user.id}`)
       .on(
         "postgres_changes",
         {
