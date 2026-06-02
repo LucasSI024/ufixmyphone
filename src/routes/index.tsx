@@ -16,7 +16,7 @@ function Landing() {
       <section className="bg-gradient-hero relative overflow-hidden">
         <div className="bg-pattern-dots bg-pattern-mask pointer-events-none absolute inset-0" aria-hidden="true" />
         <div className="bg-grain pointer-events-none absolute inset-0 opacity-[0.15] mix-blend-overlay" aria-hidden="true" />
-        <div className="container relative mx-auto max-w-6xl px-4 pb-16 pt-16 sm:pt-24 font-serif text-base">
+        <div className="container relative mx-auto max-w-6xl px-4 pb-16 pt-16 sm:pt-24">
           <div className="mx-auto max-w-3xl text-center">
             <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border-2 border-primary/40 bg-primary/15 px-5 py-2.5 text-sm font-semibold text-primary shadow-glow sm:text-base">
               <span className="relative flex h-2.5 w-2.5">
