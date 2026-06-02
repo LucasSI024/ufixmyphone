@@ -140,22 +140,28 @@ function Landing() {
 
 
       {/* Two paths */}
-      <section className="py-20">
-        <div className="container mx-auto max-w-6xl px-4">
-          <h2 className="text-center font-display text-3xl font-bold sm:text-4xl">
-            Twee zijden, één marktplaats
-          </h2>
-          <p className="mx-auto mt-3 max-w-xl text-center text-muted-foreground">
-            UFixMyPhone brengt consumenten en reparateurs samen — wij voeren zelf geen reparaties uit.
-          </p>
+      <section className="relative py-24 sm:py-32">
+        <div className="container relative mx-auto max-w-6xl px-4">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/15 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-primary">
+              Voor iedereen
+            </div>
+            <h2 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
+              Twee zijden,<br />
+              <span className="text-gradient-mint">één marktplaats</span>
+            </h2>
+            <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
+              UFixMyPhone brengt consumenten en reparateurs samen — wij voeren zelf geen reparaties uit.
+            </p>
+          </div>
 
-          <div className="mt-12 grid gap-6 md:grid-cols-2">
+          <div className="mt-14 grid gap-6 md:grid-cols-2">
             {/* Owners */}
-            <div className="bg-gradient-card shadow-card relative overflow-hidden rounded-2xl border border-border/60 p-8">
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                <Smartphone className="h-6 w-6" />
+            <div className="bg-gradient-card shadow-card group relative overflow-hidden rounded-2xl border border-border/60 p-7 transition-all hover:border-primary/40 hover:shadow-glow">
+              <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                <Smartphone className="h-7 w-7" />
               </div>
-              <h3 className="font-display text-2xl font-semibold">Heb je iets kapot?</h3>
+              <h3 className="font-display text-xl font-semibold">Heb je iets kapot?</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 Plaats een reparatieaanvraag en laat meerdere reparateurs een offerte uitbrengen — jij kiest zelf de beste.
               </p>
@@ -170,11 +176,11 @@ function Landing() {
             </div>
 
             {/* Repairers */}
-            <div className="bg-gradient-card shadow-card relative overflow-hidden rounded-2xl border border-border/60 p-8">
-              <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                <Wrench className="h-6 w-6" />
+            <div className="bg-gradient-card shadow-card group relative overflow-hidden rounded-2xl border border-border/60 p-7 transition-all hover:border-primary/40 hover:shadow-glow">
+              <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                <Wrench className="h-7 w-7" />
               </div>
-              <h3 className="font-display text-2xl font-semibold">Ben je reparateur?</h3>
+              <h3 className="font-display text-xl font-semibold">Ben je reparateur?</h3>
               <p className="mt-2 text-sm text-muted-foreground">
                 Bekijk reparatieaanvragen van consumenten en breng direct een offerte uit. Kom in contact met nieuwe klanten.
               </p>
@@ -192,14 +198,14 @@ function Landing() {
           {/* Sell phone link */}
           <Link
             to="/verkoop"
-            className="bg-gradient-card shadow-card group mt-6 flex flex-col items-start gap-4 overflow-hidden rounded-2xl border border-border/60 p-6 transition-all hover:shadow-glow sm:flex-row sm:items-center sm:justify-between"
+            className="bg-gradient-card shadow-card group mt-6 flex flex-col items-start gap-4 overflow-hidden rounded-2xl border border-border/60 p-7 transition-all hover:border-primary/40 hover:shadow-glow sm:flex-row sm:items-center sm:justify-between"
           >
             <div className="flex items-start gap-4">
-              <div className="inline-flex h-11 w-11 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                <Euro className="h-5 w-5" />
+              <div className="inline-flex h-14 w-14 shrink-0 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                <Euro className="h-7 w-7" />
               </div>
               <div>
-                <h3 className="font-display text-lg font-semibold sm:text-xl">
+                <h3 className="font-display text-xl font-semibold">
                   Of wil je liever je telefoon verkopen?
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
@@ -215,13 +221,17 @@ function Landing() {
       </section>
 
       {/* CTA */}
-      <section className="py-20">
-        <div className="container mx-auto max-w-3xl px-4 text-center">
-          <Wrench className="mx-auto mb-6 h-10 w-10 text-primary" />
-          <h2 className="font-display text-3xl font-bold sm:text-4xl">
-            Klaar om te besparen op je reparatie?
+      <section className="relative border-t border-border/60 bg-surface/30 py-24 sm:py-32">
+        <div className="bg-pattern-dots bg-pattern-mask pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="container relative mx-auto max-w-3xl px-4 text-center">
+          <div className="mb-6 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15 text-primary">
+            <Wrench className="h-7 w-7" />
+          </div>
+          <h2 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
+            Klaar om te besparen<br />
+            <span className="text-gradient-mint">op je reparatie?</span>
           </h2>
-          <p className="mt-4 text-muted-foreground">
+          <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
             Plaats binnen 1 minuut je aanvraag en laat reparateurs voor je concurreren.
           </p>
           <Button asChild size="lg" className="mt-8 shadow-glow">
