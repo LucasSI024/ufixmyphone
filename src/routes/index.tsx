@@ -14,12 +14,14 @@ function Landing() {
 
       {/* Hero */}
       <section className="bg-gradient-hero relative overflow-hidden">
-        <div className="container mx-auto max-w-6xl px-4 pb-16 pt-16 sm:pt-24">
+        <div className="bg-pattern-dots bg-pattern-mask pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="bg-grain pointer-events-none absolute inset-0 opacity-[0.15] mix-blend-overlay" aria-hidden="true" />
+        <div className="container relative mx-auto max-w-6xl px-4 pb-16 pt-16 sm:pt-24">
           <div className="mx-auto max-w-3xl text-center">
-            <div className="mb-6 inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-xs font-medium text-primary">
-              <span className="relative flex h-2 w-2">
+            <div className="mb-8 inline-flex items-center gap-2.5 rounded-full border-2 border-primary/40 bg-primary/15 px-5 py-2.5 text-sm font-semibold text-primary shadow-glow sm:text-base">
+              <span className="relative flex h-2.5 w-2.5">
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
-                <span className="relative inline-flex h-2 w-2 rounded-full bg-primary" />
+                <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
               </span>
               Eerlijke prijs door concurrentie
             </div>
@@ -95,16 +97,18 @@ function Landing() {
       </section>
 
       {/* How it works — uitgebreid */}
-      <section className="border-y border-border/60 bg-surface/30 py-20">
-        <div className="container mx-auto max-w-6xl px-4">
-          <div className="mx-auto max-w-2xl text-center">
-            <div className="mb-3 inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
+      <section className="relative border-y border-border/60 bg-surface/30 py-24 sm:py-32">
+        <div className="bg-pattern-grid bg-pattern-mask pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="container relative mx-auto max-w-6xl px-4">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/15 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-primary">
               Zo werkt de marktplaats
             </div>
-            <h2 className="font-display text-3xl font-bold sm:text-4xl">
-              Van kapot naar gerepareerd in 4 stappen
+            <h2 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
+              Van kapot naar gerepareerd<br />
+              <span className="text-gradient-mint">in 4 simpele stappen</span>
             </h2>
-            <p className="mt-3 text-muted-foreground">
+            <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
               UFixMyPhone repareert niet zelf — wij brengen jou in contact met meerdere reparateurs die met elkaar concurreren om jouw opdracht.
             </p>
           </div>
@@ -116,13 +120,13 @@ function Landing() {
               { icon: Scale, num: "03", title: "Vergelijk transparant", desc: "Vergelijk alle offertes naast elkaar — prijs, afstand én klantbeoordelingen." },
               { icon: CheckCircle2, num: "04", title: "Kies zelf je reparateur", desc: "Jij beslist. Accepteer de offerte die het beste past en kom direct in contact." },
             ].map((step) => (
-              <div key={step.num} className="bg-gradient-card shadow-card relative overflow-hidden rounded-2xl border border-border/60 p-6">
-                <div className="absolute right-4 top-4 font-mono text-xs text-muted-foreground/50">{step.num}</div>
-                <div className="mb-4 inline-flex h-12 w-12 items-center justify-center rounded-xl bg-primary/15 text-primary">
-                  <step.icon className="h-6 w-6" />
+              <div key={step.num} className="bg-gradient-card shadow-card group relative overflow-hidden rounded-2xl border border-border/60 p-7 transition-all hover:border-primary/40 hover:shadow-glow">
+                <div className="absolute -right-2 -top-3 font-display text-6xl font-bold text-primary/10 transition-colors group-hover:text-primary/20">{step.num}</div>
+                <div className="relative mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                  <step.icon className="h-7 w-7" />
                 </div>
-                <h3 className="font-display text-lg font-semibold">{step.title}</h3>
-                <p className="mt-2 text-sm text-muted-foreground">{step.desc}</p>
+                <h3 className="relative font-display text-xl font-semibold">{step.title}</h3>
+                <p className="relative mt-2 text-sm text-muted-foreground">{step.desc}</p>
               </div>
             ))}
           </div>

@@ -1,36 +1,32 @@
-## Doel
-Beheerscherm waar jij (admin) een Excel- of CSV-bestand upload met iPhone-prijsdata. De inkoopcalculator gebruikt vervolgens automatisch de nieuwe prijzen — geen redeploy nodig.
+## Wat ik ga doen
 
-## Wat ik bouw
+Je homepage voelt nu wat vlak en de belangrijkste teksten vallen te weinig op. Ik ga drie dingen aanpakken zodat de pagina krachtiger en duidelijker wordt.
 
-**1. Database (Lovable Cloud)**
-- `app_role` enum + `user_roles` tabel + `has_role()` security definer functie (jouw account krijgt `admin` rol).
-- `iphone_models` tabel: alle modellen + basisprijs + risicobuffer + defectprijzen (JSON).
-- `iphone_settings` tabel: 1 rij met opslag-, conditie-, batterij-, lock-opties en algemene instellingen (winstmarge, afronding, etc.).
-- Publiek leesbaar (zodat calculator werkt zonder login). Alleen admin mag schrijven.
+### 1. Achtergrond met patroon
+Een subtiel, modern patroon over de hele pagina (geen drukke wallpaper):
+- Fijn grid/dot-patroon in de hero (heel licht, primary-kleur)
+- Zachte "blob" gradients op de achtergrond voor diepte
+- Grain/noise textuur voor een premium gevoel
+- Patroon blijft rustig zodat tekst goed leesbaar blijft
 
-**2. Beheerscherm `/admin/inkoop-prijzen`**
-- Beschermd: alleen zichtbaar voor admin.
-- Upload-zone voor `.xlsx` of `.csv`.
-- Parser leest dezelfde tabblad-structuur als jouw Excel (Defectmatrix, Opslag, Conditie, Batterij, Lock, Instellingen).
-- Preview-tabel toont wat ingelezen is vóór opslaan.
-- "Opslaan" → upsert in database.
-- Toont laatste update-datum en wie het uploadde.
-- Download-knop: huidige data exporteren als Excel (zodat je altijd een werkend startbestand hebt).
+### 2. "Zo werkt de marktplaats" veel groter en opvallender
+Nu staat dat als klein labeltje. Ik maak ervan:
+- Grote sectiekop (denk: 4xl→5xl, vetgedrukt, display font)
+- Eyebrow-label erboven blijft, maar de titel "Van kapot naar gerepareerd in 4 stappen" wordt het echte blikvanger-punt
+- Meer ademruimte (padding) rond de sectie
+- Stapnummers (01, 02, 03, 04) prominenter in beeld
 
-**3. Calculator refactor**
-- `src/lib/iphone-buyback.ts` haalt data uit de database in plaats van hardcoded constanten.
-- React Query cache, zodat er maar 1x per sessie geladen wordt.
-- Fallback naar huidige hardcoded data als de DB leeg is (geen breuk).
+### 3. "Eerlijke prijs door concurrentie" badge groter
+De badge bovenaan de hero is nu mini. Ik maak er een echte attention-grabber van:
+- Groter formaat, duidelijker rand en glow
+- Iets meer kleur/contrast zodat het direct opvalt
+- Eventueel als banner-stijl pill in plaats van klein chipje
 
-**4. Admin-link**
-- Link naar `/admin/inkoop-prijzen` zichtbaar in account-menu, alleen voor admins.
+### Resultaat
+De homepage krijgt meer karakter (patroon = niet meer "leeg wit"), en de twee belangrijkste boodschappen — *eerlijke prijs* en *hoe het werkt* — springen er direct uit zodra je de pagina opent.
 
-## Technisch (kort)
-- Excel-parsing client-side met `xlsx` (SheetJS).
-- Server-fn `upsertIphonePricing` met `requireSupabaseAuth` + admin-check via `has_role`.
-- Calculator wordt async: `useIphonePricing()` hook met React Query.
+### Te wijzigen bestanden
+- `src/styles.css` — patroon + grain als utility classes toevoegen
+- `src/routes/index.tsx` — grotere koppen, prominentere badge, patroon-achtergrond toepassen
 
-## Vragen voor jou
-1. Welk e-mailadres moet `admin`-rechten krijgen? (Ik koppel het direct na de migratie.)
-2. Verwacht je dat het kolomformaat van het Excel-bestand exact gelijk blijft aan het huidige (`iPhone_website_inkoopcalculator_uitgebreid.xlsx`)? Zo ja, parser is straightforward. Zo nee, dan bouw ik een kolom-mapping UI.
+Wil je dat ik dit zo bouw, of wil je eerst 2-3 visuele richtingen zien (bijv. dot-grid vs. diagonale lijnen vs. blueprint-stijl patroon)?
