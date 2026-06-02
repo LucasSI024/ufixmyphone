@@ -6,6 +6,7 @@ import { supabase } from "@/integrations/supabase/client";
 import { lovable } from "@/integrations/lovable/index";
 import { useAuth } from "@/hooks/use-auth";
 import { ensureProfile } from "@/lib/profiles";
+import { submitRepairerKvk } from "@/lib/repairer.functions";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -42,23 +43,15 @@ function ReparateurPage() {
     })();
   }, [user, navigate]);
 
-  const submitKvk = async (userId: string, kvkValue: string, name?: string) => {
+  const submitKvk = async (_userId: string, kvkValue: string, name?: string) => {
     if (!KVK_REGEX.test(kvkValue)) {
       toast.error("KvK-nummer moet 8 cijfers zijn.");
       return false;
     }
-    if (user) await ensureProfile(user, { display_name: name });
-    const { error } = await supabase
-      .from("profiles")
-      .update({
-        kvk_number: kvkValue,
-        is_repairer: true,
-        repairer_status: "approved",
-        ...(name ? { display_name: name } : {}),
-      })
-      .eq("id", userId);
-    if (error) {
-      toast.error(error.message);
+    try {
+      await submitRepairerKvk({ data: { kvk: kvkValue, display_name: name } });
+    } catch (err) {
+      toast.error(err instanceof Error ? err.message : "Opslaan mislukt");
       return false;
     }
     setPendingKvk(false);
