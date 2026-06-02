@@ -63,7 +63,7 @@ function Landing() {
                     <s.icon className="h-3.5 w-3.5" />
                   </div>
                   <div className="min-w-0">
-                    <div className="text-[10px] font-mono uppercase tracking-wider text-muted-foreground">Stap {s.n}</div>
+                    <div className="text-[10px] uppercase tracking-wider text-muted-foreground">Stap {s.n}</div>
                     <div className="text-xs font-semibold leading-tight">{s.t}</div>
                   </div>
                 </li>
