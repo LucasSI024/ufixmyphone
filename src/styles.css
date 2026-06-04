@@ -120,9 +120,9 @@
 }
 
 @layer utilities {
-  .bg-gradient-hero { background: var(--gradient-hero); }
-  .bg-gradient-mint { background: var(--gradient-mint); }
-  .bg-gradient-card { background: var(--gradient-card); }
+  .bg-gradient-hero { background-image: var(--gradient-hero); }
+  .bg-gradient-mint { background-image: var(--gradient-mint); }
+  .bg-gradient-card { background-image: var(--gradient-card); }
   .shadow-glow { box-shadow: var(--shadow-glow); }
   .shadow-card { box-shadow: var(--shadow-card); }
   .text-gradient-mint {
