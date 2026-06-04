@@ -368,7 +368,7 @@ function VerkoopPage() {
           <aside className="lg:sticky lg:top-6 lg:self-start">
             <div className="overflow-hidden rounded-2xl border border-primary/30 bg-gradient-card shadow-card">
               <div className="bg-gradient-mint px-5 py-4 text-primary-foreground">
-                <div className="flex items-center justify-between text-xs uppercase tracking-wide opacity-90">
+                <div className="flex items-center justify-between text-xs font-semibold uppercase tracking-wide text-white">
                   <span>Geschatte inkoopprijs · indicatief</span>
                   <span className="inline-flex items-center gap-1">
                     <span className="h-1.5 w-1.5 animate-pulse rounded-full bg-white" /> Live
