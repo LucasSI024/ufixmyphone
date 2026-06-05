@@ -150,4 +150,36 @@
   .bg-grain {
     background-image: url("data:image/svg+xml;utf8,<svg viewBox='0 0 200 200' xmlns='http://www.w3.org/2000/svg'><filter id='n'><feTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='2' stitchTiles='stitch'/><feColorMatrix values='0 0 0 0 0  0 0 0 0 0  0 0 0 0 0  0 0 0 0.35 0'/></filter><rect width='100%25' height='100%25' filter='url(%23n)'/></svg>");
   }
+
+  /* Hero dynamics */
+  @keyframes hero-spin { to { transform: rotate(360deg); } }
+  @keyframes hero-spin-rev { to { transform: rotate(-360deg); } }
+  @keyframes hero-bob { 0%,100% { transform: translateY(0); } 50% { transform: translateY(-10px); } }
+  @keyframes hero-float-phone {
+    0%,100% { transform: rotate(-6deg) translateY(0); }
+    50% { transform: rotate(-4deg) translateY(-14px); }
+  }
+  @keyframes hero-shine {
+    0%, 15% { transform: translateX(-120%); }
+    55%, 100% { transform: translateX(130%); }
+  }
+  @keyframes hero-pulse-ring {
+    0% { box-shadow: 0 0 0 0 oklch(0.62 0.188 260 / 0.55); }
+    70% { box-shadow: 0 0 0 18px oklch(0.62 0.188 260 / 0); }
+    100% { box-shadow: 0 0 0 0 oklch(0.62 0.188 260 / 0); }
+  }
+  @keyframes hero-blob {
+    0%,100% { transform: translate3d(0,0,0) scale(1); }
+    50% { transform: translate3d(2vw, 3vh, 0) scale(1.08); }
+  }
+  @keyframes hero-progress { from { width: 62%; } to { width: 86%; } }
+
+  .animate-hero-spin { animation: hero-spin 28s linear infinite; }
+  .animate-hero-spin-rev { animation: hero-spin-rev 22s linear infinite; }
+  .animate-hero-bob { animation: hero-bob 5s ease-in-out infinite; }
+  .animate-hero-phone { animation: hero-float-phone 6s ease-in-out infinite; }
+  .animate-hero-shine { animation: hero-shine 5s ease-in-out infinite; }
+  .animate-hero-pulse { animation: hero-pulse-ring 1.8s infinite; }
+  .animate-hero-blob { animation: hero-blob 18s ease-in-out infinite; }
+  .animate-hero-progress { animation: hero-progress 3.6s ease-in-out infinite alternate; }
 }
