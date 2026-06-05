@@ -174,36 +174,130 @@ function VerkoopPage() {
       <Header />
 
       {/* HERO */}
-      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-primary/5 via-background to-background">
-        <div className="container mx-auto px-4 py-12 sm:py-20">
-          <div className="mx-auto max-w-3xl text-center">
-            <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-primary/10 px-4 py-1.5 text-sm font-medium text-primary">
-              <Sparkles className="h-3.5 w-3.5" />
-              Marktplaats voor iPhones — eerlijke prijs door concurrentie
+      <section className="relative overflow-hidden border-b border-border/60 bg-gradient-to-b from-primary/10 via-background to-background">
+        {/* Aurora blobs */}
+        <div aria-hidden className="pointer-events-none absolute inset-0">
+          <div className="absolute -left-24 -top-24 h-[42vw] w-[42vw] rounded-full bg-primary/25 blur-3xl animate-hero-blob" />
+          <div className="absolute right-[-10vw] top-[20vh] h-[34vw] w-[34vw] rounded-full bg-accent/25 blur-3xl animate-hero-blob" style={{ animationDelay: "2s" }} />
+          <div className="absolute bottom-[-10vw] left-[20vw] h-[30vw] w-[30vw] rounded-full bg-secondary/40 blur-3xl animate-hero-blob" style={{ animationDelay: "4s" }} />
+        </div>
+        <div className="absolute inset-0 bg-pattern-grid bg-pattern-mask opacity-60" aria-hidden />
+
+        <div className="container relative mx-auto px-4 py-12 sm:py-16 lg:py-20">
+          <div className="grid items-center gap-10 lg:grid-cols-[1.1fr_.9fr]">
+            {/* Left: copy */}
+            <div className="text-center lg:text-left">
+              <div className="inline-flex items-center gap-2 rounded-full border border-primary/30 bg-background/60 px-4 py-1.5 text-sm font-medium text-primary backdrop-blur">
+                <span className="h-2.5 w-2.5 rounded-full bg-primary animate-hero-pulse" />
+                Live biedingen van geverifieerde kopers
+              </div>
+              <h1 className="mt-6 font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
+                Binnen 1 minuut een{" "}
+                <span className="text-gradient-mint">indicatieve inkoopprijs</span>.
+              </h1>
+              <p className="mt-5 text-lg text-muted-foreground">
+                Beantwoord een paar simpele vragen en zie meteen een realistische prijsrange voor je iPhone.
+                Geen vast bod — kopers reageren met hun beste prijs en jij kiest.
+              </p>
+              <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
+                <Button asChild size="lg" className="rounded-xl shadow-glow">
+                  <a href="#calculator"><Smartphone className="mr-2 h-4 w-4" />Bereken mijn indicatie</a>
+                </Button>
+                <Button asChild size="lg" variant="outline" className="rounded-xl">
+                  <Link to="/feed">Bekijk aangeboden toestellen</Link>
+                </Button>
+              </div>
+              <div className="mt-6 grid grid-cols-3 gap-2 sm:gap-3">
+                <div className="rounded-2xl border border-border/60 bg-background/60 p-3 backdrop-blur">
+                  <div className="font-display text-xl font-bold sm:text-2xl">&lt;1 min</div>
+                  <div className="text-xs text-muted-foreground">tot prijsindicatie</div>
+                </div>
+                <div className="rounded-2xl border border-border/60 bg-background/60 p-3 backdrop-blur">
+                  <div className="font-display text-xl font-bold sm:text-2xl">100%</div>
+                  <div className="text-xs text-muted-foreground">vrijblijvend</div>
+                </div>
+                <div className="rounded-2xl border border-border/60 bg-background/60 p-3 backdrop-blur">
+                  <div className="font-display text-xl font-bold sm:text-2xl">0 €</div>
+                  <div className="text-xs text-muted-foreground">kosten voor jou</div>
+                </div>
+              </div>
             </div>
-            <h1 className="mt-6 font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
-              Binnen 1 minuut een <span className="bg-gradient-mint bg-clip-text text-transparent">indicatieve inkoopprijs</span>.
-            </h1>
-            <p className="mt-5 text-lg text-muted-foreground">
-              Beantwoord een paar simpele vragen en zie meteen een realistische prijsrange voor je iPhone.
-              Geen vast bod — kopers reageren met hun beste prijs en jij kiest.
-            </p>
-            <div className="mt-7 flex flex-wrap justify-center gap-3">
-              <Button asChild size="lg" className="rounded-xl">
-                <a href="#calculator"><Smartphone className="mr-2 h-4 w-4" />Bereken mijn indicatie</a>
-              </Button>
-              <Button asChild size="lg" variant="outline" className="rounded-xl">
-                <Link to="/feed">Bekijk aangeboden toestellen</Link>
-              </Button>
+
+            {/* Right: animated phone stage */}
+            <div className="relative mx-auto flex aspect-square w-full max-w-[440px] items-center justify-center">
+              {/* Orbiting rings */}
+              <div aria-hidden className="absolute inset-0 grid place-items-center">
+                <div className="absolute h-[92%] w-[92%] rounded-full border border-primary/20 animate-hero-spin" />
+                <div className="absolute h-[72%] w-[72%] rounded-full border border-accent/30 animate-hero-spin-rev" />
+                <div className="absolute h-[54%] w-[54%] rounded-full border border-primary/15 animate-hero-spin" style={{ animationDuration: "16s" }} />
+              </div>
+
+              {/* Floating chips */}
+              <div className="absolute left-0 top-[8%] z-10 rounded-2xl border border-border/60 bg-background/80 px-3 py-2 text-xs font-semibold shadow-card backdrop-blur animate-hero-bob">
+                <div className="flex items-center gap-2">
+                  <Battery className="h-3.5 w-3.5 text-primary" />
+                  Batterij 92%
+                </div>
+              </div>
+              <div className="absolute right-0 top-[14%] z-10 rounded-2xl border border-border/60 bg-background/80 px-3 py-2 text-xs font-semibold shadow-card backdrop-blur animate-hero-bob" style={{ animationDelay: "0.8s" }}>
+                <div className="flex items-center gap-2">
+                  <Shield className="h-3.5 w-3.5 text-primary" />
+                  Veilige uitbetaling
+                </div>
+              </div>
+              <div className="absolute bottom-[14%] left-[4%] z-10 rounded-2xl border border-border/60 bg-background/80 px-3 py-2 text-xs font-semibold shadow-card backdrop-blur animate-hero-bob" style={{ animationDelay: "0.4s" }}>
+                <div className="flex items-center gap-2">
+                  <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
+                  Conditie: goed
+                </div>
+              </div>
+              <div className="absolute bottom-[8%] right-[2%] z-10 rounded-2xl border border-border/60 bg-background/80 px-3 py-2 text-xs font-semibold shadow-card backdrop-blur animate-hero-bob" style={{ animationDelay: "1.1s" }}>
+                <div className="flex items-center gap-2">
+                  <Sparkles className="h-3.5 w-3.5 text-primary" />
+                  4 kopers actief
+                </div>
+              </div>
+
+              {/* Phone */}
+              <div className="relative z-[5] aspect-[9/19] w-[56%] max-w-[220px] rounded-[2.25rem] bg-gradient-to-b from-foreground to-foreground/80 p-2 shadow-2xl animate-hero-phone">
+                <div className="absolute inset-0 rounded-[2.25rem] ring-1 ring-inset ring-white/10" />
+                <div className="mx-auto h-5 w-[38%] rounded-b-2xl bg-background/90" />
+                <div className="relative mt-1 h-[calc(100%-1.5rem)] overflow-hidden rounded-[1.75rem] bg-gradient-to-b from-primary/30 via-background to-background">
+                  {/* Shine */}
+                  <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent animate-hero-shine" />
+                  <div className="relative flex h-full flex-col gap-2 p-3">
+                    <span className="self-start rounded-full bg-background/80 px-2 py-1 text-[10px] font-semibold text-foreground">
+                      Jouw iPhone
+                    </span>
+                    <div className="rounded-xl border border-border/40 bg-background/70 p-2.5 backdrop-blur">
+                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Indicatie</div>
+                      <div className="font-display text-2xl font-bold text-foreground">€ 412</div>
+                      <div className="mt-1.5 h-1.5 rounded-full bg-muted">
+                        <div className="h-full rounded-full bg-gradient-mint animate-hero-progress" />
+                      </div>
+                    </div>
+                    <div className="rounded-xl border border-border/40 bg-background/70 p-2.5 text-[11px] text-foreground/80 backdrop-blur">
+                      <div className="flex items-center gap-1.5"><Check className="h-3 w-3 text-primary" /> 128 GB</div>
+                      <div className="mt-1 flex items-center gap-1.5"><Check className="h-3 w-3 text-primary" /> Geen iCloud-lock</div>
+                      <div className="mt-1 flex items-center gap-1.5"><Check className="h-3 w-3 text-primary" /> Scherm gaaf</div>
+                    </div>
+                    <div className="mt-auto rounded-xl bg-primary px-2.5 py-2 text-center text-[11px] font-semibold text-primary-foreground">
+                      Plaats op marktplaats
+                    </div>
+                  </div>
+                </div>
+              </div>
             </div>
-            <div className="mt-8 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Gratis & vrijblijvend</span>
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Geen verplichting</span>
-              <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Definitieve prijs na controle</span>
-            </div>
+          </div>
+
+          <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Gratis & vrijblijvend</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Geen verplichting</span>
+            <span className="flex items-center gap-1.5"><CheckCircle2 className="h-4 w-4 text-primary" /> Definitieve prijs na controle</span>
           </div>
         </div>
       </section>
+
 
       {/* CALCULATOR */}
       <section id="calculator" className="container mx-auto px-4 py-10 sm:py-14">
