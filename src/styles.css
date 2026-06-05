@@ -173,6 +173,10 @@
     50% { transform: translate3d(2vw, 3vh, 0) scale(1.08); }
   }
   @keyframes hero-progress { from { width: 62%; } to { width: 86%; } }
+  @keyframes hero-click-pulse {
+    0% { transform: scale(0.6); opacity: 0.7; }
+    100% { transform: scale(1.6); opacity: 0; }
+  }
 
   .animate-hero-spin { animation: hero-spin 28s linear infinite; }
   .animate-hero-spin-rev { animation: hero-spin-rev 22s linear infinite; }

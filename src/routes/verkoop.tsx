@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Header } from "@/components/header";
+import { InteractivePhone } from "@/components/interactive-phone";
 
 export const Route = createFileRoute("/verkoop")({
   head: () => ({
