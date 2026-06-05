@@ -24,6 +24,7 @@ import {
 } from "@/components/ui/select";
 import { Checkbox } from "@/components/ui/checkbox";
 import { Header } from "@/components/header";
+import { InteractivePhone } from "@/components/interactive-phone";
 
 export const Route = createFileRoute("/verkoop")({
   head: () => ({
@@ -224,70 +225,8 @@ function VerkoopPage() {
             </div>
 
             {/* Right: animated phone stage */}
-            <div className="relative mx-auto flex aspect-square w-full max-w-[440px] items-center justify-center">
-              {/* Orbiting rings */}
-              <div aria-hidden className="absolute inset-0 grid place-items-center">
-                <div className="absolute h-[92%] w-[92%] rounded-full border border-primary/20 animate-hero-spin" />
-                <div className="absolute h-[72%] w-[72%] rounded-full border border-accent/30 animate-hero-spin-rev" />
-                <div className="absolute h-[54%] w-[54%] rounded-full border border-primary/15 animate-hero-spin" style={{ animationDuration: "16s" }} />
-              </div>
+            <InteractivePhone />
 
-              {/* Floating chips */}
-              <div className="absolute left-0 top-[8%] z-10 rounded-2xl border border-border/60 bg-background/80 px-3 py-2 text-xs font-semibold shadow-card backdrop-blur animate-hero-bob">
-                <div className="flex items-center gap-2">
-                  <Battery className="h-3.5 w-3.5 text-primary" />
-                  Batterij 92%
-                </div>
-              </div>
-              <div className="absolute right-0 top-[14%] z-10 rounded-2xl border border-border/60 bg-background/80 px-3 py-2 text-xs font-semibold shadow-card backdrop-blur animate-hero-bob" style={{ animationDelay: "0.8s" }}>
-                <div className="flex items-center gap-2">
-                  <Shield className="h-3.5 w-3.5 text-primary" />
-                  Veilige uitbetaling
-                </div>
-              </div>
-              <div className="absolute bottom-[14%] left-[4%] z-10 rounded-2xl border border-border/60 bg-background/80 px-3 py-2 text-xs font-semibold shadow-card backdrop-blur animate-hero-bob" style={{ animationDelay: "0.4s" }}>
-                <div className="flex items-center gap-2">
-                  <CheckCircle2 className="h-3.5 w-3.5 text-primary" />
-                  Conditie: goed
-                </div>
-              </div>
-              <div className="absolute bottom-[8%] right-[2%] z-10 rounded-2xl border border-border/60 bg-background/80 px-3 py-2 text-xs font-semibold shadow-card backdrop-blur animate-hero-bob" style={{ animationDelay: "1.1s" }}>
-                <div className="flex items-center gap-2">
-                  <Sparkles className="h-3.5 w-3.5 text-primary" />
-                  4 kopers actief
-                </div>
-              </div>
-
-              {/* Phone */}
-              <div className="relative z-[5] aspect-[9/19] w-[56%] max-w-[220px] rounded-[2.25rem] bg-gradient-to-b from-foreground to-foreground/80 p-2 shadow-2xl animate-hero-phone">
-                <div className="absolute inset-0 rounded-[2.25rem] ring-1 ring-inset ring-white/10" />
-                <div className="mx-auto h-5 w-[38%] rounded-b-2xl bg-background/90" />
-                <div className="relative mt-1 h-[calc(100%-1.5rem)] overflow-hidden rounded-[1.75rem] bg-gradient-to-b from-primary/30 via-background to-background">
-                  {/* Shine */}
-                  <div className="pointer-events-none absolute inset-0 -translate-x-full bg-gradient-to-r from-transparent via-white/25 to-transparent animate-hero-shine" />
-                  <div className="relative flex h-full flex-col gap-2 p-3">
-                    <span className="self-start rounded-full bg-background/80 px-2 py-1 text-[10px] font-semibold text-foreground">
-                      Jouw iPhone
-                    </span>
-                    <div className="rounded-xl border border-border/40 bg-background/70 p-2.5 backdrop-blur">
-                      <div className="text-[10px] uppercase tracking-wide text-muted-foreground">Indicatie</div>
-                      <div className="font-display text-2xl font-bold text-foreground">€ 412</div>
-                      <div className="mt-1.5 h-1.5 rounded-full bg-muted">
-                        <div className="h-full rounded-full bg-gradient-mint animate-hero-progress" />
-                      </div>
-                    </div>
-                    <div className="rounded-xl border border-border/40 bg-background/70 p-2.5 text-[11px] text-foreground/80 backdrop-blur">
-                      <div className="flex items-center gap-1.5"><Check className="h-3 w-3 text-primary" /> 128 GB</div>
-                      <div className="mt-1 flex items-center gap-1.5"><Check className="h-3 w-3 text-primary" /> Geen iCloud-lock</div>
-                      <div className="mt-1 flex items-center gap-1.5"><Check className="h-3 w-3 text-primary" /> Scherm gaaf</div>
-                    </div>
-                    <div className="mt-auto rounded-xl bg-primary px-2.5 py-2 text-center text-[11px] font-semibold text-primary-foreground">
-                      Plaats op marktplaats
-                    </div>
-                  </div>
-                </div>
-              </div>
-            </div>
           </div>
 
           <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-sm text-muted-foreground">
