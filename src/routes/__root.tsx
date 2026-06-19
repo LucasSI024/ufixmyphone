@@ -117,10 +117,12 @@ function AuthSync() {
 
 function RootComponent() {
   const { queryClient } = Route.useRouteContext();
+  const pathname = useRouterState({ select: (s) => s.location.pathname });
+  const isHome = pathname === "/";
   return (
     <QueryClientProvider client={queryClient}>
       <AuthSync />
-      <TechBackground />
+      {isHome ? <CalmBackground /> : <TechBackground />}
       <div className="relative z-[1]">
         <Outlet />
       </div>
