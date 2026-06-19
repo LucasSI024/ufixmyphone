@@ -10,6 +10,8 @@ import {
 import { useEffect } from "react";
 import { Toaster } from "@/components/ui/sonner";
 import { TechBackground } from "@/components/tech-background";
+import { CalmBackground } from "@/components/calm-background";
+import { useRouterState } from "@tanstack/react-router";
 import { supabase } from "@/integrations/supabase/client";
 
 import appCss from "../styles.css?url";
