@@ -186,4 +186,26 @@
   .animate-hero-pulse { animation: hero-pulse-ring 1.8s infinite; }
   .animate-hero-blob { animation: hero-blob 18s ease-in-out infinite; }
   .animate-hero-progress { animation: hero-progress 3.6s ease-in-out infinite alternate; }
+
+  /* Calm background */
+  @keyframes calm-drift-1 {
+    0%,100% { transform: translate3d(0,0,0) scale(1); }
+    50% { transform: translate3d(6vw, 4vh, 0) scale(1.1); }
+  }
+  @keyframes calm-drift-2 {
+    0%,100% { transform: translate3d(0,0,0) scale(1.05); }
+    50% { transform: translate3d(-5vw, -3vh, 0) scale(1); }
+  }
+  @keyframes calm-drift-3 {
+    0%,100% { transform: translate3d(0,0,0) scale(1); }
+    50% { transform: translate3d(4vw, -5vh, 0) scale(1.12); }
+  }
+  @keyframes calm-pulse {
+    0%,100% { opacity: 0.55; transform: translate(-50%, -50%) scale(1); }
+    50% { opacity: 0.9; transform: translate(-50%, -50%) scale(1.15); }
+  }
+  .animate-calm-drift-1 { animation: calm-drift-1 32s ease-in-out infinite; }
+  .animate-calm-drift-2 { animation: calm-drift-2 38s ease-in-out infinite; }
+  .animate-calm-drift-3 { animation: calm-drift-3 44s ease-in-out infinite; }
+  .animate-calm-pulse { animation: calm-pulse 14s ease-in-out infinite; }
 }
