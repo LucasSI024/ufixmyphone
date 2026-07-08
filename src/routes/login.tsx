@@ -43,7 +43,7 @@ function LoginPage() {
   const handleSignUp = async (e: FormEvent) => {
     e.preventDefault();
     setBusy(true);
-    const { error } = await supabase.auth.signUp({
+    const { data, error } = await supabase.auth.signUp({
       email,
       password,
       options: {
@@ -51,9 +51,24 @@ function LoginPage() {
         data: { display_name: displayName || email.split("@")[0] },
       },
     });
+    if (error) {
+      setBusy(false);
+      return toast.error(error.message);
+    }
+    if (data.session) {
+      toast.success("Account aangemaakt! Welkom.");
+      navigate({ to: "/feed" });
+      return;
+    }
+    // Geen sessie: probeer meteen in te loggen (bij auto-confirm)
+    const { error: signInError } = await supabase.auth.signInWithPassword({ email, password });
     setBusy(false);
-    if (error) return toast.error(error.message);
-    toast.success("Account aangemaakt! Check je e-mail om te bevestigen.");
+    if (signInError) {
+      toast.success("Account aangemaakt! Check je e-mail om te bevestigen.");
+      return;
+    }
+    toast.success("Account aangemaakt! Welkom.");
+    navigate({ to: "/feed" });
   };
 
   const handleGoogle = async () => {
