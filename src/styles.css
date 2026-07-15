@@ -46,30 +46,32 @@
 :root {
   --radius: 0.75rem;
 
-  /* Light palette: Cloud White */
+  /* Light palette: Cloud White — duidelijke tekst-hiërarchie via kleur */
   --background: oklch(0.99 0.0017 248);
-  --foreground: oklch(0.21 0.04 266);
+  /* Body/heading tekst: donkerder voor sterker contrast */
+  --foreground: oklch(0.18 0.045 265);
 
   --surface: oklch(0.99 0.0017 248);
-  --surface-2: oklch(0.97 0.007 248);
+  --surface-2: oklch(0.965 0.008 250);
 
   --card: oklch(1 0 0);
-  --card-foreground: oklch(0.21 0.04 266);
+  --card-foreground: oklch(0.18 0.045 265);
   --popover: oklch(1 0 0);
-  --popover-foreground: oklch(0.21 0.04 266);
+  --popover-foreground: oklch(0.18 0.045 265);
 
-  --primary: oklch(0.62 0.188 260);
+  --primary: oklch(0.58 0.2 260);
   --primary-foreground: oklch(1 0 0);
-  --primary-glow: oklch(0.72 0.19 260);
+  --primary-glow: oklch(0.7 0.19 260);
 
-  --secondary: oklch(0.97 0.007 248);
-  --secondary-foreground: oklch(0.21 0.04 266);
+  --secondary: oklch(0.965 0.008 250);
+  --secondary-foreground: oklch(0.28 0.04 265);
 
-  --muted: oklch(0.97 0.007 248);
-  --muted-foreground: oklch(0.55 0.041 257);
+  --muted: oklch(0.965 0.008 250);
+  /* Secundaire tekst: donkerder dan voorheen (0.55 -> 0.44) voor leesbaarheid */
+  --muted-foreground: oklch(0.44 0.03 258);
 
-  --accent: oklch(0.97 0.007 248);
-  --accent-foreground: oklch(0.21 0.04 266);
+  --accent: oklch(0.96 0.012 260);
+  --accent-foreground: oklch(0.28 0.05 265);
 
   --destructive: oklch(0.64 0.208 25);
   --destructive-foreground: oklch(1 0 0);
