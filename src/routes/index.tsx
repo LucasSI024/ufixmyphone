@@ -36,8 +36,23 @@ function Landing() {
               meerdere reparateurs een offerte uitbrengen. Zij concurreren — <strong className="text-foreground">jij betaalt nooit te veel</strong>.
             </p>
 
+            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
+              <Button asChild size="lg" className="w-full text-base shadow-glow sm:w-auto">
+                <Link to="/login">Vergelijk gratis offertes <ArrowRight className="h-4 w-4" /></Link>
+              </Button>
+              <Button asChild size="lg" variant="ghost" className="w-full text-base sm:w-auto">
+                <Link to="/feed">
+                  <Eye className="h-4 w-4" /> Ik ben reparateur
+                </Link>
+              </Button>
+            </div>
+
+            <p className="mt-3 text-xs text-muted-foreground">
+              Gratis & vrijblijvend · Geen verplichting tot kiezen · Bekijken kan zonder account
+            </p>
+
             {/* Eerlijke-prijs proof strip */}
-            <div className="mx-auto mt-8 grid max-w-2xl grid-cols-3 gap-2 sm:gap-3">
+            <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-2 sm:gap-3">
               {[
                 { big: "Tot 40%", small: "goedkoper dan winkel*" },
                 { big: "3-5", small: "offertes per aanvraag" },
@@ -70,20 +85,6 @@ function Landing() {
               ))}
             </ol>
 
-            <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
-              <Button asChild size="lg" className="w-full text-base shadow-glow sm:w-auto">
-                <Link to="/login">Vergelijk gratis offertes <ArrowRight className="h-4 w-4" /></Link>
-              </Button>
-              <Button asChild size="lg" variant="ghost" className="w-full text-base sm:w-auto">
-                <Link to="/feed">
-                  <Eye className="h-4 w-4" /> Ik ben reparateur
-                </Link>
-              </Button>
-            </div>
-
-            <p className="mt-4 text-xs text-muted-foreground">
-              Gratis & vrijblijvend · Geen verplichting tot kiezen · Bekijken kan zonder account
-            </p>
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground sm:text-sm">
               <div className="flex items-center gap-1.5"><Euro className="h-4 w-4 text-primary" /> Eerlijke marktprijs</div>
