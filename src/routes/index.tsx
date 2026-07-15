@@ -32,7 +32,7 @@ function Landing() {
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
-              Geen overprijsde winkels meer. Op UFixMyPhone plaats je één aanvraag en laten
+              Geen overprijsde winkels meer. Op repaireally plaats je één aanvraag en laten
               meerdere reparateurs een offerte uitbrengen. Zij concurreren — <strong className="text-foreground">jij betaalt nooit te veel</strong>.
             </p>
 
@@ -109,7 +109,7 @@ function Landing() {
               <span className="text-gradient-mint">in 4 simpele stappen</span>
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
-              UFixMyPhone repareert niet zelf — wij brengen jou in contact met meerdere reparateurs die met elkaar concurreren om jouw opdracht.
+              repaireally repareert niet zelf — wij brengen jou in contact met meerdere reparateurs die met elkaar concurreren om jouw opdracht.
             </p>
           </div>
 
@@ -132,7 +132,7 @@ function Landing() {
           </div>
 
           <p className="mx-auto mt-10 max-w-2xl text-center text-sm text-muted-foreground">
-            <strong className="text-foreground">Belangrijk:</strong> UFixMyPhone is een platform, geen reparatiebedrijf.
+            <strong className="text-foreground">Belangrijk:</strong> repaireally is een platform, geen reparatiebedrijf.
             De reparatie zelf wordt uitgevoerd door de reparateur die jij kiest.
           </p>
         </div>
@@ -151,7 +151,7 @@ function Landing() {
               <span className="text-gradient-mint">één marktplaats</span>
             </h2>
             <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
-              UFixMyPhone brengt consumenten en reparateurs samen — wij voeren zelf geen reparaties uit.
+              repaireally brengt consumenten en reparateurs samen — wij voeren zelf geen reparaties uit.
             </p>
           </div>
 
@@ -242,7 +242,7 @@ function Landing() {
 
       <footer className="border-t border-border/60 py-8">
         <div className="container mx-auto max-w-6xl px-4 text-center text-sm text-muted-foreground">
-          © {new Date().getFullYear()} UFixMyPhone — De marktplaats voor telefoonreparaties
+          © {new Date().getFullYear()} repaireally — De marktplaats voor telefoonreparaties
         </div>
       </footer>
     </div>

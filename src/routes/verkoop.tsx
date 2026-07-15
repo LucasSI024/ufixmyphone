@@ -29,10 +29,10 @@ import { InteractivePhone } from "@/components/interactive-phone";
 export const Route = createFileRoute("/verkoop")({
   head: () => ({
     meta: [
-      { title: "Verkoop je iPhone — Indicatieve inkoopprijs in 1 minuut | UFixMyPhone" },
+      { title: "Verkoop je iPhone — Indicatieve inkoopprijs in 1 minuut | repaireally" },
       { name: "description", content:
         "Krijg direct een indicatieve inkoopprijs voor je iPhone op basis van model, conditie, batterij en eventuele defecten. Definitieve prijs na controle." },
-      { property: "og:title", content: "Verkoop je iPhone via UFixMyPhone" },
+      { property: "og:title", content: "Verkoop je iPhone via repaireally" },
       { property: "og:description", content:
         "Indicatieve inkoopprijs op basis van jouw iPhone. Reparateurs en opkopers bieden — jij kiest." },
     ],
@@ -143,9 +143,9 @@ function VerkoopPage() {
       defectLines,
       contact.notes.trim() ? `\n**Toelichting verkoper:**\n${contact.notes.trim()}` : "",
       ``,
-      `_Indicatie op basis van UFixMyPhone-calculator. Definitief bod pas na controle van het toestel (serienummer/IMEI, iCloud-status, werkende functies)._`,
+      `_Indicatie op basis van repaireally-calculator. Definitief bod pas na controle van het toestel (serienummer/IMEI, iCloud-status, werkende functies)._`,
       ``,
-      `Aangeboden door ${contact.name} — contact via UFixMyPhone.`,
+      `Aangeboden door ${contact.name} — contact via repaireally.`,
     ].filter(Boolean).join("\n");
 
     const { data, error } = await supabase.from("repair_requests").insert({
