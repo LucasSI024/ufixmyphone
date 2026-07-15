@@ -14,7 +14,7 @@ import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
 import { Badge } from "@/components/ui/badge";
 
 export const Route = createFileRoute("/_authenticated/account")({
-  head: () => ({ meta: [{ title: "Mijn account — UFixMyPhone" }] }),
+  head: () => ({ meta: [{ title: "Mijn account — repaireally" }] }),
   component: AccountPage,
 });
 

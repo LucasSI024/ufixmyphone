@@ -137,7 +137,7 @@ function downloadCurrentTemplate(pricing: typeof DEFAULT_PRICING) {
   const setRows = Object.entries(pricing.settings).map(([key, value]) => ({ key, value }));
   XLSX.utils.book_append_sheet(wb, XLSX.utils.json_to_sheet(setRows), "Instellingen");
 
-  XLSX.writeFile(wb, "ufixmyphone-inkoop-prijzen.xlsx");
+  XLSX.writeFile(wb, "repaireally-inkoop-prijzen.xlsx");
 }
 
 async function fetchLivePricing() {

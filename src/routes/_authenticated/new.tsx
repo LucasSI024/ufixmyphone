@@ -26,7 +26,7 @@ const ACCEPTED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic"];
 type PendingPhoto = { file: File; previewUrl: string };
 
 export const Route = createFileRoute("/_authenticated/new")({
-  head: () => ({ meta: [{ title: "Reparatie plaatsen — UFixMyPhone" }] }),
+  head: () => ({ meta: [{ title: "Reparatie plaatsen — repaireally" }] }),
   component: NewRequestPage,
 });
 

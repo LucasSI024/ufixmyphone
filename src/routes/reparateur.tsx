@@ -14,8 +14,8 @@ import { Label } from "@/components/ui/label";
 export const Route = createFileRoute("/reparateur")({
   head: () => ({
     meta: [
-      { title: "Reparateur worden — UFixMyPhone" },
-      { name: "description", content: "Word reparateur op UFixMyPhone. KvK-nummer verplicht." },
+      { title: "Reparateur worden — repaireally" },
+      { name: "description", content: "Word reparateur op repaireally. KvK-nummer verplicht." },
     ],
   }),
   component: ReparateurPage,
@@ -110,7 +110,7 @@ function ReparateurPage() {
           <div className="bg-gradient-mint shadow-glow flex h-10 w-10 items-center justify-center rounded-lg">
             <Wrench className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
           </div>
-          <span className="font-display text-2xl font-bold">UFixMyPhone</span>
+          <span className="font-display text-2xl font-bold">repaireally</span>
         </Link>
 
         <div className="bg-gradient-card shadow-card rounded-2xl border border-border/60 p-6 sm:p-8">

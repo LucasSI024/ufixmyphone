@@ -52,7 +52,7 @@ export function Header() {
             <Wrench className="h-5 w-5 text-primary-foreground" strokeWidth={2.5} />
           </div>
           <span className="font-display text-lg font-bold tracking-tight leading-none">
-            UFixMyPhone
+            repaireally
           </span>
 
         </Link>
