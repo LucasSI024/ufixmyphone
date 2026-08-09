@@ -159,7 +159,7 @@ function Landing() {
 
           <div className="mt-14 grid gap-6 sm:grid-cols-3">
             {[
-              { icon: Scale, title: "Eerlijke prijs", desc: "Meerdere reparateurs concurreren om jouw opdracht. Zo betaal je nooit meer dan de marktprijs." },
+              { icon: Scale, title: "Eerlijke concurrentie", desc: "Meerdere reparateurs bieden op jouw opdracht. Jij vergelijkt offertes en kiest wat het beste bij je past." },
               { icon: ShieldCheck, title: "Veilig & geverifieerd", desc: "Reparateurs worden gecontroleerd op KvK en kwaliteit. Jij kiest zelf wie je toestel mag repareren." },
               { icon: Eye, title: "Transparant", desc: "Alle offertes, reviews en voorwaarden overzichtelijk naast elkaar. Geen verborgen kosten of verrassingen." },
             ].map((item) => (
