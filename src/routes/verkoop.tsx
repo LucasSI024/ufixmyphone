@@ -194,11 +194,11 @@ function VerkoopPage() {
               </div>
               <h1 className="mt-6 font-display text-4xl font-bold tracking-tight sm:text-5xl md:text-6xl">
                 Binnen 1 minuut een{" "}
-                <span className="text-gradient-mint">indicatieve inkoopprijs</span>.
+                <span className="text-gradient-mint">realistische indicatie</span>.
               </h1>
               <p className="mt-5 text-lg text-muted-foreground">
-                Beantwoord een paar simpele vragen en zie meteen een realistische prijsrange voor je iPhone.
-                Geen vast bod — kopers reageren met hun beste prijs en jij kiest.
+                Beantwoord een paar simpele vragen en zie meteen een realistische indicatie voor je iPhone.
+                Geen vast bod — kopers reageren met een passend bod en jij kiest.
               </p>
               <div className="mt-7 flex flex-wrap justify-center gap-3 lg:justify-start">
                 <Button asChild size="lg" className="rounded-xl shadow-glow">

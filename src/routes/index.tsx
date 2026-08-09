@@ -28,13 +28,13 @@ function Landing() {
 
             <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
               Eerlijke en<br />
-              <span className="text-gradient-mint">veilige reparatie.<br />Altijd de beste prijs.</span>
+              <span className="text-gradient-mint">veilige reparatie.<br />Meerdere offertes, één keuze.</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
               Op repaireally plaats je één aanvraag en ontvang je meerdere offertes van
               geverifieerde reparateurs. Jij vergelijkt in alle rust en kiest zelf —
-              <strong className="text-foreground"> veilig, transparant en nooit te duur</strong>.
+              <strong className="text-foreground"> veilig, transparant en zonder gedoe</strong>.
             </p>
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -52,10 +52,10 @@ function Landing() {
               Gratis & vrijblijvend · Geen verplichting tot kiezen · Bekijken kan zonder account
             </p>
 
-            {/* Eerlijke-prijs proof strip */}
+            {/* Waardepunten */}
             <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
               {[
-                { big: "Tot 40%", small: "goedkoper dan winkel*" },
+                { big: "Concurrentie", small: "reparateurs bieden mee" },
                 { big: "3-5", small: "offertes per aanvraag" },
                 { big: "100%", small: "transparant" },
                 { big: "Veilig", small: "geverifieerde reparateurs" },
@@ -72,7 +72,7 @@ function Landing() {
               {[
                 { n: "1", icon: FileText, t: "Plaats aanvraag" },
                 { n: "2", icon: MessageSquare, t: "Ontvang offertes" },
-                { n: "3", icon: Scale, t: "Vergelijk prijzen" },
+                { n: "3", icon: Scale, t: "Vergelijk offertes" },
                 { n: "4", icon: CheckCircle2, t: "Kies de beste" },
               ].map((s) => (
                 <li key={s.n} className="bg-gradient-card flex items-center gap-2.5 rounded-xl border border-border/60 px-3 py-2.5">
@@ -89,13 +89,11 @@ function Landing() {
 
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground sm:text-sm">
-              <div className="flex items-center gap-1.5"><Euro className="h-4 w-4 text-primary" /> Eerlijke marktprijs</div>
+              <div className="flex items-center gap-1.5"><Euro className="h-4 w-4 text-primary" /> Eerlijke concurrentie</div>
               <div className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-primary" /> Veilig & geverifieerd</div>
               <div className="flex items-center gap-1.5"><Star className="h-4 w-4 text-primary" /> Reviews van klanten</div>
               <div className="flex items-center gap-1.5"><Lock className="h-4 w-4 text-primary" /> Geen gedoe, jij kiest</div>
             </div>
-
-            <p className="mt-3 text-[10px] text-muted-foreground/70">* Indicatie op basis van vergeleken offertes versus gemiddelde winkelprijs.</p>
           </div>
         </div>
       </section>
@@ -161,7 +159,7 @@ function Landing() {
 
           <div className="mt-14 grid gap-6 sm:grid-cols-3">
             {[
-              { icon: Scale, title: "Eerlijke prijs", desc: "Meerdere reparateurs concurreren om jouw opdracht. Zo betaal je nooit meer dan de marktprijs." },
+              { icon: Scale, title: "Eerlijke concurrentie", desc: "Meerdere reparateurs bieden op jouw opdracht. Jij vergelijkt offertes en kiest wat het beste bij je past." },
               { icon: ShieldCheck, title: "Veilig & geverifieerd", desc: "Reparateurs worden gecontroleerd op KvK en kwaliteit. Jij kiest zelf wie je toestel mag repareren." },
               { icon: Eye, title: "Transparant", desc: "Alle offertes, reviews en voorwaarden overzichtelijk naast elkaar. Geen verborgen kosten of verrassingen." },
             ].map((item) => (
@@ -207,7 +205,7 @@ function Landing() {
               <ul className="mt-5 space-y-2.5 text-sm">
                 <li className="flex items-start gap-2"><Camera className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Foto's & duidelijke probleembeschrijving</li>
                 <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Meerdere offertes naast elkaar</li>
-                <li className="flex items-start gap-2"><Euro className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Vergelijk prijs, locatie én beoordelingen</li>
+                <li className="flex items-start gap-2"><Euro className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Vergelijk offertes op locatie én beoordelingen</li>
               </ul>
               <Button asChild className="mt-6 w-full shadow-glow">
                 <Link to="/new">Plaats je reparatie <ArrowRight className="h-4 w-4" /></Link>
@@ -248,7 +246,7 @@ function Landing() {
                   Of wil je liever je telefoon verkopen?
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Bereken binnen 1 minuut een eerlijke indicatieprijs voor je toestel.
+                  Bereken binnen 1 minuut een realistische indicatie voor je toestel.
                 </p>
               </div>
             </div>
