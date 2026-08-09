@@ -53,11 +53,12 @@ function Landing() {
             </p>
 
             {/* Eerlijke-prijs proof strip */}
-            <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-2 sm:gap-3">
+            <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
               {[
                 { big: "Tot 40%", small: "goedkoper dan winkel*" },
                 { big: "3-5", small: "offertes per aanvraag" },
                 { big: "100%", small: "transparant" },
+                { big: "Veilig", small: "geverifieerde reparateurs" },
               ].map((s) => (
                 <div key={s.small} className="bg-gradient-card rounded-xl border border-primary/30 px-3 py-3 text-center shadow-glow">
                   <div className="font-display text-xl font-bold text-primary sm:text-2xl">{s.big}</div>
