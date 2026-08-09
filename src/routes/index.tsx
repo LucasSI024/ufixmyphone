@@ -205,7 +205,7 @@ function Landing() {
               <ul className="mt-5 space-y-2.5 text-sm">
                 <li className="flex items-start gap-2"><Camera className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Foto's & duidelijke probleembeschrijving</li>
                 <li className="flex items-start gap-2"><CheckCircle2 className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Meerdere offertes naast elkaar</li>
-                <li className="flex items-start gap-2"><Euro className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Vergelijk prijs, locatie én beoordelingen</li>
+                <li className="flex items-start gap-2"><Euro className="mt-0.5 h-4 w-4 shrink-0 text-primary" /> Vergelijk offertes op locatie én beoordelingen</li>
               </ul>
               <Button asChild className="mt-6 w-full shadow-glow">
                 <Link to="/new">Plaats je reparatie <ArrowRight className="h-4 w-4" /></Link>
