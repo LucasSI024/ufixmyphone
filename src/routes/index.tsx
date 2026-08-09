@@ -142,6 +142,41 @@ function Landing() {
         </div>
       </section>
 
+      {/* Why repaireally — eerlijk & veilig */}
+      <section className="relative border-y border-border/60 bg-surface/30 py-24 sm:py-32">
+        <div className="bg-pattern-dots bg-pattern-mask pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="container relative mx-auto max-w-6xl px-4">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/15 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-primary">
+              Waarom repaireally
+            </div>
+            <h2 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
+              Eerlijk, veilig en<br />
+              <span className="text-gradient-mint">volledig transparant</span>
+            </h2>
+            <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
+              Wij vinden dat je reparatie niet alleen voordelig, maar ook zorgeloos moet zijn. Daarom zetten we eerlijkheid en veiligheid centraal.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-6 sm:grid-cols-3">
+            {[
+              { icon: Scale, title: "Eerlijke prijs", desc: "Meerdere reparateurs concurreren om jouw opdracht. Zo betaal je nooit meer dan de marktprijs." },
+              { icon: ShieldCheck, title: "Veilig & geverifieerd", desc: "Reparateurs worden gecontroleerd op KvK en kwaliteit. Jij kiest zelf wie je toestel mag repareren." },
+              { icon: Eye, title: "Transparant", desc: "Alle offertes, reviews en voorwaarden overzichtelijk naast elkaar. Geen verborgen kosten of verrassingen." },
+            ].map((item) => (
+              <div key={item.title} className="bg-gradient-card shadow-card group relative overflow-hidden rounded-2xl border border-border/60 p-7 transition-all hover:border-primary/40 hover:shadow-glow">
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                  <item.icon className="h-7 w-7" />
+                </div>
+                <h3 className="font-display text-xl font-semibold">{item.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
+              </div>
+            ))}
+          </div>
+        </div>
+      </section>
+
 
       {/* Two paths */}
       <section className="relative py-24 sm:py-32">
