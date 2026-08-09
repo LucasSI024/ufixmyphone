@@ -246,7 +246,7 @@ function Landing() {
                   Of wil je liever je telefoon verkopen?
                 </h3>
                 <p className="mt-1 text-sm text-muted-foreground">
-                  Bereken binnen 1 minuut een eerlijke indicatieprijs voor je toestel.
+                  Bereken binnen 1 minuut een realistische indicatie voor je toestel.
                 </p>
               </div>
             </div>
