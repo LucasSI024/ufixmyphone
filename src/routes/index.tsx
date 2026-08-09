@@ -27,13 +27,14 @@ function Landing() {
             </div>
 
             <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
-              Altijd een<br />
-              <span className="text-gradient-mint">eerlijke prijs<br />voor je reparatie.</span>
+              Eerlijke en<br />
+              <span className="text-gradient-mint">veilige reparatie.<br />Altijd de beste prijs.</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
-              Geen overprijsde winkels meer. Op repaireally plaats je één aanvraag en laten
-              meerdere reparateurs een offerte uitbrengen. Zij concurreren — <strong className="text-foreground">jij betaalt nooit te veel</strong>.
+              Op repaireally plaats je één aanvraag en ontvang je meerdere offertes van
+              geverifieerde reparateurs. Jij vergelijkt in alle rust en kiest zelf —
+              <strong className="text-foreground"> veilig, transparant en nooit te duur</strong>.
             </p>
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
