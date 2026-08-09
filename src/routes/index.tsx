@@ -23,17 +23,18 @@ function Landing() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
               </span>
-              Eerlijke prijs door concurrentie
+              Eerlijke & veilige reparatie
             </div>
 
             <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
-              Altijd een<br />
-              <span className="text-gradient-mint">eerlijke prijs<br />voor je reparatie.</span>
+              Eerlijke en<br />
+              <span className="text-gradient-mint">veilige reparatie.<br />Altijd de beste prijs.</span>
             </h1>
 
             <p className="mx-auto mt-6 max-w-xl text-base text-muted-foreground sm:text-lg">
-              Geen overprijsde winkels meer. Op repaireally plaats je één aanvraag en laten
-              meerdere reparateurs een offerte uitbrengen. Zij concurreren — <strong className="text-foreground">jij betaalt nooit te veel</strong>.
+              Op repaireally plaats je één aanvraag en ontvang je meerdere offertes van
+              geverifieerde reparateurs. Jij vergelijkt in alle rust en kiest zelf —
+              <strong className="text-foreground"> veilig, transparant en nooit te duur</strong>.
             </p>
 
             <div className="mt-8 flex flex-col items-center justify-center gap-3 sm:flex-row">
@@ -52,11 +53,12 @@ function Landing() {
             </p>
 
             {/* Eerlijke-prijs proof strip */}
-            <div className="mx-auto mt-10 grid max-w-2xl grid-cols-3 gap-2 sm:gap-3">
+            <div className="mx-auto mt-10 grid max-w-3xl grid-cols-2 gap-2 sm:grid-cols-4 sm:gap-3">
               {[
                 { big: "Tot 40%", small: "goedkoper dan winkel*" },
                 { big: "3-5", small: "offertes per aanvraag" },
                 { big: "100%", small: "transparant" },
+                { big: "Veilig", small: "geverifieerde reparateurs" },
               ].map((s) => (
                 <div key={s.small} className="bg-gradient-card rounded-xl border border-primary/30 px-3 py-3 text-center shadow-glow">
                   <div className="font-display text-xl font-bold text-primary sm:text-2xl">{s.big}</div>
@@ -88,8 +90,9 @@ function Landing() {
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground sm:text-sm">
               <div className="flex items-center gap-1.5"><Euro className="h-4 w-4 text-primary" /> Eerlijke marktprijs</div>
-              <div className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-primary" /> Geverifieerde reparateurs</div>
+              <div className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-primary" /> Veilig & geverifieerd</div>
               <div className="flex items-center gap-1.5"><Star className="h-4 w-4 text-primary" /> Reviews van klanten</div>
+              <div className="flex items-center gap-1.5"><Lock className="h-4 w-4 text-primary" /> Geen gedoe, jij kiest</div>
             </div>
 
             <p className="mt-3 text-[10px] text-muted-foreground/70">* Indicatie op basis van vergeleken offertes versus gemiddelde winkelprijs.</p>
@@ -136,6 +139,41 @@ function Landing() {
             <strong className="text-foreground">Belangrijk:</strong> repaireally is een platform, geen reparatiebedrijf.
             De reparatie zelf wordt uitgevoerd door de reparateur die jij kiest.
           </p>
+        </div>
+      </section>
+
+      {/* Why repaireally — eerlijk & veilig */}
+      <section className="relative border-y border-border/60 bg-surface/30 py-24 sm:py-32">
+        <div className="bg-pattern-dots bg-pattern-mask pointer-events-none absolute inset-0" aria-hidden="true" />
+        <div className="container relative mx-auto max-w-6xl px-4">
+          <div className="mx-auto max-w-3xl text-center">
+            <div className="mb-5 inline-flex items-center gap-1.5 rounded-full border border-primary/30 bg-primary/15 px-4 py-1.5 text-sm font-semibold uppercase tracking-wider text-primary">
+              Waarom repaireally
+            </div>
+            <h2 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
+              Eerlijk, veilig en<br />
+              <span className="text-gradient-mint">volledig transparant</span>
+            </h2>
+            <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
+              Wij vinden dat je reparatie niet alleen voordelig, maar ook zorgeloos moet zijn. Daarom zetten we eerlijkheid en veiligheid centraal.
+            </p>
+          </div>
+
+          <div className="mt-14 grid gap-6 sm:grid-cols-3">
+            {[
+              { icon: Scale, title: "Eerlijke prijs", desc: "Meerdere reparateurs concurreren om jouw opdracht. Zo betaal je nooit meer dan de marktprijs." },
+              { icon: ShieldCheck, title: "Veilig & geverifieerd", desc: "Reparateurs worden gecontroleerd op KvK en kwaliteit. Jij kiest zelf wie je toestel mag repareren." },
+              { icon: Eye, title: "Transparant", desc: "Alle offertes, reviews en voorwaarden overzichtelijk naast elkaar. Geen verborgen kosten of verrassingen." },
+            ].map((item) => (
+              <div key={item.title} className="bg-gradient-card shadow-card group relative overflow-hidden rounded-2xl border border-border/60 p-7 transition-all hover:border-primary/40 hover:shadow-glow">
+                <div className="mb-5 inline-flex h-14 w-14 items-center justify-center rounded-xl bg-primary/15 text-primary">
+                  <item.icon className="h-7 w-7" />
+                </div>
+                <h3 className="font-display text-xl font-semibold">{item.title}</h3>
+                <p className="mt-2 text-sm text-muted-foreground">{item.desc}</p>
+              </div>
+            ))}
+          </div>
         </div>
       </section>
 
@@ -229,11 +267,11 @@ function Landing() {
             <Wrench className="h-7 w-7" />
           </div>
           <h2 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
-            Klaar om te besparen<br />
-            <span className="text-gradient-mint">op je reparatie?</span>
+            Klaar voor een eerlijke<br />
+            <span className="text-gradient-mint">en veilige reparatie?</span>
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            Plaats binnen 1 minuut je aanvraag en laat reparateurs voor je concurreren.
+            Plaats binnen 1 minuut je aanvraag, ontvang offertes van geverifieerde reparateurs en kies met een gerust hart.
           </p>
           <Button asChild size="lg" className="mt-8 shadow-glow">
             <Link to="/login">Start nu — gratis <ArrowRight className="h-4 w-4" /></Link>
