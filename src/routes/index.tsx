@@ -267,11 +267,11 @@ function Landing() {
             <Wrench className="h-7 w-7" />
           </div>
           <h2 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-5xl md:text-6xl">
-            Klaar om te besparen<br />
-            <span className="text-gradient-mint">op je reparatie?</span>
+            Klaar voor een eerlijke<br />
+            <span className="text-gradient-mint">en veilige reparatie?</span>
           </h2>
           <p className="mx-auto mt-6 max-w-2xl text-base text-muted-foreground sm:text-lg">
-            Plaats binnen 1 minuut je aanvraag en laat reparateurs voor je concurreren.
+            Plaats binnen 1 minuut je aanvraag, ontvang offertes van geverifieerde reparateurs en kies met een gerust hart.
           </p>
           <Button asChild size="lg" className="mt-8 shadow-glow">
             <Link to="/login">Start nu — gratis <ArrowRight className="h-4 w-4" /></Link>
