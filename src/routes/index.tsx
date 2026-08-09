@@ -23,7 +23,7 @@ function Landing() {
                 <span className="absolute inline-flex h-full w-full animate-ping rounded-full bg-primary opacity-75" />
                 <span className="relative inline-flex h-2.5 w-2.5 rounded-full bg-primary" />
               </span>
-              Eerlijke prijs door concurrentie
+              Eerlijke & veilige reparatie
             </div>
 
             <h1 className="font-display text-4xl font-bold leading-[1.05] tracking-tight sm:text-6xl md:text-7xl">
