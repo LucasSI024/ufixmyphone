@@ -72,7 +72,7 @@ function Landing() {
               {[
                 { n: "1", icon: FileText, t: "Plaats aanvraag" },
                 { n: "2", icon: MessageSquare, t: "Ontvang offertes" },
-                { n: "3", icon: Scale, t: "Vergelijk prijzen" },
+                { n: "3", icon: Scale, t: "Vergelijk offertes" },
                 { n: "4", icon: CheckCircle2, t: "Kies de beste" },
               ].map((s) => (
                 <li key={s.n} className="bg-gradient-card flex items-center gap-2.5 rounded-xl border border-border/60 px-3 py-2.5">
@@ -89,13 +89,11 @@ function Landing() {
 
 
             <div className="mt-10 flex flex-wrap items-center justify-center gap-x-6 gap-y-2 text-xs text-muted-foreground sm:text-sm">
-              <div className="flex items-center gap-1.5"><Euro className="h-4 w-4 text-primary" /> Eerlijke marktprijs</div>
+              <div className="flex items-center gap-1.5"><Euro className="h-4 w-4 text-primary" /> Eerlijke concurrentie</div>
               <div className="flex items-center gap-1.5"><ShieldCheck className="h-4 w-4 text-primary" /> Veilig & geverifieerd</div>
               <div className="flex items-center gap-1.5"><Star className="h-4 w-4 text-primary" /> Reviews van klanten</div>
               <div className="flex items-center gap-1.5"><Lock className="h-4 w-4 text-primary" /> Geen gedoe, jij kiest</div>
             </div>
-
-            <p className="mt-3 text-[10px] text-muted-foreground/70">* Indicatie op basis van vergeleken offertes versus gemiddelde winkelprijs.</p>
           </div>
         </div>
       </section>
