@@ -32,6 +32,8 @@ type RequestDetail = {
   accepted_bid_id: string | null;
   created_at: string;
   photo_urls: string[] | null;
+  listing_type: string | null;
+  product_type: string | null;
   profiles: Pick<PublicProfile, "display_name" | "city"> | null;
 };
 
@@ -43,8 +45,15 @@ type Bid = {
   repair_days: number;
   status: string;
   created_at: string;
+  offer_type: string | null;
+  inspection_status: string | null;
+  revised_price: number | null;
+  revised_reason: string | null;
+  revised_response: string | null;
+  settled_price: number | null;
   profiles: Pick<PublicProfile, "display_name" | "city"> | null;
 };
+
 
 function RequestDetailPage() {
   const { id } = Route.useParams();
@@ -111,14 +120,23 @@ function RequestDetailPage() {
     );
   }
 
+  const listingType: ListingType = req.listing_type === "sell" ? "sell" : "repair";
+  const labels = LISTING_LABELS[listingType];
+  const isSell = listingType === "sell";
   const isOwner = user?.id === req.owner_id;
   const myBid = bidsQuery.data?.find((b) => b.repairer_id === user?.id);
   const myProfile = profileQuery.data;
   const canBid = !!user && !isOwner && req.status === "open" && !myBid && myProfile?.is_repairer && myProfile.repairer_status === "approved";
   const needsRepairerApproval = !!user && !isOwner && req.status === "open" && !myBid && !canBid;
+  const acceptedBid = bidsQuery.data?.find((b) => b.id === req.accepted_bid_id) ?? null;
+
+  const refresh = () => {
+    qc.invalidateQueries({ queryKey: ["request", id] });
+    qc.invalidateQueries({ queryKey: ["bids", id] });
+  };
 
   const handleDelete = async () => {
-    if (!confirm("Weet je zeker dat je deze reparatie wilt verwijderen?")) return;
+    if (!confirm("Weet je zeker dat je deze plaatsing wilt verwijderen?")) return;
     const { error } = await supabase.from("repair_requests").delete().eq("id", req.id);
     if (error) return toast.error(error.message);
     toast.success("Verwijderd");
@@ -126,7 +144,10 @@ function RequestDetailPage() {
   };
 
   const handleAccept = async (bidId: string) => {
-    const { error: bidErr } = await supabase.from("bids").update({ status: "accepted" }).eq("id", bidId);
+    const { error: bidErr } = await supabase
+      .from("bids")
+      .update({ status: "accepted", inspection_status: isSell ? "awaiting_inspection" : "not_started" })
+      .eq("id", bidId);
     if (bidErr) return toast.error(bidErr.message);
     const { error: rejErr } = await supabase.from("bids").update({ status: "rejected" }).eq("request_id", req.id).neq("id", bidId);
     if (rejErr) console.warn(rejErr);
@@ -135,10 +156,10 @@ function RequestDetailPage() {
       .update({ status: "in_progress", accepted_bid_id: bidId })
       .eq("id", req.id);
     if (reqErr) return toast.error(reqErr.message);
-    toast.success("Bod geaccepteerd!");
-    qc.invalidateQueries({ queryKey: ["request", id] });
-    qc.invalidateQueries({ queryKey: ["bids", id] });
+    toast.success(isSell ? "Bod geaccepteerd — het bedrijf controleert nu je product." : "Offerte geaccepteerd!");
+    refresh();
   };
+
 
   return (
     <div className="min-h-screen">

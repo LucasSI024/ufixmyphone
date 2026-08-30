@@ -18,33 +18,54 @@ export type Database = {
         Row: {
           created_at: string
           id: string
+          inspection_status: string
           message: string | null
+          offer_type: string
           price: number
           repair_days: number
           repairer_id: string
           request_id: string
+          revised_at: string | null
+          revised_price: number | null
+          revised_reason: string | null
+          revised_response: string
+          settled_price: number | null
           status: Database["public"]["Enums"]["bid_status"]
           updated_at: string
         }
         Insert: {
           created_at?: string
           id?: string
+          inspection_status?: string
           message?: string | null
+          offer_type?: string
           price: number
           repair_days?: number
           repairer_id: string
           request_id: string
+          revised_at?: string | null
+          revised_price?: number | null
+          revised_reason?: string | null
+          revised_response?: string
+          settled_price?: number | null
           status?: Database["public"]["Enums"]["bid_status"]
           updated_at?: string
         }
         Update: {
           created_at?: string
           id?: string
+          inspection_status?: string
           message?: string | null
+          offer_type?: string
           price?: number
           repair_days?: number
           repairer_id?: string
           request_id?: string
+          revised_at?: string | null
+          revised_price?: number | null
+          revised_reason?: string | null
+          revised_response?: string
+          settled_price?: number | null
           status?: Database["public"]["Enums"]["bid_status"]
           updated_at?: string
         }
@@ -154,6 +175,33 @@ export type Database = {
         }
         Relationships: []
       }
+      product_types: {
+        Row: {
+          created_at: string
+          icon: string
+          is_active: boolean
+          name: string
+          slug: string
+          sort_order: number
+        }
+        Insert: {
+          created_at?: string
+          icon?: string
+          is_active?: boolean
+          name: string
+          slug: string
+          sort_order?: number
+        }
+        Update: {
+          created_at?: string
+          icon?: string
+          is_active?: boolean
+          name?: string
+          slug?: string
+          sort_order?: number
+        }
+        Relationships: []
+      }
       profiles: {
         Row: {
           avatar_url: string | null
@@ -203,10 +251,13 @@ export type Database = {
           device_brand: string
           device_model: string
           id: string
+          listing_type: string
           owner_id: string
           photo_url: string | null
           photo_urls: string[]
           problem_description: string
+          product_details: Json
+          product_type: string
           status: Database["public"]["Enums"]["request_status"]
           updated_at: string
         }
@@ -219,10 +270,13 @@ export type Database = {
           device_brand: string
           device_model: string
           id?: string
+          listing_type?: string
           owner_id: string
           photo_url?: string | null
           photo_urls?: string[]
           problem_description: string
+          product_details?: Json
+          product_type?: string
           status?: Database["public"]["Enums"]["request_status"]
           updated_at?: string
         }
@@ -235,14 +289,25 @@ export type Database = {
           device_brand?: string
           device_model?: string
           id?: string
+          listing_type?: string
           owner_id?: string
           photo_url?: string | null
           photo_urls?: string[]
           problem_description?: string
+          product_details?: Json
+          product_type?: string
           status?: Database["public"]["Enums"]["request_status"]
           updated_at?: string
         }
-        Relationships: []
+        Relationships: [
+          {
+            foreignKeyName: "repair_requests_product_type_fkey"
+            columns: ["product_type"]
+            isOneToOne: false
+            referencedRelation: "product_types"
+            referencedColumns: ["slug"]
+          },
+        ]
       }
       user_roles: {
         Row: {

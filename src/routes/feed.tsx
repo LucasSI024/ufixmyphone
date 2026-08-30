@@ -15,7 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Header } from "@/components/header";
-import { REPAIR_CATEGORIES } from "@/lib/categories";
+import { categoriesForProduct } from "@/lib/categories";
+import type { ListingType } from "@/lib/product-types";
 
 export const Route = createFileRoute("/feed")({
   head: () => ({ meta: [{ title: "Open reparaties — repaireally" }] }),
@@ -30,6 +31,8 @@ type RequestRow = {
   city: string;
   budget_max: number | null;
   category: string | null;
+  listing_type: string;
+  product_type: string;
   status: string;
   created_at: string;
   owner_id: string;
@@ -37,6 +40,7 @@ type RequestRow = {
 };
 
 function FeedPage() {
+  const [tab, setTab] = useState<ListingType>("repair");
   const [category, setCategory] = useState<string | null>(null);
   const [city, setCity] = useState("");
   const [search, setSearch] = useState("");
@@ -47,7 +51,7 @@ function FeedPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("repair_requests")
-        .select("id, device_brand, device_model, problem_description, city, budget_max, category, status, created_at, owner_id, bids(count)")
+        .select("id, device_brand, device_model, problem_description, city, budget_max, category, listing_type, product_type, status, created_at, owner_id, bids(count)")
         .eq("status", "open")
         .order("created_at", { ascending: false })
         .limit(200);
@@ -56,12 +60,18 @@ function FeedPage() {
     },
   });
 
+  const counts = useMemo(() => ({
+    repair: (data ?? []).filter((r) => (r.listing_type ?? "repair") === "repair").length,
+    sell: (data ?? []).filter((r) => r.listing_type === "sell").length,
+  }), [data]);
+
   const filtered = useMemo(() => {
     if (!data) return [];
     const c = city.trim().toLowerCase();
     const s = search.trim().toLowerCase();
     const result = data.filter((r) => {
-      if (category && r.category !== category) return false;
+      if ((r.listing_type ?? "repair") !== tab) return false;
+      if (tab === "repair" && category && r.category !== category) return false;
       if (c && !r.city.toLowerCase().includes(c)) return false;
       if (s) {
         const hay = `${r.device_brand} ${r.device_model} ${r.problem_description} ${r.category ?? ""}`.toLowerCase();
@@ -75,7 +85,8 @@ function FeedPage() {
       result.sort((a, b) => (a.budget_max ?? Number.MAX_SAFE_INTEGER) - (b.budget_max ?? Number.MAX_SAFE_INTEGER));
     }
     return result;
-  }, [data, category, city, search, sort]);
+  }, [data, tab, category, city, search, sort]);
+
 
   return (
     <div className="min-h-screen">
@@ -84,17 +95,39 @@ function FeedPage() {
         <div className="mb-6 flex items-end justify-between gap-4">
           <div>
             <div className="mb-2 inline-flex items-center gap-1.5 rounded-full bg-primary/15 px-3 py-1 text-xs font-medium text-primary">
-              <Wrench className="h-3 w-3" /> Voor reparateurs
+              <Wrench className="h-3 w-3" /> Voor aangesloten bedrijven
             </div>
-            <h1 className="font-display text-3xl font-bold sm:text-4xl">Open reparaties</h1>
+            <h1 className="font-display text-3xl font-bold sm:text-4xl">
+              {tab === "repair" ? "Open reparatieaanvragen" : "Producten te koop"}
+            </h1>
             <p className="mt-1 text-sm text-muted-foreground">
-              Zoek op merk, model, onderdeel of probleem. Filter op stad en categorie.
+              {tab === "repair"
+                ? "Breng een reparatieofferte uit. Zoek op merk, model, onderdeel of probleem."
+                : "Breng een inkoopbod uit. Na acceptatie controleer je het product en betaal je uit."}
             </p>
           </div>
           <Button asChild className="shadow-glow">
             <Link to="/new"><Plus className="h-4 w-4" /> Plaatsen</Link>
           </Button>
         </div>
+
+        {/* Reparatie / verkoop */}
+        <div className="mb-4 inline-flex rounded-xl border border-border/60 bg-background/40 p-1">
+          {(["repair", "sell"] as ListingType[]).map((t) => (
+            <button
+              key={t}
+              onClick={() => { setTab(t); setCategory(null); }}
+              aria-pressed={tab === t}
+              className={`rounded-lg px-4 py-2 text-sm font-medium transition ${
+                tab === t ? "bg-primary text-primary-foreground shadow-glow" : "text-muted-foreground hover:text-foreground"
+              }`}
+            >
+              {t === "repair" ? "Repareren" : "Verkopen"}
+              <span className="ml-2 text-xs opacity-70">{counts[t]}</span>
+            </button>
+          ))}
+        </div>
+
 
         {/* Filters */}
         <div className="bg-gradient-card mb-6 space-y-3 rounded-2xl border border-border/60 p-4">
@@ -131,6 +164,7 @@ function FeedPage() {
             </Select>
           </div>
 
+          {tab === "repair" && (
           <div className="flex flex-wrap gap-2 pt-1">
             <button
               onClick={() => setCategory(null)}
@@ -142,7 +176,7 @@ function FeedPage() {
             >
               Alle
             </button>
-            {REPAIR_CATEGORIES.map((c) => (
+            {categoriesForProduct("phone").map((c) => (
               <button
                 key={c}
                 onClick={() => setCategory(c === category ? null : c)}
@@ -156,6 +190,8 @@ function FeedPage() {
               </button>
             ))}
           </div>
+          )}
+
 
           {(category || city || search || sort !== "newest") && (
             <div className="flex items-center justify-between pt-1">

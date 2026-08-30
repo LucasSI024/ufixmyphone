@@ -148,15 +148,28 @@ function VerkoopPage() {
       `Aangeboden door ${contact.name} — contact via repaireally.`,
     ].filter(Boolean).join("\n");
 
+    const brand = model.name.startsWith("Samsung") ? "Samsung" : model.name.startsWith("Google") ? "Google" : "Apple";
     const { data, error } = await supabase.from("repair_requests").insert({
       owner_id: user.id,
-      device_brand: model.name.startsWith("Samsung") ? "Samsung" : model.name.startsWith("Google") ? "Google" : "Apple",
+      listing_type: "sell",
+      product_type: "phone",
+      device_brand: brand,
       device_model: model.name,
       problem_description: desc,
-      category: "iPhone inkoop",
+      category: "Inkoop",
       city: contact.city.trim(),
       budget_max: result.high,
       photo_urls: uploaded,
+      product_details: {
+        brand,
+        model: model.name,
+        storage_gb: storageGb,
+        storage_label: storageLabel,
+        condition: condLabel,
+        battery: batLabel,
+        defects: defects.map((d) => DEFECT_LABELS[d]),
+        indication: { low: result.low, high: result.high },
+      },
     }).select("id").single();
 
     setBusy(false);
