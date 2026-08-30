@@ -15,7 +15,8 @@ import {
   SelectValue,
 } from "@/components/ui/select";
 import { Header } from "@/components/header";
-import { REPAIR_CATEGORIES } from "@/lib/categories";
+import { categoriesForProduct } from "@/lib/categories";
+import type { ListingType } from "@/lib/product-types";
 
 export const Route = createFileRoute("/feed")({
   head: () => ({ meta: [{ title: "Open reparaties — repaireally" }] }),
