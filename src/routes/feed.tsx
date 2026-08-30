@@ -163,6 +163,7 @@ function FeedPage() {
             </Select>
           </div>
 
+          {tab === "repair" && (
           <div className="flex flex-wrap gap-2 pt-1">
             <button
               onClick={() => setCategory(null)}
@@ -174,7 +175,7 @@ function FeedPage() {
             >
               Alle
             </button>
-            {REPAIR_CATEGORIES.map((c) => (
+            {categoriesForProduct("phone").map((c) => (
               <button
                 key={c}
                 onClick={() => setCategory(c === category ? null : c)}
@@ -188,6 +189,8 @@ function FeedPage() {
               </button>
             ))}
           </div>
+          )}
+
 
           {(category || city || search || sort !== "newest") && (
             <div className="flex items-center justify-between pt-1">
