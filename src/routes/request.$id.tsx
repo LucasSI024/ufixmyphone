@@ -32,6 +32,8 @@ type RequestDetail = {
   accepted_bid_id: string | null;
   created_at: string;
   photo_urls: string[] | null;
+  listing_type: string | null;
+  product_type: string | null;
   profiles: Pick<PublicProfile, "display_name" | "city"> | null;
 };
 
@@ -43,8 +45,15 @@ type Bid = {
   repair_days: number;
   status: string;
   created_at: string;
+  offer_type: string | null;
+  inspection_status: string | null;
+  revised_price: number | null;
+  revised_reason: string | null;
+  revised_response: string | null;
+  settled_price: number | null;
   profiles: Pick<PublicProfile, "display_name" | "city"> | null;
 };
+
 
 function RequestDetailPage() {
   const { id } = Route.useParams();
