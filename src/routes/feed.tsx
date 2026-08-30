@@ -30,6 +30,8 @@ type RequestRow = {
   city: string;
   budget_max: number | null;
   category: string | null;
+  listing_type: string;
+  product_type: string;
   status: string;
   created_at: string;
   owner_id: string;
@@ -37,6 +39,7 @@ type RequestRow = {
 };
 
 function FeedPage() {
+  const [tab, setTab] = useState<ListingType>("repair");
   const [category, setCategory] = useState<string | null>(null);
   const [city, setCity] = useState("");
   const [search, setSearch] = useState("");
@@ -47,7 +50,7 @@ function FeedPage() {
     queryFn: async () => {
       const { data, error } = await supabase
         .from("repair_requests")
-        .select("id, device_brand, device_model, problem_description, city, budget_max, category, status, created_at, owner_id, bids(count)")
+        .select("id, device_brand, device_model, problem_description, city, budget_max, category, listing_type, product_type, status, created_at, owner_id, bids(count)")
         .eq("status", "open")
         .order("created_at", { ascending: false })
         .limit(200);
@@ -56,12 +59,18 @@ function FeedPage() {
     },
   });
 
+  const counts = useMemo(() => ({
+    repair: (data ?? []).filter((r) => (r.listing_type ?? "repair") === "repair").length,
+    sell: (data ?? []).filter((r) => r.listing_type === "sell").length,
+  }), [data]);
+
   const filtered = useMemo(() => {
     if (!data) return [];
     const c = city.trim().toLowerCase();
     const s = search.trim().toLowerCase();
     const result = data.filter((r) => {
-      if (category && r.category !== category) return false;
+      if ((r.listing_type ?? "repair") !== tab) return false;
+      if (tab === "repair" && category && r.category !== category) return false;
       if (c && !r.city.toLowerCase().includes(c)) return false;
       if (s) {
         const hay = `${r.device_brand} ${r.device_model} ${r.problem_description} ${r.category ?? ""}`.toLowerCase();
@@ -75,7 +84,8 @@ function FeedPage() {
       result.sort((a, b) => (a.budget_max ?? Number.MAX_SAFE_INTEGER) - (b.budget_max ?? Number.MAX_SAFE_INTEGER));
     }
     return result;
-  }, [data, category, city, search, sort]);
+  }, [data, tab, category, city, search, sort]);
+
 
   return (
     <div className="min-h-screen">
