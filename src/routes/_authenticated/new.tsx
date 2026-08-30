@@ -173,6 +173,8 @@ function NewRequestPage() {
       .from("repair_requests")
       .insert({
         owner_id: user.id,
+        listing_type: "repair",
+        product_type: "phone",
         device_brand: form.device_brand.trim(),
         device_model: form.device_model.trim(),
         problem_description: description,
@@ -180,6 +182,12 @@ function NewRequestPage() {
         city: form.city.trim(),
         budget_max: budget,
         photo_urls: uploadedUrls,
+        product_details: {
+          brand: form.device_brand.trim(),
+          model: form.device_model.trim(),
+          problem_type: form.problem_type,
+          condition: form.condition,
+        },
       })
       .select("id")
       .single();
